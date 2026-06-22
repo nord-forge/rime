@@ -129,6 +129,9 @@ Conventions:
 ---
 
 ## Notes
+- **Detailed, agent-ready tickets** live in [`.claude/tickets/`](./.claude/tickets/) —
+  one self-contained `ENV-NN-slug.md` per row above (read `_conventions.md` first).
+  Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 - **Critical path to a usable demo:** ENV-01 → ENV-10/11 → ENV-30/31/32 → ENV-40/41 → ENV-50 → ENV-60/61 → ENV-21 → ENV-92.
-- **Highest-risk tickets:** ENV-05 (rich-text engine, OD-1), ENV-42 (DnD perf), ENV-02 (toolchain, OD-2). Do these early.
-- Tickets here are intentionally coarse; split into sub-issues when pulled into "In Progress".
+- **Highest-risk tickets:** ENV-42 (DnD perf, OD-3), ENV-50/55 (Lexical integration + Safari/IME, elevated R-1). Do/verify these carefully.
+- Done spikes (not tickets): ENV-02 (toolchain→rolldown-vite), ENV-05/56/57 (engine→Lexical, budget ~100 kB).
