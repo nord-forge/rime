@@ -13,14 +13,16 @@
     "size": "bun run measure-size.ts"
   },
   "dependencies": {
-    "lit": "^3.2.1",
+    "@lexical/html": "^0.23.1",
+    "@lexical/rich-text": "^0.23.1",
+    "@lexical/selection": "^0.23.1",
+    "@lexical/utils": "^0.23.1",
     "@tiptap/core": "^2.11.5",
+    "@tiptap/extension-link": "^2.11.5",
+    "@tiptap/extension-underline": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "lexical": "^0.23.1",
-    "@lexical/rich-text": "^0.23.1",
-    "@lexical/html": "^0.23.1",
-    "@lexical/selection": "^0.23.1",
-    "@lexical/utils": "^0.23.1"
+    "lit": "^3.2.1"
   },
   "devDependencies": {
     "vite": "^6.0.11",

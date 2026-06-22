@@ -78,7 +78,8 @@ Conventions:
 | ENV-53 | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-50, ENV-14 | §6.1 |
 | ENV-54 | **Paste sanitization** — Word/Outlook/Docs paste reduced to schema-valid content | P1 | ENV-50 | §6.7 |
 | ENV-55 | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-50 | §9 |
-| ENV-56 | **Trim Tiptap to minimal extension set** — bold/italic/link/list/heading instead of full StarterKit; re-measure, target < 90 kB gzip marginal (feeds OD-4 budget) | P1 | ENV-50 | §6.7, OD-4 |
+| ~~ENV-56~~ | ✅ **DONE (premise disproven)** — curating Tiptap cannot hit < 90 kB; ProseMirror floor is ~108 kB, realistic v1 set is ~128 kB gzip (> StarterKit). Gap to Lexical (~43 kB) is structural ~3×. See `spikes/od1-richtext/ENV-56-FINDINGS.md`. | P1 | ENV-05 | §6.7, OD-4 |
+| ENV-57 | **Set OD-4 core bundle budget — gates OD-1 re-confirm** — decide the core gzip budget; if rich-text headroom ≥ ~128 kB → keep Tiptap, else switch to Lexical (paste parity proven, ~3× lighter). Do BEFORE engine code (ENV-50). | P0 | ENV-56 | §10, OD-1/4 |
 
 ## Milestone 6 — Blocks & properties
 
