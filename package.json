@@ -1,0 +1,23 @@
+{
+  "name": "enveloppe",
+  "private": true,
+  "version": "0.0.0",
+  "description": "An open-source, framework-agnostic email template builder.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "lint": "oxlint",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "test": "bun test",
+    "build": "bun run --filter='@enveloppe/*' build",
+    "e2e": "playwright test"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

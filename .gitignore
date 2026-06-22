@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+bun.lockb
+playwright-report/
+test-results/
+.vite/

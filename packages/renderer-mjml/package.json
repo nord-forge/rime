@@ -1,0 +1,16 @@
+{
+  "name": "@enveloppe/renderer-mjml",
+  "version": "0.0.0",
+  "description": "Default Enveloppe Renderer: doc JSON → MJML → Outlook-safe email HTML.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"TODO ENV-21: build renderer-mjml\""
+  },
+  "dependencies": {
+    "@enveloppe/doc-model": "workspace:*"
+  }
+}
