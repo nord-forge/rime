@@ -1,0 +1,28 @@
+{
+  "name": "@enveloppe/spike-od2-toolchain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OD-2 spike: build a real Lit + CSS + iframe web component with stock Vite vs rolldown-vite; establish the bundle-size gate (OD-4).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "lint": "oxlint src",
+    "format:check": "oxfmt --check src",
+    "types": "tsc -p tsconfig.json",
+    "build": "TC_ENGINE=vite vite build",
+    "build:rolldown": "TC_ENGINE=rolldown vite build",
+    "size": "bun run measure.ts",
+    "verify": "bun run lint && bun run types && bun run build && bun run size"
+  },
+  "dependencies": {
+    "lit": "^3.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "oxfmt": "^0.56.0",
+    "oxlint": "^1.71.0",
+    "rolldown-vite": "^7.3.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11"
+  }
+}

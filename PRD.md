@@ -217,7 +217,7 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 | # | Item | Status / mitigation |
 |---|---|---|
 | OD-1 | **Rich-text engine** (Tiptap vs Lexical) | ✅ **RESOLVED 2026-06-22 → Tiptap/ProseMirror.** See `spikes/od1-richtext/FINDINGS.md`. Decided on paste-sanitization + JSON round-trip strength despite larger bundle. |
-| OD-2 | **Build toolchain** (rolldown-vite + Lit + CSS) stability | Early toolchain spike; fall back to stock Vite if Rolldown fights Lit's CSS handling. |
+| OD-2 | **Build toolchain** (rolldown-vite + Lit + CSS) stability | ✅ **RESOLVED 2026-06-22 → rolldown-vite.** Spike (`spikes/od2-toolchain/FINDINGS.md`) proved it builds AND runs a Lit + `css\`\`` + CSS-vars + iframe component, identical to stock Vite, passing browser smoke in Chromium + WebKit. oxlint/oxfmt confirmed Lit-safe. Stock Vite kept as drop-in fallback. Size gate (`measure.ts`) prototyped for OD-4. |
 | OD-3 | Exact **drop-detection latency budget** (ms) | Set during the DnD-perf ticket on the reference machine. |
 | OD-4 | **Core bundle-size budget** (gzipped) | **Promoted to blocking (ENV-57):** now gates the OD-1 engine choice. Rich text alone is ~128 kB (Tiptap) vs ~43 kB (Lexical) — a structural ~3× gap (ENV-56). Set the budget before engine code; if lean, OD-1 flips to Lexical. Enforced in CI. |
 | OD-5 | Block → MJML mapping gaps | Per-block raw-table fallback authored in the renderer when MJML can't express a block. |

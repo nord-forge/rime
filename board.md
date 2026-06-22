@@ -16,7 +16,7 @@ Conventions:
 | ID | Title | Pri | Depends on | PRD |
 |----|-------|-----|------------|-----|
 | ENV-01 | **Scaffold Bun-workspaces monorepo** — `packages/{doc-model,core,renderer-mjml,react,vue}`, `apps/demo`; root config | P0 | — | §8 |
-| ENV-02 | **Toolchain spike** — oxlint + oxfmt; Vite lib mode; try `rolldown-vite` with Lit + CSS; set core **bundle-size budget**; fall back to stock Vite if Rolldown fights Lit. Record OD-2 + OD-4. | P0 | ENV-01 | §7, OD-2/4 |
+| ~~ENV-02~~ | ✅ **DONE** — Toolchain spike. **rolldown-vite** builds + runs Lit/CSS/iframe (Chromium + WebKit smoke pass); oxlint/oxfmt Lit-safe; size gate prototyped. Stock Vite = fallback. OD-2 resolved. See `spikes/od2-toolchain/FINDINGS.md`. OD-4 budget number still pending in ENV-57. | P0 | ENV-01 | §7, OD-2/4 |
 | ENV-03 | **CI pipeline** — install, lint (oxlint), format check (oxfmt), unit (bun test), build, bundle-size gate | P0 | ENV-02 | §10 |
 | ENV-04 | **Playwright harness** — cross-browser incl. WebKit/Safari; base fixtures for the editor | P0 | ENV-01 | §9 |
 | ~~ENV-05~~ | ✅ **DONE** — Rich-text engine spike (OD-1). Decided **Tiptap/ProseMirror**. See `spikes/od1-richtext/FINDINGS.md`. | P0 | ENV-01 | §6.7, OD-1 |
