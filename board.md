@@ -19,7 +19,7 @@ Conventions:
 | ENV-02 | **Toolchain spike** — oxlint + oxfmt; Vite lib mode; try `rolldown-vite` with Lit + CSS; set core **bundle-size budget**; fall back to stock Vite if Rolldown fights Lit. Record OD-2 + OD-4. | P0 | ENV-01 | §7, OD-2/4 |
 | ENV-03 | **CI pipeline** — install, lint (oxlint), format check (oxfmt), unit (bun test), build, bundle-size gate | P0 | ENV-02 | §10 |
 | ENV-04 | **Playwright harness** — cross-browser incl. WebKit/Safari; base fixtures for the editor | P0 | ENV-01 | §9 |
-| ENV-05 | **Rich-text engine spike (OD-1)** — prototype Tiptap-core vs Lexical mounted in a Lit/iframe canvas; measure bundle, Safari/iOS behaviour, paste sanitization, JSON round-trip; **decide (default Tiptap)** | P0 | ENV-01 | §6.7, OD-1 |
+| ~~ENV-05~~ | ✅ **DONE** — Rich-text engine spike (OD-1). Decided **Tiptap/ProseMirror**. See `spikes/od1-richtext/FINDINGS.md`. | P0 | ENV-01 | §6.7, OD-1 |
 | ENV-06 | **Repo hygiene** — README quickstart skeleton, CONTRIBUTING, CODE_OF_CONDUCT, issue/PR templates, MIT LICENSE confirmed | P1 | ENV-01 | §1 |
 
 ## Milestone 1 — Document model (headless core)
@@ -77,7 +77,8 @@ Conventions:
 | ENV-52 | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-50 | §6.5 |
 | ENV-53 | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-50, ENV-14 | §6.1 |
 | ENV-54 | **Paste sanitization** — Word/Outlook/Docs paste reduced to schema-valid content | P1 | ENV-50 | §6.7 |
-| ENV-55 | **IME / mobile / Safari hardening** — verified | P1 | ENV-50 | §9 |
+| ENV-55 | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-50 | §9 |
+| ENV-56 | **Trim Tiptap to minimal extension set** — bold/italic/link/list/heading instead of full StarterKit; re-measure, target < 90 kB gzip marginal (feeds OD-4 budget) | P1 | ENV-50 | §6.7, OD-4 |
 
 ## Milestone 6 — Blocks & properties
 

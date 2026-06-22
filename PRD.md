@@ -103,7 +103,7 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
   - **Tiptap / ProseMirror** — most mature; **strict schema** auto-sanitizes pasted content (Word/Outlook garbage) into the doc model; strongest cross-browser/IME/Safari track record; matches the original "Tiptap feel" inspiration.
   - **Lexical** (Meta) — perf-first, smaller bundle, gentler API; younger, less battle-tested for IME/Safari.
   - **Slate is rejected** — its rendering layer requires React.
-- **OPEN DECISION (time-boxed spike):** prototype Tiptap-core vs Lexical inside the Lit canvas; measure bundle size, Safari/iOS behaviour, paste sanitization, and JSON round-trip. **Default to Tiptap/ProseMirror if inconclusive** (stronger cross-browser track record matches the hardest stated risk).
+- **DECIDED (OD-1, 2026-06-22): Tiptap / ProseMirror.** The spike (`spikes/od1-richtext/FINDINGS.md`) measured both engines inside a real Lit + iframe canvas across Chromium + WebKit. Result: both are genuinely framework-agnostic (no React/Vue dep). Lexical wins on bundle (+37.6 kB gzip vs Tiptap's +118.6 kB with StarterKit), but Tiptap wins decisively on the two axes that most reduce the project's hardest risk — **strict-schema paste sanitization** (built-in; Lexical is DIY via `@lexical/html`) and **synchronous, zero-effort JSON round-trip** into the doc model (Lexical needs deferred-update handling). Bundle cost is mitigated by hand-picking Tiptap extensions instead of shipping all of StarterKit (follow-up ticket ENV-56).
 - Either way, all visible UI is custom (see 6.5).
 
 ### 6.8 Extensibility API
@@ -216,7 +216,7 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 
 | # | Item | Status / mitigation |
 |---|---|---|
-| OD-1 | **Rich-text engine** (Tiptap vs Lexical) | Time-boxed spike; default Tiptap if inconclusive. **Top project risk** (cross-browser text behaviour). |
+| OD-1 | **Rich-text engine** (Tiptap vs Lexical) | ✅ **RESOLVED 2026-06-22 → Tiptap/ProseMirror.** See `spikes/od1-richtext/FINDINGS.md`. Decided on paste-sanitization + JSON round-trip strength despite larger bundle. |
 | OD-2 | **Build toolchain** (rolldown-vite + Lit + CSS) stability | Early toolchain spike; fall back to stock Vite if Rolldown fights Lit's CSS handling. |
 | OD-3 | Exact **drop-detection latency budget** (ms) | Set during the DnD-perf ticket on the reference machine. |
 | OD-4 | **Core bundle-size budget** (gzipped) | Set during the toolchain spike; enforced in CI. |

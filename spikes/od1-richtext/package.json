@@ -1,0 +1,30 @@
+{
+  "name": "@enveloppe/spike-od1-richtext",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OD-1 spike: Tiptap-core vs Lexical inside a Lit + iframe canvas. Measures bundle, Safari, paste, JSON round-trip.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build:baseline": "ENGINE=baseline vite build",
+    "build:tiptap": "ENGINE=tiptap vite build",
+    "build:lexical": "ENGINE=lexical vite build",
+    "build": "bun run build:baseline && bun run build:tiptap && bun run build:lexical",
+    "size": "bun run measure-size.ts"
+  },
+  "dependencies": {
+    "lit": "^3.2.1",
+    "@tiptap/core": "^2.11.5",
+    "@tiptap/starter-kit": "^2.11.5",
+    "lexical": "^0.23.1",
+    "@lexical/rich-text": "^0.23.1",
+    "@lexical/html": "^0.23.1",
+    "@lexical/selection": "^0.23.1",
+    "@lexical/utils": "^0.23.1"
+  },
+  "devDependencies": {
+    "vite": "^6.0.11",
+    "@playwright/test": "^1.50.1",
+    "typescript": "^5.7.3"
+  }
+}
