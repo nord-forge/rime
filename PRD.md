@@ -103,7 +103,9 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
   - **Tiptap / ProseMirror** — most mature; **strict schema** auto-sanitizes pasted content (Word/Outlook garbage) into the doc model; strongest cross-browser/IME/Safari track record; matches the original "Tiptap feel" inspiration.
   - **Lexical** (Meta) — perf-first, smaller bundle, gentler API; younger, less battle-tested for IME/Safari.
   - **Slate is rejected** — its rendering layer requires React.
-- **DECIDED (OD-1, 2026-06-22): Tiptap / ProseMirror.** The spike (`spikes/od1-richtext/FINDINGS.md`) measured both engines inside a real Lit + iframe canvas across Chromium + WebKit. Result: both are genuinely framework-agnostic (no React/Vue dep). Lexical wins on bundle (~42 kB gzip wired vs Tiptap's +118.6 kB with StarterKit). A follow-up proved Lexical's paste sanitization reaches **full parity** with Tiptap once wired with `registerRichText` + a curated node set (so it's a wiring gap, not a capability gap). Tiptap is chosen on **ergonomics / default-correctness**: paste sanitization, synchronous `getJSON()`, undo, and commands all work out of the box, whereas Lexical needs explicit wiring (manual clipboard handlers, `{discrete:true}` updates, node curation) — each a place to get cross-browser/IME behaviour subtly wrong, which is the project's top risk. **Bundle gap is structural (ENV-56):** curating Tiptap extensions does *not* close the gap — minimal Tiptap is already ~108 kB gzip (the ProseMirror floor), and the realistic v1 set (with link/lists/headings) is ~128 kB, *larger* than StarterKit. Lexical wired is ~43 kB — a permanent ~3× / ~85 kB gap. **Therefore OD-4 (core bundle budget) now gates the engine choice (ENV-57):** keep Tiptap only if the budget affords ~128 kB of rich text; otherwise switch to Lexical (paste parity proven in the spike, ~3× lighter). Decide OD-4 before writing engine code (ENV-50).
+- **DECIDED (OD-1, updated 2026-06-22): Lexical (presumptive), hard-confirmed at ENV-50.** The decision history: the spike (`spikes/od1-richtext/FINDINGS.md`) first chose **Tiptap** on ergonomics/default-correctness — paste sanitization, synchronous `getJSON()`, undo, and commands work out of the box, whereas Lexical needs explicit wiring (`registerRichText`, `{discrete:true}` updates, curated nodes). Both are framework-agnostic (no React/Vue). Follow-up research proved Lexical reaches **full paste-sanitization parity** once wired (a wiring gap, not a capability gap). ENV-56 then proved the **bundle gap is structural and permanent**: Tiptap's rich text is ~128 kB gzip (the ProseMirror floor; curation can't get below ~108 kB), vs Lexical wired at ~43 kB — a ~3× / ~85 kB gap.
+  - **OD-4 set the core budget at ~100 kB gzip (best-in-class lean, potato-PC-first).** Tiptap's rich text *alone* (~128 kB) **exceeds the entire core budget**, with no curation path back — so **OD-1 flips to Lexical.** Tiptap's ergonomics edge does not survive the budget constraint, and the project's stated in-browser/memory constraint is the tie-breaking value here.
+  - **Presumptive, not yet coded:** per the ENV-50 deferral, the Lexical integration is built and the choice formally re-confirmed against *measured* (not estimated) non-engine core weight. Tiptap is revived only if the ~100 kB budget is later raised. The wired Lexical adapter in `spikes/od1-richtext/src/lexical-adapter.ts` is the starting point.
 - Either way, all visible UI is custom (see 6.5).
 
 ### 6.8 Extensibility API
@@ -134,7 +136,7 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
 | Component model | **Lit** web components (+ thin React & Vue wrappers; more frameworks later) |
 | Canvas | same-origin `srcdoc` **iframe**, real preview DOM |
 | Drag & drop | **Pragmatic drag-and-drop** + custom keyboard/ARIA a11y layer |
-| Rich text | headless **Tiptap/ProseMirror or Lexical** (spike-decided; Tiptap default), custom UI |
+| Rich text | headless **Lexical** (presumptive, confirm at ENV-50; chosen for ~100 kB budget), custom UI |
 | Export | **MJML** via swappable `Renderer` interface |
 | Doc model | immutable **JSON tree**, patch-diff undo, CRDT-friendly |
 | Theming | **CSS custom properties** (`--eb-*`) for chrome; injected stylesheet for canvas |
@@ -176,7 +178,7 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 - **Drag at ~60fps** — no visible jank while dragging a block over a realistic newsletter.
 - **Bounded drop-detection latency** — hit-testing/drop-zone detection stays within a defined per-frame budget (target: well under one frame at 60fps; exact ms budget set during the DnD-perf ticket).
 - **Capped memory** — at most one live rich-text instance; patch-based (not snapshot) undo; no leaked listeners/observers across drag operations (verified).
-- **Bundle size budget** — core package within an agreed gzipped budget (set during the toolchain spike); tracked in CI.
+- **Bundle size budget** — `@enveloppe/core` ≤ **~100 kB gzip** (editor only; MJML renderer excluded). Set by OD-4/ENV-57; enforced in CI via `measure.ts`. This budget drove the Lexical engine choice (OD-1).
 
 ## 11. Success metrics
 
@@ -216,11 +218,11 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 
 | # | Item | Status / mitigation |
 |---|---|---|
-| OD-1 | **Rich-text engine** (Tiptap vs Lexical) | ✅ **RESOLVED 2026-06-22 → Tiptap/ProseMirror.** See `spikes/od1-richtext/FINDINGS.md`. Decided on paste-sanitization + JSON round-trip strength despite larger bundle. |
+| OD-1 | **Rich-text engine** (Tiptap vs Lexical) | ✅ **RESOLVED 2026-06-22 → Lexical (presumptive), confirm at ENV-50.** Initially Tiptap on ergonomics, but the ~100 kB OD-4 budget (below) is exceeded by Tiptap's rich text alone (~128 kB) — flips to Lexical (~43 kB wired, paste parity proven). Hard-confirm against measured core weight at ENV-50. See `spikes/od1-richtext/FINDINGS.md` + `ENV-56-FINDINGS.md`. |
 | OD-2 | **Build toolchain** (rolldown-vite + Lit + CSS) stability | ✅ **RESOLVED 2026-06-22 → rolldown-vite.** Spike (`spikes/od2-toolchain/FINDINGS.md`) proved it builds AND runs a Lit + `css\`\`` + CSS-vars + iframe component, identical to stock Vite, passing browser smoke in Chromium + WebKit. oxlint/oxfmt confirmed Lit-safe. Stock Vite kept as drop-in fallback. Size gate (`measure.ts`) prototyped for OD-4. |
 | OD-3 | Exact **drop-detection latency budget** (ms) | Set during the DnD-perf ticket on the reference machine. |
-| OD-4 | **Core bundle-size budget** (gzipped) | **Promoted to blocking (ENV-57):** now gates the OD-1 engine choice. Rich text alone is ~128 kB (Tiptap) vs ~43 kB (Lexical) — a structural ~3× gap (ENV-56). Set the budget before engine code; if lean, OD-1 flips to Lexical. Enforced in CI. |
+| OD-4 | **Core bundle-size budget** (gzipped) | ✅ **RESOLVED 2026-06-22 → ~100 kB gzip** for `@enveloppe/core` (editor only; MJML renderer excluded, runs at export). Best-in-class lean, potato-PC-first. Enforced in CI via `measure.ts` (from OD-2). **This budget decides OD-1 (see below).** |
 | OD-5 | Block → MJML mapping gaps | Per-block raw-table fallback authored in the renderer when MJML can't express a block. |
-| R-1 | contenteditable cross-browser divergence (Safari/iOS) | Headless engine with strict schema (Tiptap) preferred; heavy Safari QA budget. |
+| R-1 | contenteditable cross-browser divergence (Safari/iOS) | Headless engine (**Lexical**, per OD-1/OD-4); curated node set gives schema-like sanitization. **Elevated by the Lexical choice:** more manual wiring than Tiptap → budget heavier Safari/IME QA (ENV-55) to offset. |
 | R-2 | iframe ↔ host coordinate translation across zoom/scroll | Single drag controller owns it; covered by Playwright interaction tests. |
 | R-3 | OSS scope creep | This PRD's non-goals (§3) and v1 done-bar (§12) are the cutline. |

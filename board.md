@@ -72,14 +72,14 @@ Conventions:
 
 | ID | Title | Pri | Depends on | PRD |
 |----|-------|-----|------------|-----|
-| ENV-50 | **Integrate chosen engine** (per ENV-05) headless in the canvas | P0 | ENV-05, ENV-32 | §6.7 |
+| ENV-50 | **Integrate Lexical headless in the canvas** (per OD-1/ENV-57) + **hard-confirm bundle budget**: measure real `@enveloppe/core` gzip; revert to Tiptap only if budget is raised. Start from `spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | ENV-57, ENV-32 | §6.7, OD-1/4 |
 | ENV-51 | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-50 | §6.7, §10 |
 | ENV-52 | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-50 | §6.5 |
 | ENV-53 | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-50, ENV-14 | §6.1 |
-| ENV-54 | **Paste sanitization** — Word/Outlook/Docs paste reduced to schema-valid content | P1 | ENV-50 | §6.7 |
+| ENV-54 | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-50 | §6.7 |
 | ENV-55 | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-50 | §9 |
 | ~~ENV-56~~ | ✅ **DONE (premise disproven)** — curating Tiptap cannot hit < 90 kB; ProseMirror floor is ~108 kB, realistic v1 set is ~128 kB gzip (> StarterKit). Gap to Lexical (~43 kB) is structural ~3×. See `spikes/od1-richtext/ENV-56-FINDINGS.md`. | P1 | ENV-05 | §6.7, OD-4 |
-| ENV-57 | **Set OD-4 core bundle budget — gates OD-1 re-confirm** — decide the core gzip budget; if rich-text headroom ≥ ~128 kB → keep Tiptap, else switch to Lexical (paste parity proven, ~3× lighter). Do BEFORE engine code (ENV-50). | P0 | ENV-56 | §10, OD-1/4 |
+| ~~ENV-57~~ | ✅ **DONE** — OD-4 budget set: **~100 kB gzip** for `@enveloppe/core`. Tiptap's rich text alone (~128 kB) exceeds it → **OD-1 flips to Lexical** (presumptive; hard-confirm at ENV-50 against measured core weight). CI gate via `measure.ts`. | P0 | ENV-56 | §10, OD-1/4 |
 
 ## Milestone 6 — Blocks & properties
 
