@@ -1,17 +1,28 @@
-import { createEditor, type LexicalEditor, $getRoot, $createParagraphNode } from 'lexical';
-import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { $createTextNode, TextNode } from 'lexical';
+import {
+  createEditor,
+  type LexicalEditor,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  $createParagraphNode,
+  $createTextNode,
+  TextNode,
+} from 'lexical';
+import { HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
+import { mergeRegister } from '@lexical/utils';
 import type { EngineAdapter, RichTextJSON } from './adapter';
 
-// Lexical: build editor manually (no React), register nodes, mount on a
-// contenteditable child we create inside `mount`.
-
-const FORMAT_BIT = { bold: 1, italic: 1 << 1, underline: 1 << 3 } as const;
+// v2 adapter: wires registerRichText so the paste/clipboard command pipeline
+// exists (PASTE_COMMAND → $insertDataTransferForRichText → @lexical/html
+// $generateNodesFromDOM). Sanitization comes from the CURATED node set: only
+// para/text/heading/quote are registered, so unknown DOM (mso, <font>, <script>)
+// is dropped on import — Lexical's analogue of ProseMirror's strict schema.
 
 export class LexicalAdapter implements EngineAdapter {
   readonly name = 'lexical';
   private editor: LexicalEditor | null = null;
   private rootEl: HTMLElement | null = null;
+  private cleanup: (() => void) | null = null;
 
   create(mount: HTMLElement, initial: RichTextJSON): void {
     const editable = document.createElement('div');
@@ -23,6 +34,7 @@ export class LexicalAdapter implements EngineAdapter {
 
     const editor = createEditor({
       namespace: 'enveloppe-spike',
+      // Curated node set = the sanitization boundary.
       nodes: [HeadingNode, QuoteNode],
       onError: (e) => {
         throw e;
@@ -30,9 +42,9 @@ export class LexicalAdapter implements EngineAdapter {
     });
     editor.setRootElement(editable);
 
-    // discrete + no-history tag forces synchronous-ish reconciliation so a
-    // read immediately after seeding returns content. This extra ceremony is
-    // itself a finding: Lexical's deferred update model needs careful handling.
+    // THE FIX: install rich-text command handlers, incl. PASTE_COMMAND.
+    this.cleanup = mergeRegister(registerRichText(editor));
+
     editor.update(
       () => {
         const root = $getRoot();
@@ -54,12 +66,14 @@ export class LexicalAdapter implements EngineAdapter {
   }
 
   exec(cmd: 'bold' | 'italic' | 'underline'): void {
-    // Format toggling on selection requires @lexical/selection in real use;
-    // for the spike we toggle on all text nodes to keep the contract simple.
-    this.editor?.update(() => {
-      const root = $getRoot();
-      root.getAllTextNodes().forEach((n) => n.toggleFormat(cmd));
-    });
+    this.editor?.update(
+      () => {
+        const sel = $getSelection();
+        if ($isRangeSelection(sel)) sel.formatText(cmd);
+        else $getRoot().getAllTextNodes().forEach((n) => n.toggleFormat(cmd));
+      },
+      { discrete: true },
+    );
   }
 
   toJSON(): RichTextJSON {
@@ -88,12 +102,11 @@ export class LexicalAdapter implements EngineAdapter {
   }
 
   destroy(): void {
+    this.cleanup?.();
     this.editor?.setRootElement(null);
     this.rootEl?.remove();
+    this.cleanup = null;
     this.editor = null;
     this.rootEl = null;
   }
 }
-
-// Reference the bit map so tree-shaking keeps parity with real usage.
-void FORMAT_BIT;

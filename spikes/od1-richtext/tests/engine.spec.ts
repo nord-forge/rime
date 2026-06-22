@@ -78,6 +78,10 @@ for (const eng of ENGINES) {
       expect(s).not.toContain('o:p');
       expect(s).not.toContain('<script');
       expect(s).not.toContain('font-family');
+      // Content must ACTUALLY insert (guards against "passed because nothing
+      // was pasted"). The visible words from WORD_HTML must appear.
+      expect(s).toContain('Pasted');
+      expect(s).toContain('bold');
       console.log(`[${eng.tag}] post-paste JSON:`, s);
     });
   });

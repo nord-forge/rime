@@ -46,32 +46,64 @@ smaller than 118 kB, but is very unlikely to reach Lexical's 37 kB.
   (`Pasted / bold[bold] / junk`). The strict ProseMirror schema rejects anything
   outside the model. This is the headline advantage and it works with **zero
   extra wiring**.
-- **Lexical:** ⚠️ The paste **did not insert at all** out of the box — Lexical
-  needs `@lexical/html` + explicit paste-command handling to process pasted HTML.
-  It "passed" the no-garbage assertion only because nothing was inserted. → paste
-  is **DIY** in Lexical.
+- **Lexical (initial, unwired):** ⚠️ paste **did not insert at all** — the
+  adapter built a bare `createEditor()` with no clipboard handlers.
+- **Lexical (FIXED — see §4b):** ✅ once wired, paste **inserts AND sanitizes**
+  correctly, matching Tiptap (`Pasted / bold[bold] / junk`, no mso/font/script),
+  in both Chromium and WebKit. So this is a **wiring gap, not a capability gap.**
+
+## 4b. Lexical paste — researched & fixed (follow-up)
+The original failure was an adapter bug, not a Lexical limitation. The fix:
+1. **`registerRichText(editor)`** (from `@lexical/rich-text`) — installs the
+   `PASTE_COMMAND` handler, which routes through
+   `$insertDataTransferForRichText` (`@lexical/clipboard`) →
+   `$generateNodesFromDOM` (`@lexical/html`). Without this, `paste` has no handler.
+2. **Curated node set** (`[Paragraph, Text, Heading, Quote]` only) = the
+   sanitization boundary: `$generateNodesFromDOM` keeps only DOM that a
+   registered node's `importDOM()` claims; everything else (mso, `<font>`,
+   `<script>`) is dropped. This is Lexical's analogue of ProseMirror's strict schema.
+
+**Cost of the fix:** bundle grew **46.2 → 51.4 kB gzip** (+5 kB for
+`registerRichText` + clipboard pipeline). Still ~2.5× lighter than Tiptap.
+**Result:** Lexical's paste is now a tie with Tiptap on correctness — but Tiptap
+gives it with **zero wiring** (StarterKit includes it), whereas Lexical requires
+the explicit `registerRichText` + curated-nodes setup to reach parity.
 
 ## Scorecard
 
 | Axis | Tiptap | Lexical | Winner |
 |---|---|---|---|
 | No React/Vue dep | ✅ | ✅ | tie |
-| Bundle (gzip marginal) | 118.6 kB | **37.6 kB** | **Lexical** |
+| Bundle (gzip marginal) | 118.6 kB | **~42 kB** (51.4−7.6 baseline, wired) | **Lexical** |
 | Cross-browser/WebKit | ✅ | ✅ | tie |
 | JSON round-trip | ✅ sync, zero-effort | ✅ but needs `{discrete}` | **Tiptap** |
-| Paste sanitization | ✅ built-in, strict schema | ⚠️ DIY (`@lexical/html`) | **Tiptap** |
-| API ergonomics for our use | simpler (sync getJSON) | more ceremony (deferred) | **Tiptap** |
+| Paste sanitization | ✅ built-in, strict schema, **zero wiring** | ✅ parity **after** `registerRichText` + curated nodes | **Tiptap (ergonomics)** |
+| API ergonomics for our use | simpler (sync getJSON, batteries-included) | more ceremony (deferred updates, manual wiring) | **Tiptap** |
 
-## Decision & rationale
-**Choose Tiptap / ProseMirror.** Lexical's only win is bundle size (a real,
-notable ~80 kB gzip saving). But the project's **stated hardest risk is
-cross-browser rich-text correctness**, and the two axes that most reduce that
-risk — **strict-schema paste sanitization** and **effortless, synchronous JSON
-round-trip into the doc model** — are exactly where Tiptap wins decisively and
-works with no extra wiring. Lexical would push paste handling and update-timing
-correctness onto us, increasing the surface for the very Safari/contenteditable
-bugs we want to avoid. The bundle cost is mitigated by hand-picking Tiptap
-extensions instead of shipping all of StarterKit.
+## Decision & rationale (unchanged after the paste research)
+**Choose Tiptap / ProseMirror.** The follow-up research **narrowed the gap**:
+once wired with `registerRichText` + a curated node set, Lexical's paste
+sanitization reaches **full parity** with Tiptap and stays the lighter bundle
+(~42 kB vs ~119 kB gzip). So the decision is no longer "Lexical can't paste."
+
+The decision holds on **ergonomics and default-correctness**, which map directly
+to the project's stated hardest risk (cross-browser rich-text correctness):
+- Tiptap is **batteries-included** — paste sanitization, sync `getJSON()`, undo,
+  and command set all work out of the box. Lexical requires explicit wiring
+  (`registerRichText`, `{discrete:true}` updates, manual node curation) to reach
+  the same place; each manual step is a place to get cross-browser behaviour
+  subtly wrong.
+- For a project whose top risk is text-editing correctness across Safari/IME,
+  **fewer things we must wire correctly = less risk.** Tiptap's defaults are the
+  safer default.
+
+**The honest counter-argument (for the record):** if the **bundle budget (OD-4)
+becomes the binding constraint**, Lexical is now a credible fallback — it is
+~2.5× lighter and, as proven here, can be wired to full paste parity. Revisit
+only if a curated Tiptap build (ENV-56) still blows the budget.
+
+**Mitigation for Tiptap's bundle cost:** hand-pick extensions instead of shipping
+all of StarterKit (ENV-56); target < 90 kB gzip marginal.
 
 ## Follow-ups created
 - **OD-4 input:** core bundle budget must account for ~80–120 kB of rich text;

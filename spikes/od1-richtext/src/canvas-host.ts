@@ -69,9 +69,18 @@ export class CanvasHost extends LitElement {
           const editable = mount.querySelector('[contenteditable], .ProseMirror') as HTMLElement
             ?? (mount.firstElementChild as HTMLElement);
           editable?.focus();
+          // Place a collapsed selection at the end so the paste handler has a
+          // range selection to insert into (Lexical requires one).
+          const doc = editable.ownerDocument;
+          const sel = doc.getSelection();
+          const range = doc.createRange();
+          range.selectNodeContents(editable);
+          range.collapse(false);
+          sel?.removeAllRanges();
+          sel?.addRange(range);
           const dt = new DataTransfer();
           dt.setData('text/html', htmlStr);
-          dt.setData('text/plain', editable?.textContent ?? '');
+          dt.setData('text/plain', 'Pasted bold junk');
           editable?.dispatchEvent(
             new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }),
           );
