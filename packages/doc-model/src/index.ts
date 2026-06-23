@@ -26,6 +26,7 @@ export {
   setRichText,
   updateNode,
 } from "./operations";
+export { type AppliedOp, History, type HistoryEntry, type HistoryOptions } from "./history";
 export {
   deserialize,
   type DeserializeResult,
