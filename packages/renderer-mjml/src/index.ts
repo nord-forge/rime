@@ -1,5 +1,13 @@
 // @enveloppe/renderer-mjml — default Renderer implementation.
 // See PRD §6.3.
-// TODO: Renderer interface, MjmlRenderer (doc → MJML → HTML), raw-table fallback.
+//
+// The swappable Renderer contract + shared seam types. The concrete MjmlRenderer
+// and the raw-table fallback BlockRenderer are added next.
 
-export const PLACEHOLDER = true;
+export {
+  type BlockRenderer,
+  type Renderer,
+  RenderError,
+  type RenderContext,
+  type RenderOptions,
+} from "./renderer";

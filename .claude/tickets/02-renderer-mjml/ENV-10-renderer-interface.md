@@ -1,7 +1,7 @@
 ---
 id: ENV-10
 title: Swappable Renderer interface
-status: ready
+status: done
 priority: P0
 milestone: 2 — Export renderer (MJML)
 depends_on: [ENV-05]
