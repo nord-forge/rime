@@ -1,7 +1,7 @@
 # Enveloppe Tickets
 
 Agent-ready implementation tickets, derived from [`PRD.md`](../../PRD.md) and the
-spike findings under [`spikes/`](../../spikes/). Each ticket is **self-contained**:
+spike findings under [`.claude/spikes/`](../spikes/). Each ticket is **self-contained**:
 an LLM/agent should be able to open one file, read it, and implement it without
 needing to reconstruct context from elsewhere.
 
@@ -23,9 +23,9 @@ frontmatter is the source of truth for agents.
 ## Already-resolved (do NOT re-do — context only)
 These were spikes; their decisions are baked into the tickets below. Read the
 finding if a ticket references it.
-- **ENV-02** → toolchain = **rolldown-vite** + oxlint + oxfmt + tsc. `spikes/od2-toolchain/FINDINGS.md`
-- **ENV-05 / OD-1** → rich-text engine. **Superseded by ENV-57:** final choice is **Lexical**. `spikes/od1-richtext/FINDINGS.md`
-- **ENV-56** → curating Tiptap can't beat ~108 kB; gap to Lexical is structural. `spikes/od1-richtext/ENV-56-FINDINGS.md`
+- **ENV-02** → toolchain = **rolldown-vite** + oxlint + oxfmt + tsc. `.claude/spikes/od2-toolchain/FINDINGS.md`
+- **ENV-05 / OD-1** → rich-text engine. **Superseded by ENV-57:** final choice is **Lexical**. `.claude/spikes/od1-richtext/FINDINGS.md`
+- **ENV-56** → curating Tiptap can't beat ~108 kB; gap to Lexical is structural. `.claude/spikes/od1-richtext/ENV-56-FINDINGS.md`
 - **ENV-57 / OD-4** → core budget = **~100 kB gzip** → engine = **Lexical**. (in PRD §6.7, OD-4)
 
 ## Ticket index

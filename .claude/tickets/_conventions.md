@@ -25,7 +25,7 @@ packages/renderer-mjml  @enveloppe/renderer-mjml (doc → MJML → HTML)
 packages/react          @enveloppe/react
 packages/vue            @enveloppe/vue
 apps/demo               @enveloppe/demo
-spikes/*                throwaway proofs — DO NOT import from production code
+.claude/spikes/*                throwaway proofs — DO NOT import from production code
 ```
 Cross-package deps use `workspace:*`.
 

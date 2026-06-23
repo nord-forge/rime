@@ -21,8 +21,8 @@ impossible) and the reason hit-testing has a clean, iframe-local coordinate syst
 iframe inside the ENV-30 shell: its `srcdoc` skeleton, the injected base stylesheet
 (the email's own styles), the load lifecycle, and a clean mount point the doc→DOM
 renderer (ENV-32) draws into. The proven pattern lives in
-`spikes/od1-richtext/src/canvas-host.ts` (srcdoc iframe → `#mount` → `load`
-listener) and `spikes/od2-toolchain/src/themed-panel.ts` — reuse it.
+`.claude/spikes/od1-richtext/src/canvas-host.ts` (srcdoc iframe → `#mount` → `load`
+listener) and `.claude/spikes/od2-toolchain/src/themed-panel.ts` — reuse it.
 
 ## Goal
 The shell's `part="canvas"` hosts a same-origin srcdoc iframe that loads a clean
@@ -31,7 +31,7 @@ in Chromium + WebKit to receive **no** host CSS.
 
 ## Prerequisites
 - ENV-30 done (`<enveloppe-editor>` shell + `part="canvas"` region).
-- Read `spikes/od1-richtext/src/canvas-host.ts` for the `srcdoc` + `load` +
+- Read `.claude/spikes/od1-richtext/src/canvas-host.ts` for the `srcdoc` + `load` +
   `#mount` pattern, and the spike `playwright.config.ts` note that file:// breaks
   srcdoc origin (tests run over http via the ENV-04 harness).
 

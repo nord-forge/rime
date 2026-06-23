@@ -3,17 +3,32 @@
   "version": "0.0.0",
   "description": "Thin Vue wrapper for the <enveloppe-editor> web component.",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
-  "scripts": {
-    "build": "echo \"TODO ENV-91: build vue wrapper\""
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
-  "peerDependencies": {
-    "vue": ">=3"
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "oxlint src",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@enveloppe/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": ">=3"
   }
 }

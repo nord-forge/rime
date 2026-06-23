@@ -115,7 +115,7 @@ all of StarterKit (ENV-56); target < 90 kB gzip marginal.
 
 ## How to reproduce
 ```
-cd spikes/od1-richtext
+cd .claude/spikes/od1-richtext
 bun install
 bun run build && bun run size      # bundle table
 bunx playwright install webkit chromium

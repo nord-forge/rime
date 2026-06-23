@@ -68,7 +68,7 @@ vs Lexical ~43 kB rich text) should be made against whatever total budget OD-4 s
 
 ## Reproduce
 ```
-cd spikes/od2-toolchain
+cd .claude/spikes/od2-toolchain
 bun install
 bun run lint && bunx oxfmt --check src
 bun run types

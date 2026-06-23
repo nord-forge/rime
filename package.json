@@ -1,21 +1,35 @@
 {
   "name": "enveloppe",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "description": "An open-source, framework-agnostic email template builder.",
   "license": "MIT",
-  "type": "module",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
+  "type": "module",
   "scripts": {
     "lint": "oxlint",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "bun test",
     "build": "bun run --filter='@enveloppe/*' build",
+    "typecheck": "bun run --filter='@enveloppe/*' typecheck",
+    "size": "bun run --filter='@enveloppe/core' build && bun run scripts/measure.ts",
     "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/bun": "^1.1.14",
+    "lit": "^3.2.1",
+    "oxfmt": "^0.56.0",
+    "oxlint": "^1.71.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@^7.3.1"
   },
   "engines": {
     "bun": ">=1.1.0"

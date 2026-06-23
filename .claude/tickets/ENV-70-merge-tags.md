@@ -26,7 +26,7 @@ A token node type exists in the Lexical editor and in `RichTextJSON`, round-trip
 losslessly through the doc model, and exports to `{{var}}` text via the MJML renderer.
 
 ## Prerequisites
-- ENV-50 done (headless Lexical mounted in the canvas; `spikes/od1-richtext/src/
+- ENV-50 done (headless Lexical mounted in the canvas; `.claude/spikes/od1-richtext/src/
   lexical-adapter.ts` curated-node pattern — add the token node to that curated set).
 - ENV-53/ENV-10 (`RichTextJSON`: paragraphs → runs with `marks`/`link`) — the portable
   shape this extends.

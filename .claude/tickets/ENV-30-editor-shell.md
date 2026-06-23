@@ -20,7 +20,7 @@ three-region layout (palette / canvas / properties), the slots and parts, and th
 public `config` surface (theme tokens, enabled blocks, `onImageUpload`, token
 sources). Everything later (canvas, DnD, rich text, panels) plugs into regions this
 ticket defines. Chrome is themed exclusively via `--eb-*` CSS custom properties that
-pierce the shadow boundary — the proven pattern from `spikes/od2-toolchain/src/themed-panel.ts`.
+pierce the shadow boundary — the proven pattern from `.claude/spikes/od2-toolchain/src/themed-panel.ts`.
 > Note: the board lists ENV-30's dep as ENV-02, but ENV-02 is **DONE** (toolchain
 > spike). The real prerequisite is ENV-01. Reuse ENV-02's outputs (rolldown-vite
 > lib config, the `css\`\``/`--eb-*` pattern) — do not redo them.

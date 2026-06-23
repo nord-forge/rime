@@ -18,8 +18,8 @@ Users paste from Word, Outlook, and Google Docs, which carry `mso-*` styles,
 `<font>` tags, deprecated attributes, and even `<script>` — none of which may
 enter the doc model (§6.7). This is **de-risked**: the spike proved that Lexical's
 `registerRichText` + a **curated node set** strips mso/font/script in both
-Chromium and WebKit (see `spikes/od1-richtext/FINDINGS.md` §4/§4b and the wired
-`spikes/od1-richtext/src/lexical-adapter.ts`). This ticket **ports** that proven
+Chromium and WebKit (see `.claude/spikes/od1-richtext/FINDINGS.md` §4/§4b and the wired
+`.claude/spikes/od1-richtext/src/lexical-adapter.ts`). This ticket **ports** that proven
 approach into `@enveloppe/core`, hardens it (explicit allow-list confirmation,
 edge cases), and adds Playwright coverage so a regression can't silently let
 garbage through.

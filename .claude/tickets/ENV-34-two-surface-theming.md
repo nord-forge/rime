@@ -22,7 +22,7 @@ is walled off from both the host app and the chrome theme. This ticket formalise
 that contract and, most importantly, proves the wall holds: **no host CSS and no
 chrome `--eb-*` token bleeds into the canvas**. The bleed-proof is the whole point —
 truthful email preview depends on it. The piercing-token pattern is already proven
-in `spikes/od2-toolchain/` (CSS var applies through shadow DOM in Chromium + WebKit).
+in `.claude/spikes/od2-toolchain/` (CSS var applies through shadow DOM in Chromium + WebKit).
 
 ## Goal
 Document and enforce the two-surface model: `--eb-*` themes chrome only; the canvas

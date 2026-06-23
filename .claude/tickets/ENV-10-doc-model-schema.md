@@ -82,7 +82,7 @@ Create in `packages/doc-model/src/`:
    ```
 2. **`rich-text.ts`** — the portable rich-text shape (engine-independent so the
    doc model never imports Lexical). Reuse the shape proven in
-   `spikes/od1-richtext/src/adapter.ts` (`RichTextJSON`: doc → paragraphs →
+   `.claude/spikes/od1-richtext/src/adapter.ts` (`RichTextJSON`: doc → paragraphs →
    text runs with `marks: ('bold'|'italic'|'underline')[]`). Add `link?: string`
    to a text run for the link mark.
 3. **`validate.ts`** — `validateDoc(value: unknown): { ok: true; doc: EnveloppeDoc } | { ok: false; errors: ValidationError[] }`.

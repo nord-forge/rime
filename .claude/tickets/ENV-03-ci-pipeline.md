@@ -18,8 +18,8 @@ Every later ticket leans on a green CI to prove "done". This ticket stands up th
 GitHub Actions pipeline that runs the same checks the local `_conventions.md` gate
 demands — install, lint, format-check, unit tests, build — plus the one gate that
 cannot be left to a human: the **`@enveloppe/core` ≤ ~100 kB gzip budget** (§10,
-OD-4). The toolchain is already proven (ENV-02): `spikes/od2-toolchain/measure.ts`
-is the working prototype of the size gate and `spikes/od2-toolchain/FINDINGS.md`
+OD-4). The toolchain is already proven (ENV-02): `.claude/spikes/od2-toolchain/measure.ts`
+is the working prototype of the size gate and `.claude/spikes/od2-toolchain/FINDINGS.md`
 shows the exact pipeline stages that pass in Chromium + WebKit. Reuse them; do not
 re-spike.
 
@@ -31,7 +31,7 @@ build, or the core gzip budget regresses — green on a clean `main`.
 - ENV-01 done: workspaces build, `bun run build`/`test`/`lint`/`format:check`
   scripts exist at root, and ENV-01 copied `measure.ts` into a shared
   `scripts/measure.ts` location (its "Out of scope" note). If that copy is absent,
-  port `spikes/od2-toolchain/measure.ts` as the first step of this ticket.
+  port `.claude/spikes/od2-toolchain/measure.ts` as the first step of this ticket.
 
 ## Implementation notes
 1. **Workflow file** — create `.github/workflows/ci.yml`:

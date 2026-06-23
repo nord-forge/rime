@@ -69,7 +69,7 @@ Create under `packages/core/src/properties/`:
    is editable on the selected column.
 5. **Theming.** All controls use `--eb-color-*`, `--eb-radius`, `--eb-font-ui`, spacing
    tokens (ENV-34). No host-CSS reads; Shadow DOM only. Match the chrome look from
-   `spikes/od2-toolchain/src/themed-panel.ts`.
+   `.claude/spikes/od2-toolchain/src/themed-panel.ts`.
 6. **Mount** into the shell's `part="properties"` slot; wire `doc`/`selectedId` from
    the editor and listen for `eb-doc-change`.
 7. **Budget** — Lit + small controls; no heavy form lib. Reuse Lit's templating; no new

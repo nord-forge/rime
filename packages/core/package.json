@@ -3,14 +3,40 @@
   "version": "0.0.0",
   "description": "The <enveloppe-editor> Lit web component: canvas, drag-and-drop, inline rich text, chrome.",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "echo \"TODO ENV-30: build core (Vite lib mode)\""
+    "build": "vite build && tsc -p tsconfig.json",
+    "test": "bun test",
+    "lint": "oxlint src",
+    "typecheck": "tsc -p tsconfig.json",
+    "size": "bun run ../../scripts/measure.ts"
   },
   "dependencies": {
-    "@enveloppe/doc-model": "workspace:*"
+    "@atlaskit/pragmatic-drag-and-drop": "^1.5.0",
+    "@enveloppe/doc-model": "workspace:*",
+    "@lexical/clipboard": "^0.23.1",
+    "@lexical/html": "^0.23.1",
+    "@lexical/rich-text": "^0.23.1",
+    "@lexical/selection": "^0.23.1",
+    "@lexical/utils": "^0.23.1",
+    "lexical": "^0.23.1"
+  },
+  "peerDependencies": {
+    "lit": "^3.2.1"
   }
 }

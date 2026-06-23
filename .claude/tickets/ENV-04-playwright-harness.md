@@ -20,8 +20,8 @@ the quirks live in **WebKit/Safari** (§9, R-1, R-2). This ticket stands up the
 cross-browser Playwright harness and the reusable fixtures every browser-observable
 ticket (ENV-31/32/33/34/40+/50+) will build its specs on, so those tickets write
 *tests*, not *boilerplate*. The spikes already prove the config shape: copy
-`spikes/od2-toolchain/playwright.config.ts` (chromium + webkit projects) and the
-http-served pattern from `spikes/od1-richtext/playwright.config.ts` (file:// breaks
+`.claude/spikes/od2-toolchain/playwright.config.ts` (chromium + webkit projects) and the
+http-served pattern from `.claude/spikes/od1-richtext/playwright.config.ts` (file:// breaks
 srcdoc origin + module workers — must serve over http).
 
 ## Goal
@@ -33,7 +33,7 @@ iframe canvas — green against a placeholder editor.
 - ENV-01 done (core builds to `dist/`, `lit` resolvable). The editor shell itself
   (ENV-30) may not exist yet; the harness must work against a minimal placeholder
   custom element so it is unblocked.
-- Read both spike `playwright.config.ts` files and `spikes/od1-richtext/tests/engine.spec.ts`
+- Read both spike `playwright.config.ts` files and `.claude/spikes/od1-richtext/tests/engine.spec.ts`
   (the `__spike` test-bridge pattern for driving an in-iframe engine without UI deps).
 
 ## Implementation notes
@@ -105,7 +105,7 @@ Create under `packages/core/` (the harness lives where the component lives):
    coordinate controller (ENV-33) — do not implement coordinate math here.
 5. **`e2e/smoke.spec.ts`** — one cross-browser smoke test using the fixture:
    element is visible and a canvas iframe is present. Mirrors
-   `spikes/od2-toolchain/smoke.spec.ts`.
+   `.claude/spikes/od2-toolchain/smoke.spec.ts`.
 6. **Root script** — confirm `bun run e2e` (already declared in ENV-01) maps to
    `bunx playwright test` for the core package (or a root config that points at it).
 7. **CI note** — ENV-03 intentionally omits browser binaries. Document in the

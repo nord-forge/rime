@@ -1,7 +1,7 @@
 ---
 id: ENV-01
 title: Scaffold Bun-workspaces monorepo
-status: ready
+status: done
 priority: P0
 milestone: 0 — Foundations
 depends_on: []
@@ -15,11 +15,11 @@ estimate: M
 
 ## Context
 The repo currently has a placeholder skeleton (`packages/*/package.json` +
-placeholder `src/index.ts`, plus `spikes/`). This ticket turns it into a real,
+placeholder `src/index.ts`, plus `.claude/spikes/`). This ticket turns it into a real,
 buildable Bun-workspaces monorepo with shared tooling config, so every later
 ticket has a consistent place to add code and a working `build`/`test`/`lint`.
 The toolchain is already decided (ENV-02): rolldown-vite + oxlint + oxfmt + tsc.
-Working reference config exists in `spikes/od2-toolchain/` — copy patterns from it.
+Working reference config exists in `.claude/spikes/od2-toolchain/` — copy patterns from it.
 
 ## Goal
 `bun install && bun run build && bun test && bun run lint` all succeed from the
@@ -27,14 +27,15 @@ repo root against the five packages + demo app, with shared TS/lint/format confi
 
 ## Prerequisites
 - None. This is the foundation ticket.
-- Read `spikes/od2-toolchain/FINDINGS.md` and its `vite.config.ts`,
+- Read `.claude/spikes/od2-toolchain/FINDINGS.md` and its `vite.config.ts`,
   `tsconfig.json`, `measure.ts` — reuse those proven patterns.
 
 ## Implementation notes
 1. **Root config**
    - Root `package.json` already declares `workspaces: ["packages/*","apps/*"]`.
-     Add a `spikes/*`? **No** — keep spikes OUT of workspaces so they never leak
-     into prod builds. Leave root scripts: `lint`, `format`, `format:check`,
+     Spikes live under `.claude/spikes/` (outside the repo source tree) and must
+     stay OUT of workspaces so they never leak into prod builds. Leave root scripts:
+     `lint`, `format`, `format:check`,
      `test`, `build`, `e2e` (already present).
    - Add root `tsconfig.base.json` with the decided compiler options
      (`strict`, `module: ESNext`, `moduleResolution: bundler`,
@@ -67,7 +68,7 @@ repo root against the five packages + demo app, with shared TS/lint/format confi
 - [ ] `bun run lint` (oxlint) and `bun run format:check` (oxfmt) pass on the repo.
 - [ ] `core` has Lexical + Pragmatic DnD + Lit installed; Tiptap is absent.
 - [ ] Root `tsconfig.base.json`, `.oxlintrc.json` exist and are extended/used.
-- [ ] `spikes/*` is NOT part of the workspaces graph.
+- [ ] `.claude/spikes/*` is NOT part of the workspaces graph.
 
 ## Out of scope
 - CI wiring (ENV-03). Playwright harness (ENV-04). Any feature code.

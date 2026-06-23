@@ -6,11 +6,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "echo \"TODO ENV-92: demo dev server\"",
-    "build": "echo \"TODO ENV-92: build demo\""
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "oxlint src"
   },
   "dependencies": {
     "@enveloppe/core": "workspace:*",
-    "@enveloppe/renderer-mjml": "workspace:*"
+    "@enveloppe/renderer-mjml": "workspace:*",
+    "lit": "^3.2.1"
   }
 }

@@ -16,14 +16,14 @@ estimate: L
 ## Context
 Inline rich text is edited by **Lexical, headless** — chosen by OD-1 because the
 ~100 kB core budget (OD-4/ENV-57) is exceeded by Tiptap's rich text alone
-(~128 kB gzip), while wired Lexical is ~43 kB (see `spikes/od1-richtext/FINDINGS.md`
+(~128 kB gzip), while wired Lexical is ~43 kB (see `.claude/spikes/od1-richtext/FINDINGS.md`
 + `ENV-56-FINDINGS.md`). The engine mounts on the **focused TextBlock's element
 inside the iframe canvas** and is used headless (no Lexical UI — that is ENV-52).
 The working, sanitization-correct integration already exists in
-`spikes/od1-richtext/src/lexical-adapter.ts` (read it first) — this ticket
+`.claude/spikes/od1-richtext/src/lexical-adapter.ts` (read it first) — this ticket
 **ports** that adapter into `@enveloppe/core` and re-confirms the budget against
 real measured core weight. Spikes are throwaway; copy the approach, do not import
-from `spikes/`.
+from `.claude/spikes/`.
 
 ## Goal
 `@enveloppe/core` mounts a single headless Lexical editor onto a focused
@@ -37,7 +37,7 @@ recorded against the ~100 kB budget.
   replaces it on focus).
 - ENV-57 done (OD-4 budget = ~100 kB gzip; CI `measure.ts` exists). Reference its
   decision: Lexical was chosen *because* of this budget.
-- Read `spikes/od1-richtext/src/lexical-adapter.ts` and `src/adapter.ts`
+- Read `.claude/spikes/od1-richtext/src/lexical-adapter.ts` and `src/adapter.ts`
   (`RichTextJSON` shape, `EngineAdapter` contract).
 - Runtime deps to add: `lexical`, `@lexical/rich-text`, `@lexical/utils`,
   `@lexical/clipboard`, `@lexical/html` — **note combined gzip cost in the PR**.
