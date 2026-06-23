@@ -1,7 +1,7 @@
 ---
 id: ENV-03
 title: CI pipeline + bundle-size gate
-status: ready
+status: done
 priority: P0
 milestone: 0 — Foundations
 depends_on: [ENV-01]

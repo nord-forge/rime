@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      # Deterministic install: exactly what bun.lock pins.
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      # Cheapest checks first so failures surface fast.
+      - name: Lint (oxlint)
+        run: bun run lint
+
+      - name: Format check (oxfmt)
+        run: bun run format:check
+
+      - name: Typecheck (tsc)
+        run: bun run typecheck
+
+      - name: Unit tests (bun test)
+        run: bun test
+
+      - name: Build all packages
+        run: bun run build
+
+      # The one gate a human can't be trusted with: @enveloppe/core gzip budget
+      # (PRD §10, OD-4 = ~100 kB). Override with BUDGET_GZIP if the budget moves.
+      - name: Bundle-size gate
+        run: bun run size
+
+      # TODO(ENV-04): add `bun run e2e` (Playwright, chromium + webkit) once the
+      # browser harness lands. Kept out of this job so CI stays fast and does not
+      # require browser binaries for the core checks above.
