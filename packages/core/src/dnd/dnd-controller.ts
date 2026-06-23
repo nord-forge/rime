@@ -31,6 +31,8 @@ export interface DndDeps {
   createBlock: (blockType: LeafBlock["type"]) => LeafBlock;
   /** Apply an op result: the editor merges patch into doc + undo history + re-renders. */
   dispatch: (op: OpResult) => void;
+  /** Announce a completed drop (insert for palette, move for canvas) against the result doc. */
+  announceDrop?: (kind: "insert" | "move", resultDoc: EnveloppeDoc, nodeId: NodeId) => void;
   ops: {
     insertNode: (doc: EnveloppeDoc, parentId: NodeId, index: number, node: LeafBlock) => OpResult;
     moveNode: (doc: EnveloppeDoc, id: NodeId, newParentId: NodeId, newIndex: number) => OpResult;
@@ -219,16 +221,21 @@ export class DndController {
   #applyDrop(data: DragData, target: DropTarget): void {
     const doc = this.#deps.getDoc();
     try {
-      const op =
-        data.source === "palette"
-          ? this.#deps.ops.insertNode(
-              doc,
-              target.parentId,
-              target.index,
-              this.#deps.createBlock(data.blockType),
-            )
-          : this.#deps.ops.moveNode(doc, data.nodeId, target.parentId, target.index);
+      let op: OpResult;
+      let kind: "insert" | "move";
+      let nodeId: NodeId;
+      if (data.source === "palette") {
+        const block = this.#deps.createBlock(data.blockType);
+        op = this.#deps.ops.insertNode(doc, target.parentId, target.index, block);
+        kind = "insert";
+        nodeId = block.id;
+      } else {
+        op = this.#deps.ops.moveNode(doc, data.nodeId, target.parentId, target.index);
+        kind = "move";
+        nodeId = data.nodeId;
+      }
       this.#deps.dispatch(op);
+      this.#deps.announceDrop?.(kind, op.doc, nodeId);
     } catch {
       // An invalid drop (e.g. would break column-width invariants) is a no-op.
     }

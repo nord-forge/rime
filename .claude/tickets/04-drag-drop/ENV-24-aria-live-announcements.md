@@ -1,7 +1,7 @@
 ---
 id: ENV-24
 title: ARIA live-region announcements
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-23]

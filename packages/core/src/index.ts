@@ -33,3 +33,13 @@ export {
   resolveMove,
 } from "./dnd/keyboard-move";
 export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu";
+export { LiveAnnouncer } from "./a11y/live-region";
+export {
+  blockLabel,
+  findNodeById,
+  insertMessage,
+  locateForAnnounce,
+  moveMessage,
+  parentLabel,
+  removeMessage,
+} from "./a11y/announce-messages";

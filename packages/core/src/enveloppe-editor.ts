@@ -19,12 +19,21 @@ import {
   type LeafBlock,
   moveNode,
   type OpResult,
+  removeNode,
 } from "@enveloppe/doc-model";
 import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 import { CanvasRenderer } from "./canvas/canvas-renderer";
 import { DragCoordinateController, type Point } from "./canvas/coordinate-controller";
 import { DndController } from "./dnd/dnd-controller";
 import { KeyboardMoveController } from "./dnd/keyboard-move";
+import { LiveAnnouncer } from "./a11y/live-region";
+import {
+  findNodeById,
+  insertMessage,
+  locateForAnnounce,
+  moveMessage,
+  removeMessage,
+} from "./a11y/announce-messages";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -110,6 +119,7 @@ export class EnveloppeEditor extends LitElement {
   #coords: DragCoordinateController | null = null;
   #dnd: DndController | null = null;
   #keyboard: KeyboardMoveController | null = null;
+  #announcer: LiveAnnouncer | null = null;
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -126,6 +136,7 @@ export class EnveloppeEditor extends LitElement {
     void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
       this.#renderer = new CanvasRenderer(mount, doc);
       this.#coords = new DragCoordinateController(iframe);
+      this.#announcer = new LiveAnnouncer(this.renderRoot as ShadowRoot);
       this.#dnd = new DndController({
         canvasDocument: doc,
         coords: this.#coords,
@@ -137,6 +148,11 @@ export class EnveloppeEditor extends LitElement {
         },
         createBlock: (blockType) => this.#createBlock(blockType),
         dispatch: (op) => this.#dispatch(op),
+        announceDrop: (kind, resultDoc, nodeId) => {
+          const msg =
+            kind === "insert" ? insertMessage(resultDoc, nodeId) : moveMessage(resultDoc, nodeId);
+          this.#announcer?.announce(msg);
+        },
         ops: { insertNode, moveNode },
       });
       // Keyboard reordering — the parallel a11y input model (same moveNode op).
@@ -150,7 +166,10 @@ export class EnveloppeEditor extends LitElement {
         setSelected: (id) => this.#setSelected(id),
         focusNode: (id) => this.#focusNode(id),
         announce: () => {
-          /* ARIA live wiring lands in the announcements ticket */
+          // The selected block's new position is read from the post-move doc.
+          if (this.#doc && this.#selected) {
+            this.#announcer?.announce(moveMessage(this.#doc, this.#selected));
+          }
         },
         moveNode,
       });
@@ -174,8 +193,15 @@ export class EnveloppeEditor extends LitElement {
       };
       doc.addEventListener("click", this.#onCanvasClick);
 
-      // Alt+Arrows move the selected block (the iframe document has focus on click).
-      this.#onKeydown = (e) => this.#keyboard?.handleKeydown(e);
+      // Alt+Arrows move the selected block; Delete/Backspace removes it.
+      this.#onKeydown = (e) => {
+        if ((e.key === "Delete" || e.key === "Backspace") && this.#selected) {
+          this.#deleteSelected();
+          e.preventDefault();
+          return;
+        }
+        this.#keyboard?.handleKeydown(e);
+      };
       doc.addEventListener("keydown", this.#onKeydown);
       this.addEventListener("keydown", this.#onKeydown as EventListener);
 
@@ -205,6 +231,8 @@ export class EnveloppeEditor extends LitElement {
     this.#dnd?.destroy();
     this.#dnd = null;
     this.#keyboard = null;
+    this.#announcer?.destroy();
+    this.#announcer = null;
     this.#canvas?.destroy();
     this.#canvas = null;
     this.#coords = null;
@@ -253,6 +281,26 @@ export class EnveloppeEditor extends LitElement {
 
   #focusNode(id: string): void {
     this.#renderer?.elementForNode(id)?.focus();
+  }
+
+  // Remove the selected leaf block, announcing it (parent label from BEFORE doc).
+  #deleteSelected(): void {
+    const id = this.#selected;
+    if (!id || !this.#doc) return;
+    const before = this.#doc;
+    const located = locateForAnnounce(before, id);
+    const node = located ? findNodeById(before, id) : null;
+    let op: OpResult;
+    try {
+      op = removeNode(before, id);
+    } catch {
+      return; // e.g. removing would break a column invariant → no-op
+    }
+    if (node && located) {
+      this.#announcer?.announce(removeMessage(before, node, located.parentId));
+    }
+    this.#setSelected(null);
+    this.#dispatch(op);
   }
 
   /** The currently selected block id, or null. */
