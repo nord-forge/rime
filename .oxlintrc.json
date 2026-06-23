@@ -15,6 +15,7 @@
     "**/node_modules/**",
     "spikes/**",
     ".claude/spikes/**",
+    "**/bench/**",
     "**/test-results/**",
     "**/playwright-report/**"
   ]

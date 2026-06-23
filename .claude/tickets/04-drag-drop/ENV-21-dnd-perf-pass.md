@@ -1,7 +1,7 @@
 ---
 id: ENV-21
 title: DnD performance pass + drop-detection budget (OD-3)
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-20]

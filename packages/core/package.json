@@ -25,7 +25,8 @@
     "lint": "oxlint src",
     "typecheck": "tsc -p tsconfig.json",
     "size": "bun run ../../scripts/measure.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "bench:dnd": "bun run bench/dnd-perf.bench.ts"
   },
   "dependencies": {
     "@enveloppe/doc-model": "workspace:*",
