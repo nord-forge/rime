@@ -1,7 +1,7 @@
 ---
 id: ENV-13
 title: Output-correctness fixtures + client matrix
-status: ready
+status: done
 priority: P0
 milestone: 2 — Export renderer (MJML)
 depends_on: [ENV-11]

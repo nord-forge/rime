@@ -5,6 +5,8 @@
     "spikes/**",
     ".claude/**",
     "**/*.md",
+    "**/*.html",
+    "**/test/golden/**",
     "**/test-results/**",
     "**/playwright-report/**"
   ]

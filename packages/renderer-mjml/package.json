@@ -23,7 +23,8 @@
     "build": "vite build && tsc -p tsconfig.json",
     "test": "bun test",
     "lint": "oxlint src",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "render:fixtures": "bun run scripts/render-fixtures.ts"
   },
   "dependencies": {
     "@enveloppe/doc-model": "workspace:*",
