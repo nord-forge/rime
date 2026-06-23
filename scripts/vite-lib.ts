@@ -15,12 +15,25 @@ export interface LibOptions {
   entry?: string;
   /** Additional externals beyond the always-external Lit/workspace set. */
   external?: (string | RegExp)[];
+  /**
+   * Build for Node instead of the browser. Externalizes Node built-ins (and
+   * their `node:` forms) so a Node-side package (e.g. the MJML renderer, which
+   * runs at export time) doesn't bundle/polyfill them.
+   */
+  node?: boolean;
 }
 
 const ALWAYS_EXTERNAL: (string | RegExp)[] = ["lit", /^lit\//, /^@lit\//, /^@enveloppe\//];
 
+// Node built-ins to externalize in node-target builds (both bare and node: form).
+const NODE_BUILTINS =
+  /^(node:)?(fs|path|os|util|stream|events|crypto|url|http|https|zlib|buffer|child_process|module|assert)$/;
+
 export function libConfig(opts: LibOptions): UserConfig {
   const entry = resolve(opts.root, opts.entry ?? "src/index.ts");
+  const external = [...ALWAYS_EXTERNAL, ...(opts.external ?? [])];
+  if (opts.node) external.push(NODE_BUILTINS);
+
   return defineConfig({
     build: {
       outDir: resolve(opts.root, "dist"),
@@ -31,13 +44,15 @@ export function libConfig(opts: LibOptions): UserConfig {
         fileName: () => "index.js",
       },
       rollupOptions: {
-        external: [...ALWAYS_EXTERNAL, ...(opts.external ?? [])],
+        external,
       },
       reportCompressedSize: true,
       // "oxc" is rolldown-vite's native minifier (no separate esbuild install).
       // Stock-vite fallback understands the same value via its esbuild path.
       minify: "oxc",
-      target: "es2022",
+      target: opts.node ? "node18" : "es2022",
     },
+    // Resolve to the Node entry points of dependencies in node-target builds.
+    ...(opts.node ? { ssr: { target: "node" as const } } : {}),
   });
 }
