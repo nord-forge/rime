@@ -11,6 +11,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Verify every commit in a PR is DCO signed-off and free of AI attribution.
+  # A dedicated DCO GitHub App can replace this once the repo has a GitHub home;
+  # until then this job enforces both rules in CI. PR-only (push has no range).
+  dco:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check DCO sign-off + no AI attribution
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          fail=0
+          for sha in $(git rev-list "$BASE_SHA..$HEAD_SHA"); do
+            subject=$(git log -1 --format='%s' "$sha")
+            body=$(git log -1 --format='%B' "$sha")
+            author="$(git log -1 --format='%an <%ae>' "$sha")"
+
+            # 1) require a Signed-off-by trailer matching the author
+            if ! printf '%s\n' "$body" | grep -qiE "^Signed-off-by: .+ <.+@.+>"; then
+              echo "::error::commit $sha ($subject) is missing a Signed-off-by trailer (run: git commit -s)"
+              fail=1
+            fi
+
+            # 2) forbid Co-Authored-By / AI attribution trailers
+            if printf '%s\n' "$body" | grep -qiE "^Co-authored-by:|^Generated with|Claude Code|noreply@anthropic"; then
+              echo "::error::commit $sha ($subject) contains forbidden Co-Authored-By / AI attribution"
+              fail=1
+            fi
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "DCO check failed. See errors above."
+            exit 1
+          fi
+          echo "✅ all commits signed off, no forbidden attribution"
+
   build:
     runs-on: ubuntu-latest
     steps:
