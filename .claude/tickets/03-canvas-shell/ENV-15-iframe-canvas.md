@@ -1,7 +1,7 @@
 ---
 id: ENV-15
 title: Same-origin srcdoc iframe canvas
-status: ready
+status: done
 priority: P0
 milestone: 3 — Canvas & shell
 depends_on: [ENV-14]

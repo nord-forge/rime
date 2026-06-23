@@ -11,3 +11,4 @@ export {
   type EnveloppeConfig,
   type TokenSource,
 } from "./enveloppe-editor";
+export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";

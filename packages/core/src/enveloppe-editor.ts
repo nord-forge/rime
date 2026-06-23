@@ -5,8 +5,9 @@
 // properties that pierce the shadow boundary (proven in the OD-2 toolchain spike).
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
-import { property } from "lit/decorators.js";
+import { property, query } from "lit/decorators.js";
 import type { EnveloppeDoc } from "@enveloppe/doc-model";
+import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -52,6 +53,12 @@ export class EnveloppeEditor extends LitElement {
       grid-area: canvas;
       overflow: auto;
     }
+    [part="canvas-frame"] {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      border: 0;
+    }
     [part="properties"] {
       grid-area: properties;
       overflow: auto;
@@ -62,12 +69,40 @@ export class EnveloppeEditor extends LitElement {
   /** Public configuration. Set as a property (not an attribute). */
   @property({ attribute: false }) config: EnveloppeConfig = {};
 
+  @query('[part="canvas"]') private canvasRegion!: HTMLElement;
+
   // Current document. The real load/get + change-event wiring is ENV-42; this
   // shell only holds it so the public method shapes are stable now.
   #doc: EnveloppeDoc | null = null;
 
+  // The same-origin srcdoc canvas (PRD §6.4). Created once the shell first
+  // renders; the doc→DOM renderer awaits whenReady() to draw into #eb-root.
+  #canvas: CanvasController | null = null;
+
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) this.#applyTheme();
+  }
+
+  override firstUpdated(): void {
+    this.#canvas = new CanvasController();
+    this.#canvas.mount(this.canvasRegion);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.#canvas?.destroy();
+    this.#canvas = null;
+  }
+
+  /** The canvas controller (null before first render). */
+  get canvas(): CanvasController | null {
+    return this.#canvas;
+  }
+
+  /** Resolves when the canvas iframe is loaded and its mount node is ready. */
+  whenCanvasReady(): Promise<CanvasReadyEvent> {
+    if (!this.#canvas) throw new Error("canvas not initialized yet");
+    return this.#canvas.whenReady();
   }
 
   // Apply --eb-* overrides to the host element — the only theming channel for
