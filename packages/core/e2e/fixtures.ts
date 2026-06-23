@@ -1,23 +1,22 @@
-// Reusable Playwright fixtures every browser-observable ticket builds on
-// (ENV-31/32/33/34/40+/50+). Tickets write tests, not boilerplate: they get a
-// mounted <enveloppe-editor>, a FrameLocator for its iframe canvas, and the
-// load/get-doc persistence helpers.
+// Reusable Playwright fixtures every browser-observable feature builds on.
+// Tests write tests, not boilerplate: they get a mounted <enveloppe-editor>,
+// a FrameLocator for its iframe canvas, and the load/get-doc persistence helpers.
 
 import { type Locator, type Page, test as base, expect } from "@playwright/test";
 
 export interface EditorHarness {
   /** The <enveloppe-editor> host element. */
   host: Locator;
-  /** FrameLocator for the same-origin srcdoc canvas iframe (ENV-31). */
+  /** FrameLocator for the same-origin srcdoc canvas iframe. */
   canvasFrame(): ReturnType<Page["frameLocator"]>;
-  /** Load a document into the editor (mirrors ENV-80 persistence API). */
+  /** Load a document into the editor (mirrors the persistence API). */
   loadDoc(doc: unknown): Promise<void>;
   /** Read the current document back out. */
   getDoc(): Promise<unknown>;
   /**
    * Translate a point in canvas-document space to a host-page pointer action.
-   * STUB — the real coordinate math is owned by the drag controller (ENV-33);
-   * this throws until then so specs don't silently depend on missing behaviour.
+   * STUB — the real coordinate math is owned by the drag controller; this throws
+   * until then so specs don't silently depend on missing behaviour.
    */
   pointerInCanvas(x: number, y: number): Promise<void>;
 }
@@ -54,7 +53,7 @@ export const test = base.extend<{ editor: EditorHarness }>({
         void x;
         void y;
         throw new Error(
-          "pointerInCanvas is a stub until ENV-33 (coordinate-translation drag controller)",
+          "pointerInCanvas is a stub until the coordinate-translation drag controller lands",
         );
       },
     };

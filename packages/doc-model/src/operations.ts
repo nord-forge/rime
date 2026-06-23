@@ -1,7 +1,7 @@
 // High-level, ergonomic mutation operations the editor calls. Each is pure
 // (input doc never mutated) and returns { doc, patch, inverse }. The inverse
 // patch, applied to the new doc, restores the original — this pair is what
-// undo/redo (ENV-12) stores.
+// undo/redo stores.
 
 import type { AnyNode, ColumnNode, EnveloppeDoc, LeafBlock, NodeId, SectionNode } from "./types";
 import type { RichTextJSON } from "./rich-text";

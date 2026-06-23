@@ -2,7 +2,7 @@
 //
 // The doc model NEVER imports Lexical (or any editor engine). Text content is
 // stored in this normalized JSON shape; @enveloppe/core's Lexical adapter
-// (ENV-50/53) converts to/from it. Mirrors the shape proven in the OD-1 spike.
+// converts to/from it. Mirrors the shape proven in the rich-text engine spike.
 
 /** Inline formatting marks supported in v1. */
 export type Mark = "bold" | "italic" | "underline";

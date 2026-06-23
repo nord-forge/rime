@@ -42,11 +42,11 @@ jobs:
         run: bun run build
 
       # The one gate a human can't be trusted with: @enveloppe/core gzip budget
-      # (PRD §10, OD-4 = ~100 kB). Override with BUDGET_GZIP if the budget moves.
+      # (PRD §10 = ~100 kB). Override with BUDGET_GZIP if the budget moves.
       - name: Bundle-size gate
         run: bun run size
 
-  # Cross-browser E2E (ENV-04). Separate job so the fast `build` job above never
+  # Cross-browser E2E. Separate job so the fast `build` job above never
   # needs browser binaries. WebKit is mandatory — most canvas/pointer quirks live
   # there. Runs the Playwright harness in chromium + webkit.
   e2e:

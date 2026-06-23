@@ -2,8 +2,8 @@ import { defineConfig, type UserConfig } from "vite";
 import { resolve } from "node:path";
 
 // Shared library-build config for the five publishable @enveloppe/* packages.
-// rolldown-vite is the decided bundler (ENV-02); stock vite is a drop-in fallback,
-// so this config is engine-agnostic. JS is emitted here; .d.ts via `tsc` (ENV-01).
+// rolldown-vite is the decided bundler; stock vite is a drop-in fallback,
+// so this config is engine-agnostic. JS is emitted here; .d.ts via `tsc`.
 //
 // `external` lists peers we must NOT bundle: lit, framework peers, and workspace
 // siblings (consumers install them separately). This keeps each package small and
