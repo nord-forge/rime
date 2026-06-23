@@ -1,7 +1,7 @@
 ---
 id: ENV-04
 title: Shared Playwright harness + editor fixtures
-status: ready
+status: done
 priority: P0
 milestone: 0 — Foundations
 depends_on: [ENV-01]

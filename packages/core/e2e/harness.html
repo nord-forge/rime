@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enveloppe E2E harness</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        block-size: 100%;
+      }
+      enveloppe-editor {
+        display: block;
+        block-size: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <enveloppe-editor></enveloppe-editor>
+    <!--
+      Imports the PLACEHOLDER element until ENV-30 ships the real shell. When it
+      does, change this import to "@enveloppe/core" — the fixture is unaffected.
+    -->
+    <script type="module" src="./placeholder-editor.ts"></script>
+  </body>
+</html>

@@ -13,11 +13,11 @@
     "lint": "oxlint",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
-    "test": "bun test",
+    "test": "bun test --path-ignore-patterns='**/e2e/**' --path-ignore-patterns='**/spikes/**'",
     "build": "bun run --filter='@enveloppe/*' build",
     "typecheck": "bun run --filter='@enveloppe/*' typecheck",
     "size": "bun run --filter='@enveloppe/core' build && bun run scripts/measure.ts",
-    "e2e": "playwright test"
+    "e2e": "bun run --filter='@enveloppe/core' e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",

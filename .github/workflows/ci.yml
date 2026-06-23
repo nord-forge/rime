@@ -36,7 +36,7 @@ jobs:
         run: bun run typecheck
 
       - name: Unit tests (bun test)
-        run: bun test
+        run: bun run test
 
       - name: Build all packages
         run: bun run build
@@ -46,6 +46,24 @@ jobs:
       - name: Bundle-size gate
         run: bun run size
 
-      # TODO(ENV-04): add `bun run e2e` (Playwright, chromium + webkit) once the
-      # browser harness lands. Kept out of this job so CI stays fast and does not
-      # require browser binaries for the core checks above.
+  # Cross-browser E2E (ENV-04). Separate job so the fast `build` job above never
+  # needs browser binaries. WebKit is mandatory — most canvas/pointer quirks live
+  # there. Runs the Playwright harness in chromium + webkit.
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium webkit
+
+      - name: E2E (chromium + webkit)
+        run: bun run e2e
