@@ -9,9 +9,11 @@
 
 import type { EnveloppeDoc, LeafBlock, NodeId, OpResult } from "@enveloppe/doc-model";
 import type { CanvasRenderer } from "../canvas/canvas-renderer";
-import type { DragCoordinateController } from "../canvas/coordinate-controller";
+import type { DragCoordinateController, Point } from "../canvas/coordinate-controller";
 import type { DragData, DropTarget } from "./dnd-types";
 import { type ColumnGeometry, resolveDropTarget } from "./resolve-drop-target";
+import { DropDetector, type Scheduler } from "./drop-detector";
+import { InsertionIndicator } from "./insertion-indicator";
 
 /** Pointer move past this many px (host space) counts as a drag, not a click. */
 const DRAG_THRESHOLD_PX = 4;
@@ -21,6 +23,9 @@ export interface DndDeps {
   canvasDocument: Document;
   coords: DragCoordinateController;
   renderer: CanvasRenderer;
+  /** Where the insertion indicator (chrome overlay) is appended — e.g. the shadow
+   *  root, so --eb-* tokens cascade to it. */
+  overlayHost: ParentNode & { ownerDocument: Document };
   getDoc: () => EnveloppeDoc;
   createBlock: (blockType: LeafBlock["type"]) => LeafBlock;
   /** Apply an op result: the editor merges patch into doc + undo history + re-renders. */
@@ -29,6 +34,8 @@ export interface DndDeps {
     insertNode: (doc: EnveloppeDoc, parentId: NodeId, index: number, node: LeafBlock) => OpResult;
     moveNode: (doc: EnveloppeDoc, id: NodeId, newParentId: NodeId, newIndex: number) => OpResult;
   };
+  /** Injectable rAF (for tests). Defaults to requestAnimationFrame. */
+  scheduler?: Scheduler;
 }
 
 interface ActiveDrag {
@@ -36,13 +43,19 @@ interface ActiveDrag {
   startX: number;
   startY: number;
   started: boolean; // crossed the threshold
+  /** Column geometry snapshotted at drag start (re-snapshotted on scroll/resize). */
+  geometry: ColumnGeometry[];
+  /** Last target resolved this drag — used by drop (no re-hit-test on drop). */
+  lastTarget: DropTarget | null;
 }
 
 export class DndController {
   readonly #deps: DndDeps;
+  readonly #indicator: InsertionIndicator;
   #paletteCleanups = new Set<() => void>();
   #canvasCleanup: (() => void) | null = null;
   #active: ActiveDrag | null = null;
+  #detector: DropDetector | null = null;
   // Pointer events route to whichever document the pointer is currently over —
   // a drag can traverse BOTH the host (palette) and the iframe (canvas), so we
   // listen in both realms and normalize every coord to host space. Host handlers
@@ -60,6 +73,7 @@ export class DndController {
 
   constructor(deps: DndDeps) {
     this.#deps = deps;
+    this.#indicator = new InsertionIndicator(deps.overlayHost, deps.coords);
     this.#installCanvasSource();
   }
 
@@ -90,6 +104,7 @@ export class DndController {
     this.#paletteCleanups.clear();
     for (const cleanup of cleanups) cleanup();
     this.#endDrag();
+    this.#indicator.destroy();
   }
 
   // ---- internal ----
@@ -121,26 +136,66 @@ export class DndController {
   }
 
   #begin(data: DragData, hostX: number, hostY: number): void {
-    this.#active = { data, startX: hostX, startY: hostY, started: false };
+    // Snapshot column geometry ONCE per drag (no live getBoundingClientRect per
+    // move — layout-thrash killer). Re-snapshotted on scroll/resize via refresh().
+    this.#active = {
+      data,
+      startX: hostX,
+      startY: hostY,
+      started: false,
+      geometry: this.#columnGeometry(),
+      lastTarget: null,
+    };
+    // rAF-gated detection: a burst of moves → one hit-test per frame.
+    this.#detector = new DropDetector(
+      (p) => resolveDropTarget(this.#deps.coords.hostToCanvasClient(p), this.#active!.geometry),
+      (target) => this.#onDetect(target),
+      this.#deps.scheduler,
+    );
     window.addEventListener("pointermove", this.#onHostMove);
     window.addEventListener("pointerup", this.#onHostUp);
     this.#deps.canvasDocument.addEventListener("pointermove", this.#onCanvasMove);
     this.#deps.canvasDocument.addEventListener("pointerup", this.#onCanvasUp);
   }
 
+  /** Re-snapshot geometry (call when the canvas scrolls/resizes mid-drag). */
+  refreshGeometry(): void {
+    if (this.#active) this.#active.geometry = this.#columnGeometry();
+  }
+
   #onMove(hostX: number, hostY: number): void {
-    if (!this.#active || this.#active.started) return;
-    const dx = hostX - this.#active.startX;
-    const dy = hostY - this.#active.startY;
-    if (Math.hypot(dx, dy) >= DRAG_THRESHOLD_PX) this.#active.started = true;
-    // (ENV-20 adds throttled hit-testing + insertion indicators here.)
+    if (!this.#active) return;
+    if (!this.#active.started) {
+      const dx = hostX - this.#active.startX;
+      const dy = hostY - this.#active.startY;
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+      this.#active.started = true;
+    }
+    // O(1): stash the point + schedule a frame. Hit-test happens in the detector.
+    this.#detector?.onMove({ x: hostX, y: hostY });
+  }
+
+  // Called once per frame with the resolved target: position/hide the indicator.
+  #onDetect(target: DropTarget | null): void {
+    if (!this.#active) return;
+    this.#active.lastTarget = target;
+    if (target) this.#indicator.show(target, this.#active.geometry);
+    else this.#indicator.hide();
   }
 
   #onUp(hostX: number, hostY: number): void {
     const active = this.#active;
     this.#endDrag();
     if (!active || !active.started) return; // a click, not a drag
-    this.#performDrop(active.data, { x: hostX, y: hostY });
+    // Use the last target resolved this drag if the pointer hasn't moved since;
+    // otherwise resolve at the drop point (covers a fast drop between frames).
+    const point: Point = { x: hostX, y: hostY };
+    const target =
+      active.lastTarget ??
+      resolveDropTarget(this.#deps.coords.hostToCanvasClient(point), active.geometry);
+    if (target && this.#deps.coords.isOverCanvas(point)) {
+      this.#applyDrop(active.data, target);
+    }
   }
 
   #endDrag(): void {
@@ -148,17 +203,13 @@ export class DndController {
     window.removeEventListener("pointerup", this.#onHostUp);
     this.#deps.canvasDocument.removeEventListener("pointermove", this.#onCanvasMove);
     this.#deps.canvasDocument.removeEventListener("pointerup", this.#onCanvasUp);
+    this.#detector?.cancel();
+    this.#detector = null;
+    this.#indicator.hide();
     this.#active = null;
   }
 
-  #performDrop(data: DragData, hostPoint: { x: number; y: number }): void {
-    if (!this.#deps.coords.isOverCanvas(hostPoint)) return;
-    // Resolve in iframe VIEWPORT (client) space so the pointer and the column
-    // geometry (getBoundingClientRect, also client-space) agree under scroll.
-    const canvasPoint = this.#deps.coords.hostToCanvasClient(hostPoint);
-    const target = resolveDropTarget(canvasPoint, this.#columnGeometry());
-    if (!target) return;
-
+  #applyDrop(data: DragData, target: DropTarget): void {
     const doc = this.#deps.getDoc();
     try {
       const op =

@@ -1,7 +1,7 @@
 ---
 id: ENV-20
 title: Drop-zone detection + insertion indicators
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-19]

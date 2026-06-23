@@ -125,6 +125,7 @@ export class EnveloppeEditor extends LitElement {
         canvasDocument: doc,
         coords: this.#coords,
         renderer: this.#renderer,
+        overlayHost: this.renderRoot as ShadowRoot,
         getDoc: () => {
           if (!this.#doc) throw new Error("no document loaded");
           return this.#doc;
@@ -133,8 +134,11 @@ export class EnveloppeEditor extends LitElement {
         dispatch: (op) => this.#dispatch(op),
         ops: { insertNode, moveNode },
       });
-      // The cached iframe rect must be refreshed on host scroll/resize.
-      this.#onViewportChange = () => this.#coords?.invalidate();
+      // The cached iframe rect + any in-drag geometry must refresh on scroll/resize.
+      this.#onViewportChange = () => {
+        this.#coords?.invalidate();
+        this.#dnd?.refreshGeometry();
+      };
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
       if (this.#doc) {
