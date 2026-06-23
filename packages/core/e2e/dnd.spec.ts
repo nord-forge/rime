@@ -169,4 +169,30 @@ test.describe("drag and drop (pointer)", () => {
     await page.mouse.up();
     expect(await columnIds(page)).toEqual(before);
   });
+
+  test("nested resolution: a palette drop lands in the column under the pointer", async ({
+    page,
+  }) => {
+    await setup(page);
+    const palette = (await page.locator("#palette-button").boundingBox())!;
+    // Drop over col_2 (the right column) specifically.
+    const c = await nodeCenter(page, "t_c");
+    await pointerDrag(page, { x: palette.x + 40, y: palette.y + 12 }, { x: c.x, y: c.y + 8 });
+    const after = await columnIds(page);
+    // Resolved to col_2 (nested column level), not col_1.
+    expect(after["col_2"]!.some((id) => id.startsWith("button"))).toBe(true);
+    expect(after["col_1"]!.some((id) => id.startsWith("button"))).toBe(false);
+  });
+
+  test("a drop outside the canvas is a no-op", async ({ page }) => {
+    await setup(page);
+    const before = await columnIds(page);
+    const a = await nodeCenter(page, "t_a");
+    await page.mouse.move(a.x, a.y);
+    await page.mouse.down();
+    await page.mouse.move(a.x + 6, a.y + 6);
+    await page.mouse.move(5, 5, { steps: 4 }); // top-left, off the canvas (palette region)
+    await page.mouse.up();
+    expect(await columnIds(page)).toEqual(before);
+  });
 });

@@ -193,16 +193,16 @@ export class DndController {
   #onUp(hostX: number, hostY: number): void {
     const active = this.#active;
     this.#endDrag();
-    if (!active || !active.started) return; // a click, not a drag
-    // Use the last target resolved this drag if the pointer hasn't moved since;
-    // otherwise resolve at the drop point (covers a fast drop between frames).
+    if (!active) return;
+    // Treat as a drag if movement crossed the threshold at ANY point — including
+    // only at release (fast pointerup before a move event landed; WebKit timing).
+    const movedAtUp = Math.hypot(hostX - active.startX, hostY - active.startY) >= DRAG_THRESHOLD_PX;
+    if (!active.started && !movedAtUp) return; // a genuine click, not a drag
+    // Resolve at the drop point (lastTarget may be stale if no frame ran yet).
     const point: Point = { x: hostX, y: hostY };
-    const target =
-      active.lastTarget ??
-      resolveDropTarget(this.#deps.coords.hostToCanvasClient(point), active.geometry);
-    if (target && this.#deps.coords.isOverCanvas(point)) {
-      this.#applyDrop(active.data, target);
-    }
+    if (!this.#deps.coords.isOverCanvas(point)) return;
+    const target = resolveDropTarget(this.#deps.coords.hostToCanvasClient(point), active.geometry);
+    if (target) this.#applyDrop(active.data, target);
   }
 
   #endDrag(): void {

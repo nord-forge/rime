@@ -1,7 +1,7 @@
 ---
 id: ENV-25
 title: Cross-browser DnD E2E (WebKit + touch)
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-20]
