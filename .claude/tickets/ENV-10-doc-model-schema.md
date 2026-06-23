@@ -1,7 +1,7 @@
 ---
 id: ENV-10
 title: Document model schema + validation
-status: ready
+status: done
 priority: P0
 milestone: 1 — Document model
 depends_on: [ENV-01]

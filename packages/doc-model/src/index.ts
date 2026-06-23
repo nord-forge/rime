@@ -1,5 +1,10 @@
-// @enveloppe/doc-model — headless JSON document model (source of truth).
+// @enveloppe/doc-model — headless JSON document model (the single source of truth).
 // See PRD §6.1 and board ENV-10..ENV-14.
-// TODO: schema, immutable update + patch-diff engine, capped undo/redo, serialize/deserialize.
+//
+// ENV-10: schema (types), validation, factory helpers, portable rich-text shape.
+// ENV-11/12/14 add the immutable patch engine, undo/redo, and serialize/load.
 
-export const PLACEHOLDER = true;
+export * from "./types";
+export * from "./rich-text";
+export * from "./factory";
+export { validateDoc, type ValidateResult, type ValidationError } from "./validate";
