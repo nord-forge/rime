@@ -9,6 +9,7 @@ import { property, query } from "lit/decorators.js";
 import type { EnveloppeDoc } from "@enveloppe/doc-model";
 import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 import { CanvasRenderer } from "./canvas/canvas-renderer";
+import { DragCoordinateController, type Point } from "./canvas/coordinate-controller";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -80,6 +81,8 @@ export class EnveloppeEditor extends LitElement {
   // renders; the doc→DOM renderer awaits whenReady() to draw into #eb-root.
   #canvas: CanvasController | null = null;
   #renderer: CanvasRenderer | null = null;
+  #coords: DragCoordinateController | null = null;
+  #onViewportChange: (() => void) | null = null;
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) this.#applyTheme();
@@ -88,16 +91,32 @@ export class EnveloppeEditor extends LitElement {
   override firstUpdated(): void {
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
-    void this.#canvas.whenReady().then(({ doc, mount }) => {
+    void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
       this.#renderer = new CanvasRenderer(mount, doc);
+      this.#coords = new DragCoordinateController(iframe);
+      // The cached iframe rect must be refreshed on host scroll/resize.
+      this.#onViewportChange = () => this.#coords?.invalidate();
+      window.addEventListener("scroll", this.#onViewportChange, true);
+      window.addEventListener("resize", this.#onViewportChange);
       if (this.#doc) this.#renderer.render(this.#doc);
     });
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    if (this.#onViewportChange) {
+      window.removeEventListener("scroll", this.#onViewportChange, true);
+      window.removeEventListener("resize", this.#onViewportChange);
+      this.#onViewportChange = null;
+    }
     this.#canvas?.destroy();
     this.#canvas = null;
+    this.#coords = null;
+  }
+
+  /** Node id under a host pointer (clientX/Y), or null. */
+  nodeIdAtHostPoint(point: Point): string | null {
+    return this.#coords?.nodeIdAtHostPoint(point) ?? null;
   }
 
   /** The canvas controller (null before first render). */

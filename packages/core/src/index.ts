@@ -13,3 +13,8 @@ export {
 } from "./enveloppe-editor";
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer";
+export {
+  type CanvasFrameLike,
+  DragCoordinateController,
+  type Point,
+} from "./canvas/coordinate-controller";

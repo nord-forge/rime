@@ -1,7 +1,7 @@
 ---
 id: ENV-17
 title: Coordinate-translation drag controller
-status: ready
+status: done
 priority: P0
 milestone: 3 — Canvas & shell
 depends_on: [ENV-15]
