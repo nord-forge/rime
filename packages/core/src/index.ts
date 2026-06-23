@@ -19,3 +19,6 @@ export {
   DragCoordinateController,
   type Point,
 } from "./canvas/coordinate-controller";
+export { DndController, type DndDeps } from "./dnd/dnd-controller";
+export { type DragData, type DropTarget, isDragData } from "./dnd/dnd-types";
+export { type ColumnGeometry, type Rect, resolveDropTarget } from "./dnd/resolve-drop-target";

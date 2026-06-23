@@ -1,7 +1,7 @@
 ---
 id: ENV-19
 title: Integrate Pragmatic drag-and-drop
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-16, ENV-17]
@@ -12,6 +12,15 @@ estimate: L
 ---
 
 # ENV-19 — Integrate Pragmatic drag-and-drop
+
+> **Resolved differently (OD-6, 2026-06-23): Pragmatic was DROPPED.** It binds
+> drag listeners to the host `document` + uses native HTML5 drag, which the
+> same-origin srcdoc iframe canvas defeats (iframe-originated drags never reach
+> it; native drag isn't reliably testable cross-browser/touch). Implemented
+> instead as **custom pointer-event dragging inside the iframe**, bridged by the
+> ENV-17 coordinate controller. All other goals (palette→canvas insert,
+> within/between-column reorder, drops via immutable ops, idempotent teardown)
+> are met as written. See PRD OD-6 / §6.6.
 
 ## Context
 Drag-and-drop is the do-or-die feature (§6.6). This ticket wires

@@ -39,8 +39,10 @@ Cross-package deps use `workspace:*`.
   (create on focus / destroy on blur). 100% custom UI (no library toolbar).
 - **Canvas = same-origin `srcdoc` iframe.** Host app CSS must never reach it.
 - **Chrome theming = `--eb-*` CSS custom properties** only.
-- **DnD = Pragmatic drag-and-drop** (`@atlaskit/pragmatic-drag-and-drop`) + our
-  own keyboard-reorder + ARIA-live layer (a11y is ours regardless of engine).
+- **Canvas DnD = custom pointer-event dragging inside the iframe** (OD-6) — via
+  the single drag controller, NOT a library. (Pragmatic was dropped: it binds to
+  the host document + native HTML5 drag, which the srcdoc iframe canvas defeats.)
+  Plus our own keyboard-reorder + ARIA-live layer (a11y is ours regardless).
 - **Export = MJML** behind a swappable `Renderer` interface.
 - **Headless persistence:** JSON in/out; images via host `onImageUpload` callback;
   no backend in any published package.

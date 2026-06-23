@@ -42,15 +42,24 @@ export class DragCoordinateController {
     return { x: win?.scrollX ?? 0, y: win?.scrollY ?? 0 };
   }
 
-  /** Host client coords → iframe VIEWPORT (client) coords, pre-scroll. */
-  #hostToCanvasClient(p: Point): Point {
+  /**
+   * Host client coords → iframe VIEWPORT (client) coords, pre-scroll. This is the
+   * space getBoundingClientRect() and elementFromPoint() use inside the iframe.
+   */
+  hostToCanvasClient(p: Point): Point {
     const r = this.#frameRect();
     return { x: p.x - r.left, y: p.y - r.top };
   }
 
+  /** Iframe VIEWPORT (client) coords → host client coords. Inverse of hostToCanvasClient. */
+  canvasClientToHost(p: Point): Point {
+    const r = this.#frameRect();
+    return { x: p.x + r.left, y: p.y + r.top };
+  }
+
   /** Host client coords → iframe DOCUMENT coords (post-scroll). */
   hostToCanvas(p: Point): Point {
-    const client = this.#hostToCanvasClient(p);
+    const client = this.hostToCanvasClient(p);
     const s = this.#scroll();
     return { x: client.x + s.x, y: client.y + s.y };
   }
@@ -73,7 +82,7 @@ export class DragCoordinateController {
     const doc = this.#iframe.contentDocument;
     if (!doc) return null;
     // elementFromPoint takes iframe VIEWPORT coords (pre-scroll).
-    const client = this.#hostToCanvasClient(p);
+    const client = this.hostToCanvasClient(p);
     const hit = doc.elementFromPoint(client.x, client.y) as HTMLElement | null;
     return hit?.closest<HTMLElement>("[data-node-id]")?.dataset["nodeId"] ?? null;
   }

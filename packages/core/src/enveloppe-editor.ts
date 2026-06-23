@@ -6,10 +6,24 @@
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, query } from "lit/decorators.js";
-import type { EnveloppeDoc } from "@enveloppe/doc-model";
+import {
+  createButtonBlock,
+  createDividerBlock,
+  createIdFactory,
+  createImageBlock,
+  createSpacerBlock,
+  createTextBlock,
+  type EnveloppeDoc,
+  type IdFactory,
+  insertNode,
+  type LeafBlock,
+  moveNode,
+  type OpResult,
+} from "@enveloppe/doc-model";
 import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 import { CanvasRenderer } from "./canvas/canvas-renderer";
 import { DragCoordinateController, type Point } from "./canvas/coordinate-controller";
+import { DndController } from "./dnd/dnd-controller";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -40,8 +54,11 @@ export class EnveloppeEditor extends LitElement {
     :host {
       display: grid;
       grid-template-columns: var(--eb-palette-width, 240px) 1fr var(--eb-properties-width, 300px);
+      grid-template-rows: minmax(0, 1fr);
       grid-template-areas: "palette canvas properties";
-      block-size: 100%;
+      /* The embedder sizes the element (e.g. height: 100vh). Default to a usable
+         height so it is never zero/collapsed if unsized. */
+      min-block-size: 400px;
       font: var(--eb-font-ui, 14px system-ui);
       color: var(--eb-color-fg, #18181b);
       background: var(--eb-color-bg, #fff);
@@ -53,13 +70,21 @@ export class EnveloppeEditor extends LitElement {
     }
     [part="canvas"] {
       grid-area: canvas;
+      display: flex;
+      flex-direction: column;
       overflow: auto;
+      min-block-size: 0;
+      block-size: 100%;
     }
     [part="canvas-frame"] {
-      display: block;
+      flex: 1 1 auto;
       inline-size: 100%;
-      block-size: 100%;
+      min-block-size: 0;
       border: 0;
+    }
+    /* The slot is not used while the iframe is the canvas; keep it out of flow. */
+    [part="canvas"] > slot {
+      display: none;
     }
     [part="properties"] {
       grid-area: properties;
@@ -82,7 +107,9 @@ export class EnveloppeEditor extends LitElement {
   #canvas: CanvasController | null = null;
   #renderer: CanvasRenderer | null = null;
   #coords: DragCoordinateController | null = null;
+  #dnd: DndController | null = null;
   #onViewportChange: (() => void) | null = null;
+  #newId: IdFactory = createIdFactory();
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) this.#applyTheme();
@@ -94,11 +121,26 @@ export class EnveloppeEditor extends LitElement {
     void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
       this.#renderer = new CanvasRenderer(mount, doc);
       this.#coords = new DragCoordinateController(iframe);
+      this.#dnd = new DndController({
+        canvasDocument: doc,
+        coords: this.#coords,
+        renderer: this.#renderer,
+        getDoc: () => {
+          if (!this.#doc) throw new Error("no document loaded");
+          return this.#doc;
+        },
+        createBlock: (blockType) => this.#createBlock(blockType),
+        dispatch: (op) => this.#dispatch(op),
+        ops: { insertNode, moveNode },
+      });
       // The cached iframe rect must be refreshed on host scroll/resize.
       this.#onViewportChange = () => this.#coords?.invalidate();
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
-      if (this.#doc) this.#renderer.render(this.#doc);
+      if (this.#doc) {
+        this.#renderer.render(this.#doc);
+        this.#dnd.syncCanvasTargets();
+      }
     });
   }
 
@@ -109,9 +151,45 @@ export class EnveloppeEditor extends LitElement {
       window.removeEventListener("resize", this.#onViewportChange);
       this.#onViewportChange = null;
     }
+    this.#dnd?.destroy();
+    this.#dnd = null;
     this.#canvas?.destroy();
     this.#canvas = null;
     this.#coords = null;
+  }
+
+  /** Register a host palette element as a drag source creating `blockType`. */
+  registerPaletteItem(element: HTMLElement, blockType: LeafBlock["type"]): () => void {
+    if (!this.#dnd) throw new Error("drag-and-drop not initialized yet");
+    return this.#dnd.registerPaletteItem(element, blockType);
+  }
+
+  // Apply an ENV-06 op: adopt the new doc, re-render incrementally, re-sync DnD.
+  #dispatch(op: OpResult): void {
+    this.#doc = op.doc;
+    this.#renderer?.update(op.doc);
+    this.#dnd?.syncCanvasTargets();
+    this.dispatchEvent(
+      new CustomEvent<EnveloppeChangeDetail>("change", { detail: { doc: op.doc } }),
+    );
+  }
+
+  // Build a fresh leaf block of the given type for palette drops.
+  #createBlock(blockType: LeafBlock["type"]): LeafBlock {
+    switch (blockType) {
+      case "text":
+        return createTextBlock(this.#newId);
+      case "image":
+        return createImageBlock(this.#newId);
+      case "button":
+        return createButtonBlock(this.#newId);
+      case "divider":
+        return createDividerBlock(this.#newId);
+      case "spacer":
+        return createSpacerBlock(this.#newId);
+      default:
+        throw new Error(`unknown block type "${blockType}"`);
+    }
   }
 
   /** Node id under a host pointer (clientX/Y), or null. */
@@ -145,11 +223,12 @@ export class EnveloppeEditor extends LitElement {
    * change-event side of persistence still lands in ENV-42.)
    */
   loadDoc(doc: EnveloppeDoc): void {
-    const isUpdate = this.#doc !== null;
+    const isUpdate = this.#doc !== null && this.#renderer !== null;
     this.#doc = doc;
     if (!this.#renderer) return; // canvas not ready yet; firstUpdated paints it
     if (isUpdate) this.#renderer.update(doc);
     else this.#renderer.render(doc);
+    this.#dnd?.syncCanvasTargets();
   }
 
   /** The element rendered for a node id, or null. */
