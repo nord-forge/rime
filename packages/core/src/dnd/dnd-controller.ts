@@ -14,6 +14,7 @@ import type { DragData, DropTarget } from "./dnd-types";
 import { type ColumnGeometry, resolveDropTarget } from "./resolve-drop-target";
 import { DropDetector, type Scheduler } from "./drop-detector";
 import { InsertionIndicator } from "./insertion-indicator";
+import { DragPreview } from "./drag-preview";
 
 /** Pointer move past this many px (host space) counts as a drag, not a click. */
 const DRAG_THRESHOLD_PX = 4;
@@ -56,6 +57,7 @@ export class DndController {
   #canvasCleanup: (() => void) | null = null;
   #active: ActiveDrag | null = null;
   #detector: DropDetector | null = null;
+  #preview: DragPreview | null = null;
   // Pointer events route to whichever document the pointer is currently over —
   // a drag can traverse BOTH the host (palette) and the iframe (canvas), so we
   // listen in both realms and normalize every coord to host space. Host handlers
@@ -170,7 +172,10 @@ export class DndController {
       const dy = hostY - this.#active.startY;
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
       this.#active.started = true;
+      // Show the branded preview only once the drag actually begins.
+      this.#preview = new DragPreview(this.#deps.overlayHost, this.#active.data);
     }
+    this.#preview?.move(hostX, hostY);
     // O(1): stash the point + schedule a frame. Hit-test happens in the detector.
     this.#detector?.onMove({ x: hostX, y: hostY });
   }
@@ -205,6 +210,8 @@ export class DndController {
     this.#deps.canvasDocument.removeEventListener("pointerup", this.#onCanvasUp);
     this.#detector?.cancel();
     this.#detector = null;
+    this.#preview?.destroy();
+    this.#preview = null;
     this.#indicator.hide();
     this.#active = null;
   }

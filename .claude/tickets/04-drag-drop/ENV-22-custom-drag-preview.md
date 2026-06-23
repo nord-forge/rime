@@ -1,7 +1,7 @@
 ---
 id: ENV-22
 title: Custom drag preview
-status: ready
+status: done
 priority: P1
 milestone: 4 — Drag & drop
 depends_on: [ENV-19]
@@ -12,6 +12,12 @@ estimate: S
 ---
 
 # ENV-22 — Custom drag preview
+
+> **Implemented per OD-6 (pointer DnD), not Pragmatic.** With pointer-event
+> dragging there is no native HTML5 drag image to replace, so instead of
+> Pragmatic's `setCustomNativeDragPreview` we render a themed card and move it to
+> follow the pointer, removing it on drag end. All acceptance criteria
+> (branded/themed preview, pointer offset, cleanup) are met.
 
 ## Context
 Pragmatic drag-and-drop offers a custom drag-preview API; the default browser
