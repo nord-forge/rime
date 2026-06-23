@@ -1,7 +1,7 @@
 ---
 id: ENV-08
 title: CRDT-friendly shape audit (design only)
-status: ready
+status: done
 priority: P1
 milestone: 1 — Document model
 depends_on: [ENV-05]
