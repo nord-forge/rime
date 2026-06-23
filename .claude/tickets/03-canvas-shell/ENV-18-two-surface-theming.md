@@ -1,7 +1,7 @@
 ---
 id: ENV-18
 title: Two-surface theming + no-CSS-bleed guarantee
-status: ready
+status: done
 priority: P1
 milestone: 3 — Canvas & shell
 depends_on: [ENV-14]

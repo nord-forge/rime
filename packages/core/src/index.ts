@@ -11,6 +11,7 @@ export {
   type EnveloppeConfig,
   type TokenSource,
 } from "./enveloppe-editor";
+export { EB_TOKENS, type EbTheme, type EbToken } from "./theme/tokens";
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer";
 export {
