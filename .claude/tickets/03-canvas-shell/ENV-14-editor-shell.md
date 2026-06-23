@@ -1,7 +1,7 @@
 ---
 id: ENV-14
 title: <enveloppe-editor> Lit component shell
-status: ready
+status: done
 priority: P0
 milestone: 3 — Canvas & shell
 depends_on: [ENV-01]

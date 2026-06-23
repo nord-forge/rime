@@ -1,18 +1,22 @@
 import { expect, test } from "./fixtures";
 
-// Build-success ≠ runs. This cross-browser smoke proves the harness mounts the
-// element and the canvas iframe is live in BOTH chromium and webkit, and that
-// the load/get-doc round-trip works through the real element instance.
+// Build-success ≠ runs. Cross-browser smoke: the harness mounts the element in
+// BOTH chromium and webkit and the load/get-doc round-trip works through the real
+// element instance. (The canvas iframe arrives in ENV-15; see editor-shell.spec.)
 test.describe("editor harness smoke", () => {
-  test("element is visible and the canvas iframe is present", async ({ editor }) => {
+  test("element is defined and visible", async ({ editor, page }) => {
     await expect(editor.host).toBeVisible();
-    const frame = editor.canvasFrame();
-    // The iframe's body must be reachable (proves a real same-origin srcdoc frame).
-    await expect(frame.locator("body")).toBeAttached();
+    const defined = await page.evaluate(() => !!customElements.get("enveloppe-editor"));
+    expect(defined).toBe(true);
   });
 
   test("loadDoc / getDoc round-trips through the element", async ({ editor }) => {
-    const doc = { version: 1, doc: { id: "d1", type: "document" } };
+    const doc = {
+      id: "d1",
+      type: "document",
+      settings: { contentWidth: 600, backgroundColor: "#fff", fontFamily: "Arial" },
+      children: [],
+    };
     await editor.loadDoc(doc);
     expect(await editor.getDoc()).toEqual(doc);
   });

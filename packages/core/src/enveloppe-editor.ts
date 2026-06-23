@@ -1,0 +1,117 @@
+// <enveloppe-editor> — the single public custom element the product ships as.
+// This is the SHELL: the three-region layout (palette / canvas / properties),
+// the slots + parts later features mount into, and the typed `config` surface.
+// No feature logic lives here yet. Chrome is themed exclusively via --eb-* custom
+// properties that pierce the shadow boundary (proven in the OD-2 toolchain spike).
+
+import { type CSSResultGroup, LitElement, css, html } from "lit";
+import { property } from "lit/decorators.js";
+import type { EnveloppeDoc } from "@enveloppe/doc-model";
+
+/** A declarative merge-token source (consumed by the tokens milestone). */
+export interface TokenSource {
+  id: string;
+  label: string;
+  tokens: { key: string; label: string }[];
+}
+
+/** The public configuration surface for the editor. */
+export interface EnveloppeConfig {
+  /** --eb-* token overrides applied to the chrome (host-piercing). */
+  theme?: Record<`--eb-${string}`, string>;
+  /** Block type ids enabled in the palette; undefined = all built-ins. */
+  enabledBlocks?: string[];
+  /** Host uploader; returns the final URL for an image block. */
+  onImageUpload?: (file: File) => Promise<string>;
+  /** Declarative merge-token sources. */
+  tokenSources?: TokenSource[];
+}
+
+/** Detail payload of the `change` event. */
+export interface EnveloppeChangeDetail {
+  doc: EnveloppeDoc;
+}
+
+export class EnveloppeEditor extends LitElement {
+  static styles: CSSResultGroup = css`
+    :host {
+      display: grid;
+      grid-template-columns: var(--eb-palette-width, 240px) 1fr var(--eb-properties-width, 300px);
+      grid-template-areas: "palette canvas properties";
+      block-size: 100%;
+      font: var(--eb-font-ui, 14px system-ui);
+      color: var(--eb-color-fg, #18181b);
+      background: var(--eb-color-bg, #fff);
+    }
+    [part="palette"] {
+      grid-area: palette;
+      overflow: auto;
+      border-inline-end: 1px solid var(--eb-color-border, #e4e4e7);
+    }
+    [part="canvas"] {
+      grid-area: canvas;
+      overflow: auto;
+    }
+    [part="properties"] {
+      grid-area: properties;
+      overflow: auto;
+      border-inline-start: 1px solid var(--eb-color-border, #e4e4e7);
+    }
+  `;
+
+  /** Public configuration. Set as a property (not an attribute). */
+  @property({ attribute: false }) config: EnveloppeConfig = {};
+
+  // Current document. The real load/get + change-event wiring is ENV-42; this
+  // shell only holds it so the public method shapes are stable now.
+  #doc: EnveloppeDoc | null = null;
+
+  override willUpdate(changed: Map<PropertyKey, unknown>): void {
+    if (changed.has("config")) this.#applyTheme();
+  }
+
+  // Apply --eb-* overrides to the host element — the only theming channel for
+  // chrome. We never read host stylesheets.
+  #applyTheme(): void {
+    const theme = this.config.theme;
+    if (!theme) return;
+    for (const [key, value] of Object.entries(theme)) {
+      this.style.setProperty(key, value);
+    }
+  }
+
+  /**
+   * Load a document into the editor.
+   * STUB — full wiring (render + change events) lands in ENV-42.
+   */
+  loadDoc(doc: EnveloppeDoc): void {
+    this.#doc = doc;
+  }
+
+  /**
+   * Read the current document.
+   * STUB — full wiring lands in ENV-42.
+   */
+  getDoc(): EnveloppeDoc {
+    if (!this.#doc) throw new Error("no document loaded");
+    return this.#doc;
+  }
+
+  override render() {
+    return html`
+      <section part="palette"><slot name="palette"></slot></section>
+      <section part="canvas"><slot name="canvas"></slot></section>
+      <section part="properties"><slot name="properties"></slot></section>
+    `;
+  }
+}
+
+if (!customElements.get("enveloppe-editor")) {
+  customElements.define("enveloppe-editor", EnveloppeEditor);
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "enveloppe-editor": EnveloppeEditor;
+  }
+}

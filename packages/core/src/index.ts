@@ -1,5 +1,13 @@
 // @enveloppe/core — the <enveloppe-editor> Lit web component.
-// See PRD §6.4–§6.8 and board Milestones 3–8.
-// TODO: editor shell, iframe canvas, drag controller, Pragmatic DnD, rich text, registerBlock, registerToken.
+// See PRD §6.4–§6.8.
+//
+// Importing this module defines the <enveloppe-editor> custom element. The canvas
+// iframe, drag-and-drop, rich text, palette, and properties panel mount into the
+// shell's regions in later milestones.
 
-export const PLACEHOLDER = true;
+export {
+  EnveloppeEditor,
+  type EnveloppeChangeDetail,
+  type EnveloppeConfig,
+  type TokenSource,
+} from "./enveloppe-editor";
