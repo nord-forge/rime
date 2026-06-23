@@ -14,3 +14,4 @@ export {
 export { MjmlRenderer, type MjmlRendererOptions } from "./mjml-renderer";
 export { docToMjml, styleToMjmlAttrs } from "./to-mjml";
 export { escapeAttr, escapeHtml, richTextToInlineHtml } from "./rich-text-to-html";
+export { createRawBlockRenderer, rawTableFallback } from "./raw-fallback";

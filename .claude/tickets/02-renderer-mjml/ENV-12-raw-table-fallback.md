@@ -1,7 +1,7 @@
 ---
 id: ENV-12
 title: Raw-table fallback path
-status: ready
+status: done
 priority: P1
 milestone: 2 — Export renderer (MJML)
 depends_on: [ENV-11]
