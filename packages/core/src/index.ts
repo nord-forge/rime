@@ -22,6 +22,7 @@ export {
 export { DndController, type DndDeps } from "./dnd/dnd-controller";
 export { type DragData, type DropTarget, isDragData } from "./dnd/dnd-types";
 export { type ColumnGeometry, type Rect, resolveDropTarget } from "./dnd/resolve-drop-target";
+export { CleanupRegistry } from "./dnd/cleanup-registry";
 export { DropDetector, type Scheduler } from "./dnd/drop-detector";
 export { indicatorLineFor, InsertionIndicator } from "./dnd/insertion-indicator";
 export { DragPreview, renderPreviewCard } from "./dnd/drag-preview";

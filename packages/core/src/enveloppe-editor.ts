@@ -139,6 +139,7 @@ export class EnveloppeEditor extends LitElement {
       this.#announcer = new LiveAnnouncer(this.renderRoot as ShadowRoot);
       this.#dnd = new DndController({
         canvasDocument: doc,
+        hostWindow: window,
         coords: this.#coords,
         renderer: this.#renderer,
         overlayHost: this.renderRoot as ShadowRoot,

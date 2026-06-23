@@ -15,6 +15,7 @@ import { type ColumnGeometry, resolveDropTarget } from "./resolve-drop-target";
 import { DropDetector, type Scheduler } from "./drop-detector";
 import { InsertionIndicator } from "./insertion-indicator";
 import { DragPreview } from "./drag-preview";
+import { CleanupRegistry } from "./cleanup-registry";
 
 /** Pointer move past this many px (host space) counts as a drag, not a click. */
 const DRAG_THRESHOLD_PX = 4;
@@ -22,6 +23,8 @@ const DRAG_THRESHOLD_PX = 4;
 export interface DndDeps {
   /** The iframe document where canvas drag sources live. */
   canvasDocument: Document;
+  /** The host window pointer events are tracked on. Defaults to globalThis. */
+  hostWindow?: Pick<Window, "addEventListener" | "removeEventListener">;
   coords: DragCoordinateController;
   renderer: CanvasRenderer;
   /** Where the insertion indicator (chrome overlay) is appended — e.g. the shadow
@@ -60,6 +63,10 @@ export class DndController {
   #active: ActiveDrag | null = null;
   #detector: DropDetector | null = null;
   #preview: DragPreview | null = null;
+  // Every transient registration of a single drag (the 4 listeners, the rAF
+  // detector, the preview node) routes through here so it is countable + fully
+  // disposable — the leak guard asserts this returns to 0 after each drag.
+  #dragCleanups = new CleanupRegistry();
   // Pointer events route to whichever document the pointer is currently over —
   // a drag can traverse BOTH the host (palette) and the iframe (canvas), so we
   // listen in both realms and normalize every coord to host space. Host handlers
@@ -151,15 +158,30 @@ export class DndController {
       lastTarget: null,
     };
     // rAF-gated detection: a burst of moves → one hit-test per frame.
-    this.#detector = new DropDetector(
+    const detector = new DropDetector(
       (p) => resolveDropTarget(this.#deps.coords.hostToCanvasClient(p), this.#active!.geometry),
       (target) => this.#onDetect(target),
       this.#deps.scheduler,
     );
-    window.addEventListener("pointermove", this.#onHostMove);
-    window.addEventListener("pointerup", this.#onHostUp);
-    this.#deps.canvasDocument.addEventListener("pointermove", this.#onCanvasMove);
-    this.#deps.canvasDocument.addEventListener("pointerup", this.#onCanvasUp);
+    this.#detector = detector;
+    this.#dragCleanups.add(() => detector.cancel());
+
+    // Track the pointer in BOTH realms; register each remover with the registry.
+    const win = this.#deps.hostWindow ?? (globalThis as unknown as Window);
+    const cdoc = this.#deps.canvasDocument;
+    win.addEventListener("pointermove", this.#onHostMove);
+    this.#dragCleanups.add(() => win.removeEventListener("pointermove", this.#onHostMove));
+    win.addEventListener("pointerup", this.#onHostUp);
+    this.#dragCleanups.add(() => win.removeEventListener("pointerup", this.#onHostUp));
+    cdoc.addEventListener("pointermove", this.#onCanvasMove);
+    this.#dragCleanups.add(() => cdoc.removeEventListener("pointermove", this.#onCanvasMove));
+    cdoc.addEventListener("pointerup", this.#onCanvasUp);
+    this.#dragCleanups.add(() => cdoc.removeEventListener("pointerup", this.#onCanvasUp));
+  }
+
+  /** Live count of transient drag cleanups (0 when idle). Test/diagnostic. */
+  get activeCleanupCount(): number {
+    return this.#dragCleanups.size;
   }
 
   /** Re-snapshot geometry (call when the canvas scrolls/resizes mid-drag). */
@@ -175,7 +197,9 @@ export class DndController {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
       this.#active.started = true;
       // Show the branded preview only once the drag actually begins.
-      this.#preview = new DragPreview(this.#deps.overlayHost, this.#active.data);
+      const preview = new DragPreview(this.#deps.overlayHost, this.#active.data);
+      this.#preview = preview;
+      this.#dragCleanups.add(() => preview.destroy());
     }
     this.#preview?.move(hostX, hostY);
     // O(1): stash the point + schedule a frame. Hit-test happens in the detector.
@@ -206,13 +230,10 @@ export class DndController {
   }
 
   #endDrag(): void {
-    window.removeEventListener("pointermove", this.#onHostMove);
-    window.removeEventListener("pointerup", this.#onHostUp);
-    this.#deps.canvasDocument.removeEventListener("pointermove", this.#onCanvasMove);
-    this.#deps.canvasDocument.removeEventListener("pointerup", this.#onCanvasUp);
-    this.#detector?.cancel();
+    // Disposes the 4 listeners, the rAF detector, and the preview node — all
+    // routed through the registry, so the live count returns to 0.
+    this.#dragCleanups.disposeAll();
     this.#detector = null;
-    this.#preview?.destroy();
     this.#preview = null;
     this.#indicator.hide();
     this.#active = null;
