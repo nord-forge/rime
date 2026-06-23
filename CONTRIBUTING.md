@@ -67,8 +67,13 @@ its gzip cost in the PR description.**
 - Reference the ticket ID in the commit/PR — but **not in source-code comments**;
   describe intent in plain language there so code doesn't go stale against the
   tracker.
-- Sign commits if your machine is configured for it; otherwise a normal commit is
-  fine.
+- **Sign off every commit** per the [Developer Certificate of Origin](https://developercertificate.org/)
+  (`git commit -s` adds a `Signed-off-by:` trailer; amend an existing commit with
+  `git commit --amend -s --no-edit`). This is the DCO sign-off — distinct from,
+  and not to be confused with, `Co-Authored-By:`/AI attribution, which is
+  forbidden.
+- Sign commits cryptographically if your machine is configured for it; otherwise
+  a normal (signed-off) commit is fine.
 
 ## Pull requests
 

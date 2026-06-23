@@ -14,6 +14,25 @@ Closes:
 - [ ] `bun run typecheck` (tsc) clean
 - [ ] `bun run build` succeeds
 - [ ] **`@enveloppe/core` bundle still within budget** (`bun run size`)
+- [ ] All commits are **signed off** per the DCO (see below)
+
+## Developer Certificate of Origin (DCO)
+
+By submitting this pull request, I certify that my contribution complies with the
+[Developer Certificate of Origin 1.1](https://developercertificate.org/), and
+every commit carries a `Signed-off-by:` trailer matching the author.
+
+Sign off your commits with:
+
+```bash
+git commit -s -m "type(ENV-NN): summary"   # adds the Signed-off-by trailer
+# already committed? add it with:
+git commit --amend -s --no-edit
+```
+
+> Note: `Signed-off-by:` is the DCO sign-off (allowed and required). It is **not**
+> the same as `Co-Authored-By:` / AI attribution, which must **not** appear in
+> commits or this PR.
 
 ## Bundle impact
 
