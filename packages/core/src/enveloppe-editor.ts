@@ -24,6 +24,7 @@ import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas"
 import { CanvasRenderer } from "./canvas/canvas-renderer";
 import { DragCoordinateController, type Point } from "./canvas/coordinate-controller";
 import { DndController } from "./dnd/dnd-controller";
+import { KeyboardMoveController } from "./dnd/keyboard-move";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -108,7 +109,11 @@ export class EnveloppeEditor extends LitElement {
   #renderer: CanvasRenderer | null = null;
   #coords: DragCoordinateController | null = null;
   #dnd: DndController | null = null;
+  #keyboard: KeyboardMoveController | null = null;
+  #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
+  #onKeydown: ((e: KeyboardEvent) => void) | null = null;
+  #onCanvasClick: ((e: MouseEvent) => void) | null = null;
   #newId: IdFactory = createIdFactory();
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
@@ -134,6 +139,22 @@ export class EnveloppeEditor extends LitElement {
         dispatch: (op) => this.#dispatch(op),
         ops: { insertNode, moveNode },
       });
+      // Keyboard reordering — the parallel a11y input model (same moveNode op).
+      this.#keyboard = new KeyboardMoveController({
+        getDoc: () => {
+          if (!this.#doc) throw new Error("no document loaded");
+          return this.#doc;
+        },
+        dispatch: (op) => this.#dispatch(op),
+        getSelected: () => this.#selected,
+        setSelected: (id) => this.#setSelected(id),
+        focusNode: (id) => this.#focusNode(id),
+        announce: () => {
+          /* ARIA live wiring lands in the announcements ticket */
+        },
+        moveNode,
+      });
+
       // The cached iframe rect + any in-drag geometry must refresh on scroll/resize.
       this.#onViewportChange = () => {
         this.#coords?.invalidate();
@@ -141,9 +162,27 @@ export class EnveloppeEditor extends LitElement {
       };
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
+
+      // Click a block to select it (delegated inside the iframe).
+      this.#onCanvasClick = (e) => {
+        const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-node-id]");
+        const id = el?.dataset["nodeId"];
+        const type = el?.dataset["nodeType"];
+        if (id && type && type !== "document" && type !== "section" && type !== "column") {
+          this.#setSelected(id);
+        }
+      };
+      doc.addEventListener("click", this.#onCanvasClick);
+
+      // Alt+Arrows move the selected block (the iframe document has focus on click).
+      this.#onKeydown = (e) => this.#keyboard?.handleKeydown(e);
+      doc.addEventListener("keydown", this.#onKeydown);
+      this.addEventListener("keydown", this.#onKeydown as EventListener);
+
       if (this.#doc) {
         this.#renderer.render(this.#doc);
         this.#dnd.syncCanvasTargets();
+        this.#makeLeavesFocusable();
       }
     });
   }
@@ -155,8 +194,17 @@ export class EnveloppeEditor extends LitElement {
       window.removeEventListener("resize", this.#onViewportChange);
       this.#onViewportChange = null;
     }
+    const canvasDoc = this.#canvas?.document;
+    if (this.#onCanvasClick) canvasDoc?.removeEventListener("click", this.#onCanvasClick);
+    if (this.#onKeydown) {
+      canvasDoc?.removeEventListener("keydown", this.#onKeydown);
+      this.removeEventListener("keydown", this.#onKeydown as EventListener);
+    }
+    this.#onCanvasClick = null;
+    this.#onKeydown = null;
     this.#dnd?.destroy();
     this.#dnd = null;
+    this.#keyboard = null;
     this.#canvas?.destroy();
     this.#canvas = null;
     this.#coords = null;
@@ -168,14 +216,48 @@ export class EnveloppeEditor extends LitElement {
     return this.#dnd.registerPaletteItem(element, blockType);
   }
 
-  // Apply an ENV-06 op: adopt the new doc, re-render incrementally, re-sync DnD.
+  // Apply an immutable op: adopt the new doc, re-render incrementally, re-sync DnD.
   #dispatch(op: OpResult): void {
     this.#doc = op.doc;
     this.#renderer?.update(op.doc);
     this.#dnd?.syncCanvasTargets();
+    this.#makeLeavesFocusable();
     this.dispatchEvent(
       new CustomEvent<EnveloppeChangeDetail>("change", { detail: { doc: op.doc } }),
     );
+  }
+
+  // Make leaf blocks keyboard-reachable so a user can select one to move.
+  #makeLeavesFocusable(): void {
+    const root = this.#canvas?.mountPoint;
+    if (!root) return;
+    for (const el of root.querySelectorAll<HTMLElement>("[data-node-id]")) {
+      const type = el.dataset["nodeType"];
+      if (type && type !== "document" && type !== "section" && type !== "column") {
+        if (!el.hasAttribute("tabindex")) el.tabIndex = 0;
+      }
+    }
+  }
+
+  #setSelected(id: string | null): void {
+    this.#selected = id;
+    const root = this.#canvas?.mountPoint;
+    if (!root) return;
+    for (const el of root.querySelectorAll<HTMLElement>("[data-node-id]")) {
+      const isSel = el.dataset["nodeId"] === id;
+      el.toggleAttribute("data-selected", isSel);
+      if (isSel) el.setAttribute("aria-current", "true");
+      else el.removeAttribute("aria-current");
+    }
+  }
+
+  #focusNode(id: string): void {
+    this.#renderer?.elementForNode(id)?.focus();
+  }
+
+  /** The currently selected block id, or null. */
+  get selectedNodeId(): string | null {
+    return this.#selected;
   }
 
   // Build a fresh leaf block of the given type for palette drops.
@@ -233,6 +315,7 @@ export class EnveloppeEditor extends LitElement {
     if (isUpdate) this.#renderer.update(doc);
     else this.#renderer.render(doc);
     this.#dnd?.syncCanvasTargets();
+    this.#makeLeavesFocusable();
   }
 
   /** The element rendered for a node id, or null. */

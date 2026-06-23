@@ -1,7 +1,7 @@
 ---
 id: ENV-23
 title: Keyboard reordering path (a11y)
-status: ready
+status: done
 priority: P0
 milestone: 4 — Drag & drop
 depends_on: [ENV-19]

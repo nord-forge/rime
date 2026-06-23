@@ -25,3 +25,11 @@ export { type ColumnGeometry, type Rect, resolveDropTarget } from "./dnd/resolve
 export { DropDetector, type Scheduler } from "./dnd/drop-detector";
 export { indicatorLineFor, InsertionIndicator } from "./dnd/insertion-indicator";
 export { DragPreview, renderPreviewCard } from "./dnd/drag-preview";
+export {
+  KeyboardMoveController,
+  type KeyboardMoveDeps,
+  type MoveDirection,
+  locateLeaf,
+  resolveMove,
+} from "./dnd/keyboard-move";
+export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu";
