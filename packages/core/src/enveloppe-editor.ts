@@ -8,6 +8,7 @@ import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, query } from "lit/decorators.js";
 import type { EnveloppeDoc } from "@enveloppe/doc-model";
 import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
+import { CanvasRenderer } from "./canvas/canvas-renderer";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -78,6 +79,7 @@ export class EnveloppeEditor extends LitElement {
   // The same-origin srcdoc canvas (PRD §6.4). Created once the shell first
   // renders; the doc→DOM renderer awaits whenReady() to draw into #eb-root.
   #canvas: CanvasController | null = null;
+  #renderer: CanvasRenderer | null = null;
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) this.#applyTheme();
@@ -86,6 +88,10 @@ export class EnveloppeEditor extends LitElement {
   override firstUpdated(): void {
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
+    void this.#canvas.whenReady().then(({ doc, mount }) => {
+      this.#renderer = new CanvasRenderer(mount, doc);
+      if (this.#doc) this.#renderer.render(this.#doc);
+    });
   }
 
   override disconnectedCallback(): void {
@@ -116,11 +122,25 @@ export class EnveloppeEditor extends LitElement {
   }
 
   /**
-   * Load a document into the editor.
-   * STUB — full wiring (render + change events) lands in ENV-42.
+   * Load a document into the editor and paint it onto the canvas. (The public
+   * change-event side of persistence still lands in ENV-42.)
    */
   loadDoc(doc: EnveloppeDoc): void {
+    const isUpdate = this.#doc !== null;
     this.#doc = doc;
+    if (!this.#renderer) return; // canvas not ready yet; firstUpdated paints it
+    if (isUpdate) this.#renderer.update(doc);
+    else this.#renderer.render(doc);
+  }
+
+  /** The element rendered for a node id, or null. */
+  elementForNode(id: string): HTMLElement | null {
+    return this.#renderer?.elementForNode(id) ?? null;
+  }
+
+  /** Resolve a canvas-local point to the node id under it. */
+  nodeIdAt(x: number, y: number): string | null {
+    return this.#renderer?.nodeIdAt(x, y) ?? null;
   }
 
   /**

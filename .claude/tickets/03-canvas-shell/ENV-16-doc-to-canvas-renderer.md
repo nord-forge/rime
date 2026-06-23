@@ -1,7 +1,7 @@
 ---
 id: ENV-16
 title: Doc → canvas renderer (WYSIWYG preview DOM)
-status: ready
+status: done
 priority: P0
 milestone: 3 — Canvas & shell
 depends_on: [ENV-15, ENV-05]
