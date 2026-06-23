@@ -1,0 +1,8 @@
+# Keep blank issues enabled so people can file things that don't fit a template.
+# Add Discussions/contact links here once the repository's GitHub home is set up,
+# e.g.:
+#   contact_links:
+#     - name: Question or idea
+#       url: https://github.com/<org>/enveloppe/discussions
+#       about: For open-ended questions, please use Discussions.
+blank_issues_enabled: true

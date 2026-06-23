@@ -1,7 +1,7 @@
 ---
 id: ENV-04
 title: Repo hygiene — README, CONTRIBUTING, templates, LICENSE
-status: ready
+status: done
 priority: P1
 milestone: 0 — Foundations
 depends_on: [ENV-01]

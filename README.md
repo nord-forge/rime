@@ -98,18 +98,31 @@ const html = await new MjmlRenderer().render(doc); // Outlook-safe HTML
 - **One immutable JSON doc** is the source of truth; undo/redo via patch diffs (memory-lean); designed CRDT-friendly for future collaboration.
 - **Canvas** = same-origin `srcdoc` iframe (clean preview DOM, no host CSS bleed, iframe-local hit-testing).
 - **Drag & drop** = [Pragmatic drag-and-drop](https://github.com/atlassian/pragmatic-drag-and-drop) + a custom keyboard/ARIA accessibility layer.
-- **Rich text** = a headless engine (Tiptap-core or Lexical — see [PRD §6.7](./PRD.md)) with 100% custom, themeable UI.
+- **Rich text** = [Lexical](https://lexical.dev) used **headless** (see [PRD §6.7](./PRD.md)), one live instance at a time, with 100% custom, themeable UI (no library toolbar).
 - **Export** = MJML behind a swappable `Renderer` interface.
 
 See the full [**PRD**](./PRD.md) and [**board**](./board.md).
 
 ## Tech stack
 
-Lit · Pragmatic drag-and-drop · MJML · Bun (workspaces, runtime, tests) · Vite (lib mode, optionally rolldown-vite) · oxlint + oxfmt · Playwright (cross-browser, Safari emphasis).
+Lit · Pragmatic drag-and-drop · Lexical (headless) · MJML · Bun (workspaces, runtime, tests) · rolldown-vite (lib mode; stock Vite as fallback) · oxlint + oxfmt · Playwright (cross-browser, Safari emphasis).
+
+## Develop locally
+
+```bash
+bun install
+bun run build         # build all packages
+bun test              # unit tests
+bun run lint          # oxlint
+bun run format:check  # oxfmt
+bun run typecheck     # tsc
+bun run size          # @enveloppe/core bundle-size gate (~100 kB gzip)
+bun run e2e           # cross-browser Playwright (chromium + webkit)
+```
 
 ## Contributing
 
-This is early. The best contribution right now is feedback on the [PRD](./PRD.md). See [board.md](./board.md) for the ticket plan.
+This is early — the best contribution right now is feedback on the [PRD](./PRD.md). When contributing code, see [CONTRIBUTING.md](./CONTRIBUTING.md) and the ticket plan in [board.md](./board.md). All participants are expected to follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## License
 
