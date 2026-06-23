@@ -26,3 +26,11 @@ export {
   setRichText,
   updateNode,
 } from "./operations";
+export {
+  deserialize,
+  type DeserializeResult,
+  type DocEnvelope,
+  SCHEMA_VERSION,
+  serialize,
+  type SerializeOptions,
+} from "./serialize";

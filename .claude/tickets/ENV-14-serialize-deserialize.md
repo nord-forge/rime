@@ -1,7 +1,7 @@
 ---
 id: ENV-14
 title: Serialize / deserialize (lossless round-trip)
-status: ready
+status: done
 priority: P0
 milestone: 1 — Document model
 depends_on: [ENV-10]
