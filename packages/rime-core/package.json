@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json",
-    "test": "bun test --path-ignore-patterns='**/e2e/**'",
+    "test": "bun test --conditions=development --path-ignore-patterns='**/e2e/**'",
     "lint": "oxlint src",
     "typecheck": "tsc -p tsconfig.json",
     "size": "cd ../.. && bun run scripts/measure.ts",
