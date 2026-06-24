@@ -1,6 +1,4 @@
-// Convert the portable, engine-independent RichTextJSON (paragraphs → text runs
-// with bold/italic/underline marks + optional link) into escaped inline HTML safe
-// inside <mj-text>. Plain string building — no DOM, no rich-text engine import.
+// Convert RichTextJSON into escaped inline HTML for <mj-text>. No DOM, no engine.
 
 import type { Mark, RichTextJSON, TextRun } from "@nord-forge/rime-model";
 
@@ -38,12 +36,22 @@ function renderRun(run: TextRun): string {
   return html;
 }
 
-/** Convert a RichTextJSON document to inline HTML (one <p> per paragraph). */
+function renderRuns(runs: TextRun[] | undefined): string {
+  return (runs ?? []).map(renderRun).join("");
+}
+
 export function richTextToInlineHtml(content: RichTextJSON): string {
   return content.content
-    .map((paragraph) => {
-      const inner = (paragraph.content ?? []).map(renderRun).join("");
-      return `<p>${inner}</p>`;
+    .map((block) => {
+      if (block.type === "heading") {
+        return `<h${block.level}>${renderRuns(block.content)}</h${block.level}>`;
+      }
+      if (block.type === "list") {
+        const tag = block.ordered ? "ol" : "ul";
+        const items = block.items.map((item) => `<li>${renderRuns(item.content)}</li>`).join("");
+        return `<${tag}>${items}</${tag}>`;
+      }
+      return `<p>${renderRuns(block.content)}</p>`;
     })
     .join("");
 }

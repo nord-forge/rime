@@ -1,7 +1,7 @@
 ---
 id: ENV-30
 title: Lexical ↔ doc-model RichTextJSON round-trip
-status: ready
+status: done
 priority: P0
 milestone: 5 — Inline rich text
 depends_on: [ENV-27, ENV-09]

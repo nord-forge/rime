@@ -257,39 +257,73 @@ function validateRichText(value: unknown, path: string, errors: ValidationError[
     errors.push({ path: `${path}.content`, message: "content must be an array" });
     return;
   }
-  content.forEach((para, i) => {
-    const paraPath = `${path}.content[${i}]`;
-    if (!isObject(para) || para["type"] !== "paragraph") {
-      errors.push({ path: paraPath, message: "must be a paragraph" });
+  content.forEach((block, i) => {
+    const blockPath = `${path}.content[${i}]`;
+    if (!isObject(block)) {
+      errors.push({ path: blockPath, message: "must be a rich-text block" });
       return;
     }
-    const runs = para["content"];
-    if (runs === undefined) return;
-    if (!Array.isArray(runs)) {
-      errors.push({ path: `${paraPath}.content`, message: "must be an array of runs" });
-      return;
-    }
-    runs.forEach((run, j) => {
-      const runPath = `${paraPath}.content[${j}]`;
-      if (!isObject(run) || run["type"] !== "text" || typeof run["text"] !== "string") {
-        errors.push({ path: runPath, message: 'must be { type: "text", text: string }' });
-        return;
-      }
-      const marks = run["marks"];
-      if (marks !== undefined) {
-        if (!Array.isArray(marks)) {
-          errors.push({ path: `${runPath}.marks`, message: "marks must be an array" });
-        } else {
-          marks.forEach((m, k) => {
-            if (!VALID_MARKS.has(m as Mark)) {
-              errors.push({ path: `${runPath}.marks[${k}]`, message: `unknown mark "${m}"` });
-            }
-          });
+    switch (block["type"]) {
+      case "paragraph":
+        validateRuns(block["content"], `${blockPath}.content`, errors);
+        break;
+      case "heading":
+        if (block["level"] !== 1 && block["level"] !== 2 && block["level"] !== 3) {
+          errors.push({ path: `${blockPath}.level`, message: "heading level must be 1, 2 or 3" });
         }
+        validateRuns(block["content"], `${blockPath}.content`, errors);
+        break;
+      case "list": {
+        if (typeof block["ordered"] !== "boolean") {
+          errors.push({ path: `${blockPath}.ordered`, message: "ordered must be a boolean" });
+        }
+        const items = block["items"];
+        if (!Array.isArray(items)) {
+          errors.push({ path: `${blockPath}.items`, message: "items must be an array" });
+          break;
+        }
+        items.forEach((item, j) => {
+          const itemPath = `${blockPath}.items[${j}]`;
+          if (!isObject(item) || item["type"] !== "listitem") {
+            errors.push({ path: itemPath, message: 'must be { type: "listitem" }' });
+            return;
+          }
+          validateRuns(item["content"], `${itemPath}.content`, errors);
+        });
+        break;
       }
-      if (run["link"] !== undefined && typeof run["link"] !== "string") {
-        errors.push({ path: `${runPath}.link`, message: "link must be a string" });
+      default:
+        errors.push({ path: blockPath, message: "must be a paragraph, heading or list" });
+    }
+  });
+}
+
+function validateRuns(runs: unknown, path: string, errors: ValidationError[]): void {
+  if (runs === undefined) return;
+  if (!Array.isArray(runs)) {
+    errors.push({ path, message: "must be an array of runs" });
+    return;
+  }
+  runs.forEach((run, j) => {
+    const runPath = `${path}[${j}]`;
+    if (!isObject(run) || run["type"] !== "text" || typeof run["text"] !== "string") {
+      errors.push({ path: runPath, message: 'must be { type: "text", text: string }' });
+      return;
+    }
+    const marks = run["marks"];
+    if (marks !== undefined) {
+      if (!Array.isArray(marks)) {
+        errors.push({ path: `${runPath}.marks`, message: "marks must be an array" });
+      } else {
+        marks.forEach((m, k) => {
+          if (!VALID_MARKS.has(m as Mark)) {
+            errors.push({ path: `${runPath}.marks[${k}]`, message: `unknown mark "${m}"` });
+          }
+        });
       }
-    });
+    }
+    if (run["link"] !== undefined && typeof run["link"] !== "string") {
+      errors.push({ path: `${runPath}.link`, message: "link must be a string" });
+    }
   });
 }

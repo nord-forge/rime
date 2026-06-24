@@ -1,9 +1,4 @@
-// @nord-forge/rime-core — the <rime-editor> Lit web component.
-// See PRD §6.4–§6.8.
-//
-// Importing this module defines the <rime-editor> custom element. The canvas
-// iframe, drag-and-drop, rich text, palette, and properties panel mount into the
-// shell's regions in later milestones.
+// Importing this module defines the <rime-editor> custom element.
 
 export {
   RimeEditor,
@@ -42,6 +37,12 @@ export {
 } from "./dnd/keyboard-move/keyboard-move";
 export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
+export {
+  $applyRichTextJSON,
+  $readRichTextJSON,
+  canonicalize,
+  richTextEqual,
+} from "./richtext/serialize/serialize";
 export {
   type Mounter,
   RichTextLifecycle,
