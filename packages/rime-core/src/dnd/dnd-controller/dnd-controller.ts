@@ -150,6 +150,11 @@ export class DndController {
   }
 
   #begin(data: DragData, hostX: number, hostY: number): void {
+    // End any in-progress drag before starting a new one. Without this, a second
+    // pointerdown arriving before the previous drag's pointerup (possible when the
+    // machine is slow enough to interleave/coalesce events, e.g. CI) would orphan
+    // the prior drag's listeners + preview node in the shared cleanup registry.
+    if (this.#active) this.#endDrag();
     // Snapshot column geometry ONCE per drag (no live getBoundingClientRect per
     // move — layout-thrash killer). Re-snapshotted on scroll/resize via refresh().
     this.#active = {
@@ -199,7 +204,10 @@ export class DndController {
       const dy = hostY - this.#active.startY;
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
       this.#active.started = true;
-      // Show the branded preview only once the drag actually begins.
+      // Show the branded preview only once the drag actually begins. Defensively
+      // destroy any prior preview first so an interleaved/late event sequence can
+      // never orphan a node in the overlay (belt-and-braces over #dragCleanups).
+      this.#preview?.destroy();
       const preview = new DragPreview(this.#deps.overlayHost, this.#active.data);
       this.#preview = preview;
       this.#dragCleanups.add(() => preview.destroy());
