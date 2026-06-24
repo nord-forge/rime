@@ -3,10 +3,10 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 33 / 52 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
-properties) is next. Milestone 5 shipped headless Lexical in-iframe, one-instance
-lifecycle, lossless round-trip, bubble toolbar + link popover, paste sanitization,
-and the IME composition guard. Core 68.28 kB gzip vs ~100 kB budget.
+**Progress: 33 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
+properties) in progress — the block catalog was expanded (ENV-57–64 added, ENV-65
+schema field-types) so the registration interface lands a real library, not just
+seven blocks. Core 68.71 kB gzip vs ~100 kB budget.
 
 > ENV-32 caveat: the composition guard + QA checklist (`packages/rime-core/docs/
 > RICHTEXT-QA-CHECKLIST.md`) are landed; the **real-device iOS Safari + CJK IME
@@ -20,7 +20,7 @@ and the IME composition guard. Core 68.28 kB gzip vs ~100 kB budget.
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
-| 6 — Blocks & properties | 🔶 1 / 6 |
+| 6 — Blocks & properties | 🔶 1 / 15 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
@@ -110,11 +110,20 @@ Conventions:
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-33 | ✅ | **Block registration interface** — `registerBlock({schema, renderCanvas, renderExport, palette})`; built-ins use same path | P0 | ENV-16, ENV-11 | §6.8 |
-| ENV-34 | ⬜ | **Core blocks** — Section, Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
+| ENV-34 | ⬜ | **Core blocks** — Section (styled container: full-bleed bg + padding, holds blocks), Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
 | ENV-35 | ⬜ | **Properties panel** — schema-driven forms (padding, colors, alignment, columns, etc.) | P0 | ENV-33 | §6.5 |
 | ENV-36 | ⬜ | **Palette** — categorized, icons, drag source | P0 | ENV-33, ENV-19 | §6.5 |
 | ENV-37 | ⬜ | **Example custom block** — documented end-to-end (the SDK proof) | P1 | ENV-33 | §12 |
-| ENV-38 | ⬜ | **Social block** | P2 | ENV-34 | §12 |
+| ENV-65 | ⬜ | **Schema field-type extensions** — `list`/repeater + `multiline`/`code` (shared by menu/html/video/table) | P1 | ENV-33 | §6.8 |
+| ENV-38 | ⬜ | **Social block** — `<mj-social>` icons + links | P1 | ENV-34 | §12 |
+| ENV-57 | ⬜ | **Heading block** — standalone layout-level h1–3 (`<mj-text>`) | P1 | ENV-34, ENV-33 | §12 |
+| ENV-58 | ⬜ | **Quote block** — pull-quote w/ accent border (`<mj-text>`) | P1 | ENV-34, ENV-33 | §12 |
+| ENV-59 | ⬜ | **Menu / Nav block** — horizontal links (`<mj-navbar>`) | P1 | ENV-34, ENV-33, ENV-65 | §12 |
+| ENV-60 | ⬜ | **Hero block** — bg image + overlay text + CTA (`<mj-hero>`) | P1 | ENV-34, ENV-33 | §12 |
+| ENV-61 | ⬜ | **Column-layout presets** — 2/3-col, sidebar, image+text (Section+Column subtrees) | P1 | ENV-34, ENV-33 | §12 |
+| ENV-62 | ⬜ | **HTML / Code block** — raw passthrough (`<mj-raw>`, advanced) | P2 | ENV-34, ENV-33, ENV-65 | §12 |
+| ENV-63 | ⬜ | **Video block** — poster + play overlay linking out | P2 | ENV-34, ENV-33, ENV-65 | §12 |
+| ENV-64 | ⬜ | **Table block** — simple data table (raw-table fallback) | P2 | ENV-34, ENV-33, ENV-65 | §12 |
 
 ## Milestone 7 — Personalization tokens ⬜
 
@@ -155,10 +164,11 @@ Conventions:
 ## Notes
 - **Detailed, agent-ready tickets** live in [`.claude/tickets/`](./.claude/tickets/),
   grouped into per-milestone subfolders (`00-foundations/` … `10-release/`), one
-  self-contained `ENV-NN-slug.md` each (read `_conventions.md` first). IDs are
-  contiguous `ENV-01`…`ENV-52`. Ticket frontmatter `status:` is the source of
-  truth; this board is the rollup.
-- **Critical path to a usable demo:** ENV-01 → ENV-05/06 → ENV-14/15/16 → ENV-19/20 → ENV-27 → ENV-33/34 → ENV-11 → ENV-46. (Through ENV-27 is done; ENV-33/34 is the next critical-path item.)
-- **Highest-risk remaining tickets:** ENV-27/32 (Lexical integration + Safari/IME, elevated R-1). Do/verify these carefully.
+  self-contained `ENV-NN-slug.md` each (read `_conventions.md` first). IDs run
+  `ENV-01`…`ENV-64` (ENV-01–52 were the original plan; ENV-57–64 + ENV-65 are the
+  expanded block catalog; ENV-53–56 are spike/findings docs). Ticket frontmatter
+  `status:` is the source of truth; this board is the rollup.
+- **Critical path to a usable demo:** ENV-01 → ENV-05/06 → ENV-14/15/16 → ENV-19/20 → ENV-27 → ENV-33/34 → ENV-11 → ENV-46. (Through ENV-33 is done; ENV-34 is the next critical-path item; the expanded catalog ENV-57–64 layers on after.)
+- **Highest-risk remaining tickets:** ENV-60 (Hero bg-image email support), ENV-32 manual iOS/IME pass still pending. Do/verify carefully.
 - **Resolved decisions:** OD-1 (engine→Lexical), OD-2 (toolchain→rolldown-vite), OD-3 (DnD perf budget), OD-4 (core budget ~100 kB), OD-5 (raw-table fallback), OD-6 (canvas DnD→custom pointer events). See PRD "Open decisions".
 - Done spikes (not tickets): OD-2 (toolchain), OD-1/OD-4 (engine→Lexical, budget).
