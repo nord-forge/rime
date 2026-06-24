@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #11 merged. Branch: `main` (clean).
+Last updated after PR #12 merged. Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,10 +11,14 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **35/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **3/15**
+- **37/61 tickets done.**
+- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **5/15**
   — ENV-33 (registerBlock interface), ENV-34 (seven core blocks), ENV-65 (schema
-  field types + open validator) done.
+  field types + open validator), ENV-57 (Heading), ENV-58 (Quote) done.
+- Heading + Quote (PR #12) are the first of Batch A. They're custom leaf blocks:
+  node interface declared in rime-core (NOT the rime-model union), validated via
+  `validateDoc`'s `extraLeafTypes`, exported as native `<mj-text>`. They go in the
+  core set (`registerCoreBlocks`). Pattern to copy for the rest of the catalog.
 - ENV-32 caveat: composition guard + QA checklist landed, but the **real-device iOS
   Safari + CJK IME manual pass is still pending** (needs hardware) — see
   `packages/rime-core/docs/RICHTEXT-QA-FINDINGS.md`.
@@ -81,8 +85,8 @@ Build each as a `BlockDefinition`, register via `registerBlock`, add canvas + MJ
 extend `validateDoc` use via `extraLeafTypes`. Suggested batching:
 
 **Batch A — simple P1 (MJML-native, no schema-gap deps):**
-- ENV-57 Heading (`<mj-text>` h1–3), ENV-58 Quote (`<mj-text>` blockquote),
-  ENV-38 Social (`<mj-social>`), ENV-60 Hero (`<mj-hero>` bg+text+CTA),
+- ✅ ENV-57 Heading (`<mj-text>` h1–3), ✅ ENV-58 Quote (`<mj-text>` blockquote) — done (PR #12).
+- REMAINING: ENV-38 Social (`<mj-social>`), ENV-60 Hero (`<mj-hero>` bg+text+CTA),
   ENV-61 Column presets (Section+Column subtrees — palette presets that drop a subtree;
   note the design wrinkle: a PaletteEntry that yields a subtree, not a single leaf).
 
