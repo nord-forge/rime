@@ -10,7 +10,10 @@ export type FieldType =
   | "spacing"
   | "align"
   | "url"
-  | "richtext";
+  | "richtext"
+  | "multiline"
+  | "code"
+  | "list";
 
 export interface FieldDef {
   // Prop key on the node; dot-paths address nested props (e.g. "style.paddingTop").
@@ -24,6 +27,11 @@ export interface FieldDef {
   default?: unknown;
   // Properties-panel section, e.g. "Spacing" or "Colors".
   group?: string;
+  // For type "list" (a repeater): the schema of each row. The edited value is
+  // Array<Record<string, unknown>>, one object per row keyed by itemFields[].key.
+  itemFields?: FieldDef[];
+  minItems?: number;
+  maxItems?: number;
 }
 
 export interface BlockSchema {

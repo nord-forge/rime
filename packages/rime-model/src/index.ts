@@ -6,7 +6,12 @@
 export * from "./types";
 export * from "./rich-text";
 export * from "./factory";
-export { validateDoc, type ValidateResult, type ValidationError } from "./validate";
+export {
+  validateDoc,
+  type ValidateOptions,
+  type ValidateResult,
+  type ValidationError,
+} from "./validate";
 export {
   applyPatch,
   getAtPath,

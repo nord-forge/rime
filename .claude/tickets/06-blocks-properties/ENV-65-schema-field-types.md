@@ -1,7 +1,7 @@
 ---
 id: ENV-65
 title: Schema field-type extensions (list/repeater + multiline/code)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-33]
