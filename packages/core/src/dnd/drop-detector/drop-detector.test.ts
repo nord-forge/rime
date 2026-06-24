@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { DropDetector, type Scheduler } from "./drop-detector";
-import type { DropTarget } from "./dnd-types";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 /** A manual scheduler: collect callbacks, flush them on demand (fake rAF). */
 function fakeScheduler() {

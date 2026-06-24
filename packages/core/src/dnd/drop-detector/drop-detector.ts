@@ -4,8 +4,8 @@
 // a frame); all rect-math runs in flush(). The scheduler is injectable so the
 // coalescing is unit-testable with a fake rAF.
 
-import type { Point } from "../canvas/coordinate-controller";
-import type { DropTarget } from "./dnd-types";
+import type { Point } from "../../canvas/coordinate-controller/coordinate-controller";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 export interface Scheduler {
   request(cb: () => void): number;

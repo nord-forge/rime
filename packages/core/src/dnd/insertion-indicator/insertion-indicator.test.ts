@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { indicatorLineFor } from "./insertion-indicator";
-import type { ColumnGeometry } from "./resolve-drop-target";
+import type { ColumnGeometry } from "../resolve-drop-target/resolve-drop-target";
 
 const rect = (top: number, bottom: number, left = 0, right = 100) => ({ top, bottom, left, right });
 

@@ -4,9 +4,12 @@
 // cached canvas geometry and converted to host space via the coordinate
 // controller. A plain absolutely-positioned element (lighter than a component).
 
-import type { DragCoordinateController, Point } from "../canvas/coordinate-controller";
-import type { ColumnGeometry } from "./resolve-drop-target";
-import type { DropTarget } from "./dnd-types";
+import type {
+  DragCoordinateController,
+  Point,
+} from "../../canvas/coordinate-controller/coordinate-controller";
+import type { ColumnGeometry } from "../resolve-drop-target/resolve-drop-target";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 /** Compute the indicator line (in iframe-client coords) for a resolved target. */
 export function indicatorLineFor(

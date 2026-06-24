@@ -5,7 +5,7 @@
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import type { DropTarget } from "./dnd-types";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 /** A selectable destination shown in the menu. */
 export interface MoveDestination {

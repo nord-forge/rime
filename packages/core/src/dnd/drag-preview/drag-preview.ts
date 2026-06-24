@@ -3,7 +3,7 @@
 // small themed card and move it to follow the pointer during the drag, then
 // remove it on drag end. Styled exclusively from --eb-* tokens.
 
-import type { DragData } from "./dnd-types";
+import type { DragData } from "../dnd-types/dnd-types";
 
 const POINTER_OFFSET = 12; // px below-right of the pointer
 

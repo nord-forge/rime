@@ -9,10 +9,10 @@ import {
   insertNode,
   moveNode,
 } from "@enveloppe/doc-model";
-import { CanvasRenderer } from "../canvas/canvas-renderer";
-import { DragCoordinateController } from "../canvas/coordinate-controller";
-import { CleanupRegistry } from "./cleanup-registry";
-import { DndController } from "./dnd-controller";
+import { CanvasRenderer } from "../../canvas/canvas-renderer/canvas-renderer";
+import { DragCoordinateController } from "../../canvas/coordinate-controller/coordinate-controller";
+import { CleanupRegistry } from "../cleanup-registry/cleanup-registry";
+import { DndController } from "../dnd-controller/dnd-controller";
 
 describe("CleanupRegistry", () => {
   test("counts, disposer removes one, disposeAll clears", () => {

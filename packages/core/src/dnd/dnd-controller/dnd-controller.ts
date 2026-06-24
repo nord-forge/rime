@@ -8,14 +8,17 @@
 // Every drop goes through an immutable doc op; we never mutate canvas DOM directly.
 
 import type { EnveloppeDoc, LeafBlock, NodeId, OpResult } from "@enveloppe/doc-model";
-import type { CanvasRenderer } from "../canvas/canvas-renderer";
-import type { DragCoordinateController, Point } from "../canvas/coordinate-controller";
-import type { DragData, DropTarget } from "./dnd-types";
-import { type ColumnGeometry, resolveDropTarget } from "./resolve-drop-target";
-import { DropDetector, type Scheduler } from "./drop-detector";
-import { InsertionIndicator } from "./insertion-indicator";
-import { DragPreview } from "./drag-preview";
-import { CleanupRegistry } from "./cleanup-registry";
+import type { CanvasRenderer } from "../../canvas/canvas-renderer/canvas-renderer";
+import type {
+  DragCoordinateController,
+  Point,
+} from "../../canvas/coordinate-controller/coordinate-controller";
+import type { DragData, DropTarget } from "../dnd-types/dnd-types";
+import { type ColumnGeometry, resolveDropTarget } from "../resolve-drop-target/resolve-drop-target";
+import { DropDetector, type Scheduler } from "../drop-detector/drop-detector";
+import { InsertionIndicator } from "../insertion-indicator/insertion-indicator";
+import { DragPreview } from "../drag-preview/drag-preview";
+import { CleanupRegistry } from "../cleanup-registry/cleanup-registry";
 
 /** Pointer move past this many px (host space) counts as a drag, not a click. */
 const DRAG_THRESHOLD_PX = 4;

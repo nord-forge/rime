@@ -4,7 +4,7 @@
 // unit-testable; the live wiring (ENV-19 controller) and the fast/throttled
 // version (ENV-20) call it.
 
-import type { DropTarget } from "./dnd-types";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 export interface Rect {
   top: number;

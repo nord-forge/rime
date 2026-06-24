@@ -21,19 +21,22 @@ import {
   type OpResult,
   removeNode,
 } from "@enveloppe/doc-model";
-import { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas";
-import { CanvasRenderer } from "./canvas/canvas-renderer";
-import { DragCoordinateController, type Point } from "./canvas/coordinate-controller";
-import { DndController } from "./dnd/dnd-controller";
-import { KeyboardMoveController } from "./dnd/keyboard-move";
-import { LiveAnnouncer } from "./a11y/live-region";
+import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
+import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
+import {
+  DragCoordinateController,
+  type Point,
+} from "../canvas/coordinate-controller/coordinate-controller";
+import { DndController } from "../dnd/dnd-controller/dnd-controller";
+import { KeyboardMoveController } from "../dnd/keyboard-move/keyboard-move";
+import { LiveAnnouncer } from "../a11y/live-region/live-region";
 import {
   findNodeById,
   insertMessage,
   locateForAnnounce,
   moveMessage,
   removeMessage,
-} from "./a11y/announce-messages";
+} from "../a11y/announce-messages/announce-messages";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {

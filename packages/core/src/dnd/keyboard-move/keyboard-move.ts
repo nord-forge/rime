@@ -7,7 +7,7 @@
 // the boundary cases are unit-testable.
 
 import type { EnveloppeDoc, NodeId, OpResult } from "@enveloppe/doc-model";
-import type { DropTarget } from "./dnd-types";
+import type { DropTarget } from "../dnd-types/dnd-types";
 
 export type MoveDirection = "up" | "down" | "into-prev-column" | "into-next-column";
 

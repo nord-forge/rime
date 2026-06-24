@@ -25,7 +25,7 @@ import {
   renderSpacer,
   renderText,
   renderUnknown,
-} from "./render-node";
+} from "../render-node/render-node";
 
 /** Render a single node (no children) to a fresh element. */
 function createElementFor(node: AnyNode, doc: Document): HTMLElement {
