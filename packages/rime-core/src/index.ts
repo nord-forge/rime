@@ -36,6 +36,25 @@ export {
   resolveMove,
 } from "./dnd/keyboard-move/keyboard-move";
 export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
+export type { BlockSchema, FieldDef, FieldType } from "./blocks/schema";
+export type {
+  BlockDefinition,
+  CanvasRenderContext,
+  ExportOutput,
+  ExportRenderContext,
+  PaletteEntry,
+  RenderCanvas,
+  RenderExport,
+} from "./blocks/types";
+export {
+  BlockRegistry,
+  blockRegistry,
+  type MjmlBlockRenderer,
+  registerBlock,
+  registryToMjmlRenderers,
+  renderNodeViaRegistry,
+  toMjmlBlockRenderer,
+} from "./blocks/registry";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
 export {
   $applyRichTextJSON,

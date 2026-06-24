@@ -1,7 +1,7 @@
 ---
 id: ENV-33
 title: Block registration interface (registerBlock)
-status: ready
+status: done
 priority: P0
 milestone: 6 — Blocks & properties
 depends_on: [ENV-16, ENV-11]

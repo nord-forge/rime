@@ -3,7 +3,7 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 32 / 52 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
+**Progress: 33 / 52 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
 properties) is next. Milestone 5 shipped headless Lexical in-iframe, one-instance
 lifecycle, lossless round-trip, bubble toolbar + link popover, paste sanitization,
 and the IME composition guard. Core 68.28 kB gzip vs ~100 kB budget.
@@ -20,7 +20,7 @@ and the IME composition guard. Core 68.28 kB gzip vs ~100 kB budget.
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
-| 6 — Blocks & properties | ⬜ 0 / 6 |
+| 6 — Blocks & properties | 🔶 1 / 6 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
@@ -105,11 +105,11 @@ Conventions:
 | ENV-31 | ✅ | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-27 | §6.7 |
 | ENV-32 | ✅ | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-27 | §9 |
 
-## Milestone 6 — Blocks & properties ⬜
+## Milestone 6 — Blocks & properties 🔶
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
-| ENV-33 | ⬜ | **Block registration interface** — `registerBlock({schema, renderCanvas, renderExport, palette})`; built-ins use same path | P0 | ENV-16, ENV-11 | §6.8 |
+| ENV-33 | ✅ | **Block registration interface** — `registerBlock({schema, renderCanvas, renderExport, palette})`; built-ins use same path | P0 | ENV-16, ENV-11 | §6.8 |
 | ENV-34 | ⬜ | **Core blocks** — Section, Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
 | ENV-35 | ⬜ | **Properties panel** — schema-driven forms (padding, colors, alignment, columns, etc.) | P0 | ENV-33 | §6.5 |
 | ENV-36 | ⬜ | **Palette** — categorized, icons, drag source | P0 | ENV-33, ENV-19 | §6.5 |
