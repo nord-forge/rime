@@ -1,8 +1,6 @@
-// Pure node → preview DOM mappers (the WYSIWYG, PRD §6.2). This is NOT the email
-// export HTML: it renders modern, edit-friendly markup (divs + flexbox) optimized
-// for editing and hit-testing. Ghost-table/mso email HTML is produced separately
-// at export time. Every element is stamped with its node id + type so hit-testing
-// and selection can resolve a pointer → node.
+// Pure node -> preview DOM mappers for editing/hit-testing (divs + flexbox), NOT
+// the email export HTML. Every element is stamped with its node id + type so a
+// pointer can resolve to a node.
 
 import type {
   BaseNode,
@@ -16,6 +14,7 @@ import type {
   SectionNode,
   SpacerBlock,
   TextBlock,
+  TextRun,
 } from "@nord-forge/rime-model";
 
 /** Create an element stamped with the node's identity for hit-testing. */
@@ -37,31 +36,50 @@ export function applyStyle(e: HTMLElement, style: BlockStyle | undefined): void 
   e.style.textAlign = style?.align ?? "";
 }
 
-/** Render the portable RichTextJSON into preview DOM (static; no editor engine). */
+function appendRuns(host: HTMLElement, runs: TextRun[] | undefined, doc: Document): void {
+  for (const run of runs ?? []) {
+    let child: Node = doc.createTextNode(run.text);
+    for (const mark of ["bold", "italic", "underline"] as const) {
+      if (run.marks?.includes(mark)) {
+        const tag = mark === "bold" ? "strong" : mark === "italic" ? "em" : "u";
+        const wrapper = doc.createElement(tag);
+        wrapper.append(child);
+        child = wrapper;
+      }
+    }
+    if (run.link !== undefined) {
+      const a = doc.createElement("a");
+      a.href = run.link;
+      a.append(child);
+      child = a;
+    }
+    host.append(child);
+  }
+}
+
 export function renderRichText(content: RichTextJSON, doc: Document): DocumentFragment {
   const frag = doc.createDocumentFragment();
-  for (const paragraph of content.content) {
-    const p = doc.createElement("p");
-    p.style.margin = "0";
-    for (const run of paragraph.content ?? []) {
-      let child: Node = doc.createTextNode(run.text);
-      for (const mark of ["bold", "italic", "underline"] as const) {
-        if (run.marks?.includes(mark)) {
-          const tag = mark === "bold" ? "strong" : mark === "italic" ? "em" : "u";
-          const wrapper = doc.createElement(tag);
-          wrapper.append(child);
-          child = wrapper;
-        }
+  for (const block of content.content) {
+    if (block.type === "heading") {
+      const h = doc.createElement(`h${block.level}`);
+      h.style.margin = "0";
+      appendRuns(h, block.content, doc);
+      frag.append(h);
+    } else if (block.type === "list") {
+      const list = doc.createElement(block.ordered ? "ol" : "ul");
+      list.style.margin = "0";
+      for (const item of block.items) {
+        const li = doc.createElement("li");
+        appendRuns(li, item.content, doc);
+        list.append(li);
       }
-      if (run.link !== undefined) {
-        const a = doc.createElement("a");
-        a.href = run.link;
-        a.append(child);
-        child = a;
-      }
-      p.append(child);
+      frag.append(list);
+    } else {
+      const p = doc.createElement("p");
+      p.style.margin = "0";
+      appendRuns(p, block.content, doc);
+      frag.append(p);
     }
-    frag.append(p);
   }
   return frag;
 }

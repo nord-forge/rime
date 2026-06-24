@@ -30,6 +30,8 @@
       "dependencies": {
         "@lexical/clipboard": "^0.23.1",
         "@lexical/html": "^0.23.1",
+        "@lexical/link": "^0.23.1",
+        "@lexical/list": "^0.23.1",
         "@lexical/rich-text": "^0.23.1",
         "@lexical/selection": "^0.23.1",
         "@lexical/utils": "^0.23.1",
@@ -102,6 +104,8 @@
     "@lexical/clipboard": ["@lexical/clipboard@0.23.1", "", { "dependencies": { "@lexical/html": "0.23.1", "@lexical/list": "0.23.1", "@lexical/selection": "0.23.1", "@lexical/utils": "0.23.1", "lexical": "0.23.1" } }, "sha512-MT8IXl1rhTe8VcwnkhgFtWra6sRYNsl/I7nE9aw6QxwvPReKmRDmyBmEIeXwnKSGHRe19OJhu4/A9ciKPyVdMA=="],
 
     "@lexical/html": ["@lexical/html@0.23.1", "", { "dependencies": { "@lexical/selection": "0.23.1", "@lexical/utils": "0.23.1", "lexical": "0.23.1" } }, "sha512-kNkDUaDe/Awypaw8JZn65BzT1gwNj2bNkaGFcmIkXUrTtiqlvgYvKvJeOKLkoAb/i2xq990ZAbHOsJrJm1jMbw=="],
+
+    "@lexical/link": ["@lexical/link@0.23.1", "", { "dependencies": { "@lexical/utils": "0.23.1", "lexical": "0.23.1" } }, "sha512-HRaOp7prtcbHjbgq8AjJ4O02jYb8pTeS8RrGcgIRhCOq3/EcsSb1dXMwuraqmh9oxbuFyEu/JE31EFksiOW6qA=="],
 
     "@lexical/list": ["@lexical/list@0.23.1", "", { "dependencies": { "@lexical/utils": "0.23.1", "lexical": "0.23.1" } }, "sha512-TI3WyWk3avv9uaJwaq8V+m9zxLRgnzXDYNS0rREafnW09rDpaFkpVmDuX+PZVR3NqPlwVt+slWVSBuyfguAFbA=="],
 

@@ -1,8 +1,5 @@
-// <rime-editor> — the single public custom element the product ships as.
-// This is the SHELL: the three-region layout (palette / canvas / properties),
-// the slots + parts later features mount into, and the typed `config` surface.
-// No feature logic lives here yet. Chrome is themed exclusively via --eb-* custom
-// properties that pierce the shadow boundary (proven in the OD-2 toolchain spike).
+// <rime-editor> — the public custom element: the shell hosting the palette,
+// canvas, and properties regions. Chrome is themed via --eb-* custom properties.
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, query } from "lit/decorators.js";
@@ -39,6 +36,7 @@ import {
   removeMessage,
 } from "../a11y/announce-messages/announce-messages";
 import { RichTextLifecycle } from "../richtext/richtext-lifecycle/richtext-lifecycle";
+import { canonicalize, richTextEqual } from "../richtext/serialize/serialize";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -113,12 +111,8 @@ export class RimeEditor extends LitElement {
 
   @query('[part="canvas"]') private canvasRegion!: HTMLElement;
 
-  // Current document. The real load/get + change-event wiring is ENV-42; this
-  // shell only holds it so the public method shapes are stable now.
   #doc: RimeDoc | null = null;
 
-  // The same-origin srcdoc canvas (PRD §6.4). Created once the shell first
-  // renders; the doc→DOM renderer awaits whenReady() to draw into #eb-root.
   #canvas: CanvasController | null = null;
   #renderer: CanvasRenderer | null = null;
   #coords: DragCoordinateController | null = null;
@@ -182,24 +176,21 @@ export class RimeEditor extends LitElement {
         moveNode,
       });
 
-      // Inline rich text: exactly one live Lexical editor, mounted on focus and
-      // destroyed on blur (PRD §6.7, §10). On blur it commits the editor's JSON
-      // back into the doc via setRichText.
       this.#richtext = new RichTextLifecycle({
         getDoc: () => this.#doc,
         elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
         onCommit: (nodeId, json) => {
           if (!this.#doc) return;
+          const node = findNodeById(this.#doc, nodeId);
+          // Skip the commit when nothing changed, so focus/blur alone adds no undo entry.
+          if (node?.type === "text" && richTextEqual(canonicalize(node.content), json)) return;
           this.#dispatch(setRichText(this.#doc, nodeId, json));
         },
         repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
       });
 
-      // Blur the live editor as soon as a pointer goes down outside any text block
-      // (empty canvas / a non-text block). Entering edit mode is driven by `click`
-      // (below) so it composes cleanly with selection; doing it here would tear the
-      // element down mid-gesture. Pointerdown ON a text block is left alone so the
-      // browser can place the caret.
+      // Entering edit mode is driven by `click` below; blurring here mid-gesture
+      // would tear the element down before the browser places the caret.
       this.#onCanvasPointerdown = (e) => {
         const onText = (e.target as HTMLElement | null)?.closest('[data-node-type="text"]');
         if (!onText) this.#richtext?.blur();
@@ -214,10 +205,8 @@ export class RimeEditor extends LitElement {
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
 
-      // Click a block to select it (delegated inside the iframe). A text block that
-      // is clicked while ALREADY selected enters edit mode (mounts the one Lexical
-      // editor) — first click selects, second click edits. This keeps select-to-
-      // move (ENV-23) and click-to-edit from fighting over the same gesture.
+      // First click selects a block; a second click on an already-selected text
+      // block enters edit mode, so selection and editing don't share one gesture.
       this.#onCanvasClick = (e) => {
         const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-node-id]");
         const id = el?.dataset["nodeId"];
@@ -398,10 +387,6 @@ export class RimeEditor extends LitElement {
     }
   }
 
-  /**
-   * Load a document into the editor and paint it onto the canvas. (The public
-   * change-event side of persistence still lands in ENV-42.)
-   */
   loadDoc(doc: RimeDoc): void {
     const isUpdate = this.#doc !== null && this.#renderer !== null;
     this.#doc = doc;
@@ -412,20 +397,14 @@ export class RimeEditor extends LitElement {
     this.#makeLeavesFocusable();
   }
 
-  /** The element rendered for a node id, or null. */
   elementForNode(id: string): HTMLElement | null {
     return this.#renderer?.elementForNode(id) ?? null;
   }
 
-  /** Resolve a canvas-local point to the node id under it. */
   nodeIdAt(x: number, y: number): string | null {
     return this.#renderer?.nodeIdAt(x, y) ?? null;
   }
 
-  /**
-   * Read the current document.
-   * STUB — full wiring lands in ENV-42.
-   */
   getDoc(): RimeDoc {
     if (!this.#doc) throw new Error("no document loaded");
     return this.#doc;
