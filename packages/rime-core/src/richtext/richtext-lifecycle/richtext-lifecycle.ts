@@ -46,9 +46,29 @@ export class RichTextLifecycle {
   #active: Active | null = null;
   #mount: Mounter;
   #destroyed = false;
+  #composing = false;
+  #blurPending = false;
 
   constructor(private readonly deps: RichTextLifecycleDeps) {
     this.#mount = deps.mount ?? mountLexical;
+  }
+
+  /**
+   * Mark whether an IME composition is in progress. While composing, a blur is
+   * deferred (committing/destroying mid-composition corrupts composed text); when
+   * composition ends, any pending blur is flushed.
+   */
+  setComposing(composing: boolean): void {
+    this.#composing = composing;
+    if (!composing && this.#blurPending) {
+      this.#blurPending = false;
+      this.blur();
+    }
+  }
+
+  /** Whether an IME composition is currently in progress. */
+  get composing(): boolean {
+    return this.#composing;
   }
 
   /** The node currently being edited, or null. */
@@ -92,6 +112,12 @@ export class RichTextLifecycle {
   blur(): void {
     const active = this.#active;
     if (!active) return;
+    // Defer blur until the IME composition finishes — committing or destroying the
+    // editor mid-composition drops/corrupts the composed text.
+    if (this.#composing) {
+      this.#blurPending = true;
+      return;
+    }
     // Null the ref BEFORE destroy so a re-entrant focus during onCommit can't see
     // a half-destroyed mount.
     this.#active = null;
@@ -107,6 +133,7 @@ export class RichTextLifecycle {
 
   /** Blur (committing) and refuse further focus/blur. Idempotent. */
   destroy(): void {
+    this.#composing = false; // teardown is not deferred for composition
     this.blur();
     this.#destroyed = true;
   }

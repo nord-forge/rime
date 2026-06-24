@@ -130,6 +130,8 @@ export class RimeEditor extends LitElement {
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
   #onCanvasClick: ((e: MouseEvent) => void) | null = null;
   #onCanvasPointerdown: ((e: PointerEvent) => void) | null = null;
+  #onCompositionStart: (() => void) | null = null;
+  #onCompositionEnd: (() => void) | null = null;
   #newId: IdFactory = createIdFactory();
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
@@ -209,6 +211,13 @@ export class RimeEditor extends LitElement {
       };
       doc.addEventListener("pointerdown", this.#onCanvasPointerdown);
 
+      // IME composition guard: a blur requested mid-composition is deferred until
+      // the composition ends, so composed (e.g. CJK) text isn't dropped.
+      this.#onCompositionStart = () => this.#richtext?.setComposing(true);
+      this.#onCompositionEnd = () => this.#richtext?.setComposing(false);
+      doc.addEventListener("compositionstart", this.#onCompositionStart);
+      doc.addEventListener("compositionend", this.#onCompositionEnd);
+
       // The cached iframe rect + any in-drag geometry must refresh on scroll/resize.
       this.#onViewportChange = () => {
         this.#coords?.invalidate();
@@ -266,12 +275,20 @@ export class RimeEditor extends LitElement {
     if (this.#onCanvasPointerdown) {
       canvasDoc?.removeEventListener("pointerdown", this.#onCanvasPointerdown);
     }
+    if (this.#onCompositionStart) {
+      canvasDoc?.removeEventListener("compositionstart", this.#onCompositionStart);
+    }
+    if (this.#onCompositionEnd) {
+      canvasDoc?.removeEventListener("compositionend", this.#onCompositionEnd);
+    }
     if (this.#onKeydown) {
       canvasDoc?.removeEventListener("keydown", this.#onKeydown);
       this.removeEventListener("keydown", this.#onKeydown as EventListener);
     }
     this.#onCanvasClick = null;
     this.#onCanvasPointerdown = null;
+    this.#onCompositionStart = null;
+    this.#onCompositionEnd = null;
     this.#onKeydown = null;
     this.#richtext?.destroy();
     this.#richtext = null;
