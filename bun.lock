@@ -15,7 +15,7 @@
         "vite": "^6.0.11",
       },
     },
-    "apps/demo": {
+    "apps/rime-demo": {
       "name": "@nord-forge/rime-demo",
       "version": "0.0.0",
       "dependencies": {
@@ -24,7 +24,7 @@
         "lit": "^3.2.1",
       },
     },
-    "packages/core": {
+    "packages/rime-core": {
       "name": "@nord-forge/rime-core",
       "version": "0.0.0",
       "dependencies": {
@@ -40,11 +40,19 @@
         "lit": "^3.2.1",
       },
     },
-    "packages/doc-model": {
+    "packages/rime-mjml": {
+      "name": "@nord-forge/rime-mjml",
+      "version": "0.0.0",
+      "dependencies": {
+        "@nord-forge/rime-model": "workspace:*",
+        "mjml": "^4.15.3",
+      },
+    },
+    "packages/rime-model": {
       "name": "@nord-forge/rime-model",
       "version": "0.0.0",
     },
-    "packages/react": {
+    "packages/rime-react": {
       "name": "@nord-forge/rime-react",
       "version": "0.0.0",
       "dependencies": {
@@ -56,15 +64,7 @@
         "react-dom": ">=18",
       },
     },
-    "packages/renderer-mjml": {
-      "name": "@nord-forge/rime-mjml",
-      "version": "0.0.0",
-      "dependencies": {
-        "@nord-forge/rime-model": "workspace:*",
-        "mjml": "^4.15.3",
-      },
-    },
-    "packages/vue": {
+    "packages/rime-vue": {
       "name": "@nord-forge/rime-vue",
       "version": "0.0.0",
       "dependencies": {
@@ -119,19 +119,19 @@
 
     "@lit/reactive-element": ["@lit/reactive-element@2.1.2", "", { "dependencies": { "@lit-labs/ssr-dom-shim": "^1.5.0" } }, "sha512-pbCDiVMnne1lYUIaYNN5wrwQXDtHaYtg7YEFPeW+hws6U47WeFvISGUWekPGKWOP1ygrs0ef0o1VJMk1exos5A=="],
 
-    "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.5", "", { "dependencies": { "@tybys/wasm-util": "^0.10.2" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q=="],
+    "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.6", "", { "dependencies": { "@tybys/wasm-util": "^0.10.3" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg=="],
 
-    "@nord-forge/rime-core": ["@nord-forge/rime-core@workspace:packages/core"],
+    "@nord-forge/rime-core": ["@nord-forge/rime-core@workspace:packages/rime-core"],
 
-    "@nord-forge/rime-demo": ["@nord-forge/rime-demo@workspace:apps/demo"],
+    "@nord-forge/rime-demo": ["@nord-forge/rime-demo@workspace:apps/rime-demo"],
 
-    "@nord-forge/rime-mjml": ["@nord-forge/rime-mjml@workspace:packages/renderer-mjml"],
+    "@nord-forge/rime-mjml": ["@nord-forge/rime-mjml@workspace:packages/rime-mjml"],
 
-    "@nord-forge/rime-model": ["@nord-forge/rime-model@workspace:packages/doc-model"],
+    "@nord-forge/rime-model": ["@nord-forge/rime-model@workspace:packages/rime-model"],
 
-    "@nord-forge/rime-react": ["@nord-forge/rime-react@workspace:packages/react"],
+    "@nord-forge/rime-react": ["@nord-forge/rime-react@workspace:packages/rime-react"],
 
-    "@nord-forge/rime-vue": ["@nord-forge/rime-vue@workspace:packages/vue"],
+    "@nord-forge/rime-vue": ["@nord-forge/rime-vue@workspace:packages/rime-vue"],
 
     "@one-ini/wasm": ["@one-ini/wasm@0.1.1", "", {}, "sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw=="],
 
