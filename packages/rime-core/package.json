@@ -13,6 +13,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "development": "./src/index.ts",
       "import": "./dist/index.js"
     }
   },
@@ -21,7 +23,7 @@
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json",
-    "test": "bun test --path-ignore-patterns='**/e2e/**'",
+    "test": "bun test --conditions=development --path-ignore-patterns='**/e2e/**'",
     "lint": "oxlint src",
     "typecheck": "tsc -p tsconfig.json",
     "size": "cd ../.. && bun run scripts/measure.ts",
@@ -29,12 +31,12 @@
     "bench:dnd": "bun run bench/dnd-perf.bench.ts"
   },
   "dependencies": {
-    "@nord-forge/rime-model": "workspace:*",
     "@lexical/clipboard": "^0.23.1",
     "@lexical/html": "^0.23.1",
     "@lexical/rich-text": "^0.23.1",
     "@lexical/selection": "^0.23.1",
     "@lexical/utils": "^0.23.1",
+    "@nord-forge/rime-model": "workspace:*",
     "lexical": "^0.23.1"
   },
   "peerDependencies": {

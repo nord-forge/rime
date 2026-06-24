@@ -20,6 +20,7 @@ import {
   moveNode,
   type OpResult,
   removeNode,
+  setRichText,
 } from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
@@ -37,6 +38,7 @@ import {
   moveMessage,
   removeMessage,
 } from "../a11y/announce-messages/announce-messages";
+import { RichTextLifecycle } from "../richtext/richtext-lifecycle/richtext-lifecycle";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -123,10 +125,12 @@ export class RimeEditor extends LitElement {
   #dnd: DndController | null = null;
   #keyboard: KeyboardMoveController | null = null;
   #announcer: LiveAnnouncer | null = null;
+  #richtext: RichTextLifecycle | null = null;
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
   #onCanvasClick: ((e: MouseEvent) => void) | null = null;
+  #onCanvasPointerdown: ((e: PointerEvent) => void) | null = null;
   #newId: IdFactory = createIdFactory();
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
@@ -178,6 +182,30 @@ export class RimeEditor extends LitElement {
         moveNode,
       });
 
+      // Inline rich text: exactly one live Lexical editor, mounted on focus and
+      // destroyed on blur (PRD §6.7, §10). On blur it commits the editor's JSON
+      // back into the doc via setRichText.
+      this.#richtext = new RichTextLifecycle({
+        getDoc: () => this.#doc,
+        elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
+        onCommit: (nodeId, json) => {
+          if (!this.#doc) return;
+          this.#dispatch(setRichText(this.#doc, nodeId, json));
+        },
+        repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
+      });
+
+      // Blur the live editor as soon as a pointer goes down outside any text block
+      // (empty canvas / a non-text block). Entering edit mode is driven by `click`
+      // (below) so it composes cleanly with selection; doing it here would tear the
+      // element down mid-gesture. Pointerdown ON a text block is left alone so the
+      // browser can place the caret.
+      this.#onCanvasPointerdown = (e) => {
+        const onText = (e.target as HTMLElement | null)?.closest('[data-node-type="text"]');
+        if (!onText) this.#richtext?.blur();
+      };
+      doc.addEventListener("pointerdown", this.#onCanvasPointerdown);
+
       // The cached iframe rect + any in-drag geometry must refresh on scroll/resize.
       this.#onViewportChange = () => {
         this.#coords?.invalidate();
@@ -186,19 +214,27 @@ export class RimeEditor extends LitElement {
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
 
-      // Click a block to select it (delegated inside the iframe).
+      // Click a block to select it (delegated inside the iframe). A text block that
+      // is clicked while ALREADY selected enters edit mode (mounts the one Lexical
+      // editor) — first click selects, second click edits. This keeps select-to-
+      // move (ENV-23) and click-to-edit from fighting over the same gesture.
       this.#onCanvasClick = (e) => {
         const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-node-id]");
         const id = el?.dataset["nodeId"];
         const type = el?.dataset["nodeType"];
         if (id && type && type !== "document" && type !== "section" && type !== "column") {
+          const wasSelected = this.#selected === id;
           this.#setSelected(id);
+          if (type === "text" && wasSelected) this.#richtext?.focus(id);
         }
       };
       doc.addEventListener("click", this.#onCanvasClick);
 
-      // Alt+Arrows move the selected block; Delete/Backspace removes it.
+      // Alt+Arrows move the selected block; Delete/Backspace removes it. While a
+      // text editor is live, those keys belong to the editor (typing), so the
+      // structural shortcuts are suppressed until the editor blurs.
       this.#onKeydown = (e) => {
+        if (this.#richtext?.activeNodeId) return;
         if ((e.key === "Delete" || e.key === "Backspace") && this.#selected) {
           this.#deleteSelected();
           e.preventDefault();
@@ -226,12 +262,18 @@ export class RimeEditor extends LitElement {
     }
     const canvasDoc = this.#canvas?.document;
     if (this.#onCanvasClick) canvasDoc?.removeEventListener("click", this.#onCanvasClick);
+    if (this.#onCanvasPointerdown) {
+      canvasDoc?.removeEventListener("pointerdown", this.#onCanvasPointerdown);
+    }
     if (this.#onKeydown) {
       canvasDoc?.removeEventListener("keydown", this.#onKeydown);
       this.removeEventListener("keydown", this.#onKeydown as EventListener);
     }
     this.#onCanvasClick = null;
+    this.#onCanvasPointerdown = null;
     this.#onKeydown = null;
+    this.#richtext?.destroy();
+    this.#richtext = null;
     this.#dnd?.destroy();
     this.#dnd = null;
     this.#keyboard = null;
@@ -289,6 +331,8 @@ export class RimeEditor extends LitElement {
   #deleteSelected(): void {
     const id = this.#selected;
     if (!id || !this.#doc) return;
+    // Commit + tear down any live editor before a structural change.
+    this.#richtext?.blur();
     const before = this.#doc;
     const located = locateForAnnounce(before, id);
     const node = located ? findNodeById(before, id) : null;

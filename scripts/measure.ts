@@ -10,8 +10,9 @@ import { join, resolve } from "node:path";
 // runs at export time, off the in-browser hot path).
 const BUDGET_GZIP = Number(process.env.BUDGET_GZIP ?? 100 * 1024);
 
-// Which package's dist to measure. Defaults to core (the only budgeted package).
-const PKG = process.env.MEASURE_PKG ?? "packages/core";
+// Which package's dist to measure. Defaults to the editor core (the only budgeted
+// package).
+const PKG = process.env.MEASURE_PKG ?? "packages/rime-core";
 
 const kb = (n: number) => (n / 1024).toFixed(2) + " kB";
 

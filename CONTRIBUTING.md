@@ -39,12 +39,12 @@ oxlint clean · oxfmt applied · tsc clean · core bundle within budget.
 ## Project layout
 
 ```
-packages/doc-model      @nord-forge/rime-model      headless JSON document model
-packages/core           @nord-forge/rime-core           the <rime-editor> Lit web component
-packages/renderer-mjml  @nord-forge/rime-mjml  doc JSON → MJML → email HTML
-packages/react          @nord-forge/rime-react          React wrapper
-packages/vue            @nord-forge/rime-vue            Vue wrapper
-apps/demo               @nord-forge/rime-demo           runnable demo app
+packages/rime-model        @nord-forge/rime-model      headless JSON document model
+packages/rime-core        @nord-forge/rime-core           the <rime-editor> Lit web component
+packages/rime-mjml   @nord-forge/rime-mjml  doc JSON → MJML → email HTML
+packages/rime-react         @nord-forge/rime-react          React wrapper
+packages/rime-vue          @nord-forge/rime-vue            Vue wrapper
+apps/rime-demo             @nord-forge/rime-demo           runnable demo app
 ```
 
 The work is planned as tickets — see [`board.md`](./board.md) for the rollup and

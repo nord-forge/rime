@@ -66,6 +66,12 @@ export class DragPreview {
   readonly #el: HTMLElement;
 
   constructor(parent: ParentNode & { ownerDocument: Document }, data: DragData) {
+    // Enforce the single-preview invariant structurally: clear any stragglers in
+    // this overlay before inserting ours, so no event-ordering race can leave more
+    // than one drag-preview node in the DOM.
+    for (const stale of parent.querySelectorAll('[data-eb-overlay="drag-preview"]')) {
+      stale.remove();
+    }
     this.#el = renderPreviewCard(parent.ownerDocument, data);
     parent.append(this.#el);
   }

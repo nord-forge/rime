@@ -3,9 +3,9 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 27 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
-rich text) in progress — ENV-27 done (headless Lexical mounted in-iframe,
-core measured 50.58 kB gzip vs ~100 kB budget).
+**Progress: 28 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
+rich text) in progress — ENV-27/28 done (headless Lexical in-iframe + one-instance
+focus/blur lifecycle; core 51.35 kB gzip vs ~100 kB budget).
 
 | Milestone | Done |
 |-----------|------|
@@ -14,7 +14,7 @@ core measured 50.58 kB gzip vs ~100 kB budget).
 | 2 — Export renderer (MJML) | ✅ 4 / 4 |
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
-| 5 — Inline rich text | 🔶 1 / 6 |
+| 5 — Inline rich text | 🔶 2 / 6 |
 | 6 — Blocks & properties | ⬜ 0 / 6 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
@@ -94,7 +94,7 @@ Conventions:
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-27 | ✅ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@nord-forge/rime-core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
-| ENV-28 | ⬜ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
+| ENV-28 | ✅ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
 | ENV-29 | ⬜ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-27 | §6.5 |
 | ENV-30 | ⬜ | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-27, ENV-09 | §6.1 |
 | ENV-31 | ⬜ | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-27 | §6.7 |

@@ -19,12 +19,12 @@ An agent implementing any ticket MUST follow these. They are the implicit
 
 ## Monorepo layout (Bun workspaces)
 ```
-packages/doc-model      @nord-forge/rime-model     (headless JSON model)
-packages/core           @nord-forge/rime-core          (<rime-editor> Lit WC)
-packages/renderer-mjml  @nord-forge/rime-mjml (doc → MJML → HTML)
-packages/react          @nord-forge/rime-react
-packages/vue            @nord-forge/rime-vue
-apps/demo               @nord-forge/rime-demo
+packages/rime-model        @nord-forge/rime-model     (headless JSON model)
+packages/rime-core        @nord-forge/rime-core          (<rime-editor> Lit WC)
+packages/rime-mjml   @nord-forge/rime-mjml (doc → MJML → HTML)
+packages/rime-react         @nord-forge/rime-react
+packages/rime-vue          @nord-forge/rime-vue
+apps/rime-demo             @nord-forge/rime-demo
 .claude/spikes/*                throwaway proofs — DO NOT import from production code
 ```
 Cross-package deps use `workspace:*`.

@@ -35,6 +35,14 @@ export function libConfig(opts: LibOptions): UserConfig {
   if (opts.node) external.push(NODE_BUILTINS);
 
   return defineConfig({
+    // Resolve workspace siblings (@nord-forge/*) from their TS source during dev
+    // serve — the Playwright e2e harness is served by `vite` with no prior build,
+    // so the packages have no dist/ yet. The "development"/"source" conditions map
+    // to ./src/index.ts in each package's exports. (Library builds externalize
+    // these siblings, so this only matters when serving.)
+    resolve: {
+      conditions: ["development", "source", "import", "module", "browser", "default"],
+    },
     build: {
       outDir: resolve(opts.root, "dist"),
       emptyOutDir: true,

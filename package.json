@@ -13,7 +13,7 @@
     "lint": "oxlint",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
-    "test": "bun test --path-ignore-patterns='**/e2e/**' --path-ignore-patterns='**/spikes/**'",
+    "test": "bun test --conditions=development --path-ignore-patterns='**/e2e/**' --path-ignore-patterns='**/spikes/**'",
     "build": "bun run --filter='@nord-forge/*' build",
     "typecheck": "bun run --filter='@nord-forge/*' typecheck",
     "size": "bun run --filter='@nord-forge/rime-core' build && bun run scripts/measure.ts",
