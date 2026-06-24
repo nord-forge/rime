@@ -15,16 +15,25 @@ export interface ValidationError {
 
 export type ValidateResult = { ok: true; doc: RimeDoc } | { ok: false; errors: ValidationError[] };
 
+export interface ValidateOptions {
+  // Leaf block types beyond the built-ins to accept as valid (e.g. registered
+  // custom blocks). Such a leaf is validated for the common shape only — id and,
+  // if present, BlockStyle — since the doc model is headless and does not know a
+  // registered block's prop schema. The block's own schema validates the rest.
+  extraLeafTypes?: Iterable<string>;
+}
+
 const VALID_MARKS = new Set<Mark>(["bold", "italic", "underline"]);
 const VALID_ALIGN = new Set(["left", "center", "right"]);
 const COLUMN_SUM_TOLERANCE = 1; // ±1% for rounding
 
 /** Validate an unknown value as an RimeDoc. */
-export function validateDoc(value: unknown): ValidateResult {
+export function validateDoc(value: unknown, options: ValidateOptions = {}): ValidateResult {
   const errors: ValidationError[] = [];
   const seenIds = new Set<string>();
+  const allowedLeaves = new Set<string>([...LEAF_TYPES, ...(options.extraLeafTypes ?? [])]);
 
-  validateDocument(value, "$", errors, seenIds);
+  validateDocument(value, "$", errors, seenIds, allowedLeaves);
 
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true, doc: value as RimeDoc };
@@ -83,6 +92,7 @@ function validateDocument(
   path: string,
   errors: ValidationError[],
   seenIds: Set<string>,
+  allowedLeaves: Set<string>,
 ): void {
   if (!isObject(value)) {
     errors.push({ path, message: "document must be an object" });
@@ -120,7 +130,7 @@ function validateDocument(
       errors.push({ path: childPath, message: "document children must be sections" });
       return;
     }
-    validateSection(child, childPath, errors, seenIds);
+    validateSection(child, childPath, errors, seenIds, allowedLeaves);
   });
 }
 
@@ -129,6 +139,7 @@ function validateSection(
   path: string,
   errors: ValidationError[],
   seenIds: Set<string>,
+  allowedLeaves: Set<string>,
 ): void {
   checkId(value, path, errors, seenIds);
   checkStyle(value["style"], `${path}.style`, errors);
@@ -151,7 +162,7 @@ function validateSection(
       widthsValid = false;
       return;
     }
-    validateColumn(child, childPath, errors, seenIds);
+    validateColumn(child, childPath, errors, seenIds, allowedLeaves);
     if (checkFiniteNumber(child["widthPercent"], `${childPath}.widthPercent`, errors)) {
       widthSum += child["widthPercent"] as number;
     } else {
@@ -172,6 +183,7 @@ function validateColumn(
   path: string,
   errors: ValidationError[],
   seenIds: Set<string>,
+  allowedLeaves: Set<string>,
 ): void {
   checkId(value, path, errors, seenIds);
   checkStyle(value["style"], `${path}.style`, errors);
@@ -187,7 +199,7 @@ function validateColumn(
       errors.push({ path: childPath, message: "leaf block must be an object with a type" });
       return;
     }
-    if (!(LEAF_TYPES as readonly string[]).includes(child["type"])) {
+    if (!allowedLeaves.has(child["type"])) {
       errors.push({
         path: `${childPath}.type`,
         message: `unknown leaf type "${child["type"]}"`,
@@ -243,6 +255,11 @@ function validateLeaf(
     case "spacer": {
       checkFiniteNumber(value["height"], `${path}.height`, errors);
       break;
+    }
+    default: {
+      // A registered custom leaf (allowed via extraLeafTypes). The doc model only
+      // validates the common shape; the block's own schema validates its props.
+      if (value["style"] !== undefined) checkStyle(value["style"], `${path}.style`, errors);
     }
   }
 }
