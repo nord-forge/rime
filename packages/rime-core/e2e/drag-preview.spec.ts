@@ -96,10 +96,17 @@ test.describe("drag preview", () => {
       await page.mouse.move(palette.x + 80, palette.y + 80, { steps: 3 });
       await page.mouse.up();
     }
-    const count = await page.evaluate(() => {
-      const host = document.querySelector("rime-editor")!;
-      return host.shadowRoot!.querySelectorAll('[data-eb-overlay="drag-preview"]').length;
-    });
-    expect(count).toBe(0);
+    // Preview teardown is driven by the drop's async pointer handling, so the
+    // count settles to 0 shortly after the last mouse.up rather than synchronously.
+    // Poll for the settled state — a single immediate read races cleanup on slower
+    // (CI) machines while passing on fast local ones.
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const host = document.querySelector("rime-editor")!;
+          return host.shadowRoot!.querySelectorAll('[data-eb-overlay="drag-preview"]').length;
+        }),
+      )
+      .toBe(0);
   });
 });
