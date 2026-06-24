@@ -1,8 +1,8 @@
 // Pure drop-target resolution: given a point and the rendered geometry, decide
 // which column to drop into and at what index. Kept dependency-free and free of
 // the live DOM (geometry is injected) so the midpoint/empty-column logic is
-// unit-testable; the live wiring (ENV-19 controller) and the fast/throttled
-// version (ENV-20) call it.
+// unit-testable; the live wiring (the controller) and the fast/throttled
+// version call it.
 
 import type { DropTarget } from "../dnd-types/dnd-types";
 

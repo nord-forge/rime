@@ -1,4 +1,4 @@
-// Golden-snapshot gate (PRD §11). Re-render each fixture and compare to its
+// Golden-snapshot gate. Re-render each fixture and compare to its
 // committed test/golden/<name>.html. An unintended renderer change fails here.
 //
 // To intentionally update goldens after a deliberate output change:

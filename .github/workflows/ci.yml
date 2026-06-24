@@ -82,7 +82,7 @@ jobs:
         run: bun run build
 
       # The one gate a human can't be trusted with: @nord-forge/rime-core gzip budget
-      # (PRD §10 = ~100 kB). Override with BUDGET_GZIP if the budget moves.
+      # (~100 kB). Override with BUDGET_GZIP if the budget moves.
       - name: Bundle-size gate
         run: bun run size
 

@@ -1,4 +1,4 @@
-// Single-instance rich-text lifecycle (PRD §6.7, §10). The hard memory constraint
+// Single-instance rich-text lifecycle. The hard memory constraint
 // is: **exactly one Lexical editor alive at a time**, no matter how many TextBlocks
 // the email has. N live contenteditable editors would wreck a low-end machine. The
 // controller mounts one editor on focus and destroys it on blur, and guarantees
@@ -78,7 +78,7 @@ export class RichTextLifecycle {
   }
 
   /**
-   * Blur the active editor: serialize + fire `onCommit` (ENV-30 write-back), then
+   * Blur the active editor: serialize + fire `onCommit` (write-back), then
    * destroy it and release all references. No-op when nothing is active.
    */
   blur(): void {

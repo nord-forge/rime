@@ -1,4 +1,4 @@
-// A polite ARIA live region (PRD §6.6). Structural changes (move/insert/delete)
+// A polite ARIA live region. Structural changes (move/insert/delete)
 // set its text so screen readers announce them. Lives in the host document/shadow
 // root (screen readers track the host, not the iframe canvas), uses the
 // visually-hidden CLIP pattern (display:none would suppress announcements), and

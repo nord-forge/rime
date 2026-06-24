@@ -1,8 +1,8 @@
 import { expect, test } from "./fixtures";
 
-// ENV-28: exactly one live Lexical editor at a time. Clicking through several text
+// Exactly one live Lexical editor at a time. Clicking through several text
 // blocks must never leave more than one contenteditable element live in the iframe
-// — the §6.7/§10 memory invariant. Verified in chromium + webkit (focus/blur
+// — the memory invariant. Verified in chromium + webkit (focus/blur
 // transitions differ between engines).
 
 const DOC = {
@@ -60,7 +60,7 @@ async function enterEdit(
   await block.click(); // edit
 }
 
-test.describe("ENV-28 one-instance rich-text lifecycle", () => {
+test.describe("one-instance rich-text lifecycle", () => {
   test("clicking through text blocks keeps exactly one editor live", async ({ editor, page }) => {
     await editor.loadDoc(DOC);
     const frame = page.frameLocator("rime-editor iframe");

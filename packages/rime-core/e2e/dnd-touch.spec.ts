@@ -1,6 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// Touch DnD path (PRD §9). Canvas DnD is pointer-event based (OD-6); pointer
+// Touch DnD path. Canvas DnD is pointer-event based; pointer
 // events fire with pointerType "touch" for touch input, so the same controller
 // drives touch drags. WebKit + touch is the highest-risk combination — covered
 // by running under both Playwright projects with a touch-enabled context.

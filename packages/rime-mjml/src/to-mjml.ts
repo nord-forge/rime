@@ -1,4 +1,4 @@
-// doc → MJML-string mapper, built as a registry of BlockRenderers (the ENV-10
+// doc → MJML-string mapper, built as a registry of BlockRenderers (the renderer
 // seam) so a raw-table fallback can register per block type later. One handler
 // per node type; containers delegate to children through the registry, keeping a
 // single dispatch point. Deterministic: same doc → same MJML string.
@@ -128,7 +128,7 @@ function renderHead(doc: DocumentNode): string {
 }
 
 /**
- * Convert a doc to an MJML source string. `extra` lets a caller (ENV-12) register
+ * Convert a doc to an MJML source string. `extra` lets a caller register
  * raw-table BlockRenderers that override the built-in mapping per node type.
  */
 export function docToMjml(

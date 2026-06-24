@@ -1,6 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// Canvas DnD is pointer-event based (OD-6), so real page.mouse drives it — no
+// Canvas DnD is pointer-event based, so real page.mouse drives it — no
 // native-HTML5-drag or cross-document hacks needed.
 
 const TWO_COL_DOC = {

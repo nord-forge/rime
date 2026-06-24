@@ -1,5 +1,5 @@
-// Branded drag preview (PRD §6.6). Because canvas DnD is pointer-event based
-// (OD-6) there is NO native HTML5 drag image to replace — instead we render a
+// Branded drag preview. Because canvas DnD is pointer-event based
+// there is NO native HTML5 drag image to replace — instead we render a
 // small themed card and move it to follow the pointer during the drag, then
 // remove it on drag end. Styled exclusively from --eb-* tokens.
 
@@ -7,7 +7,7 @@ import type { DragData } from "../dnd-types/dnd-types";
 
 const POINTER_OFFSET = 12; // px below-right of the pointer
 
-/** Human label + icon for a block type (placeholder until palette metadata, ENV-36). */
+/** Human label + icon for a block type (placeholder until palette metadata). */
 const BLOCK_META: Record<string, { icon: string; label: string }> = {
   text: { icon: "T", label: "Text" },
   image: { icon: "▦", label: "Image" },

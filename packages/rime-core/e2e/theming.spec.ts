@@ -32,7 +32,7 @@ const DOC = {
   ],
 };
 
-// ENV-18: the two-surface contract. Chrome is themed by --eb-* (pierces shadow
+// The two-surface contract. Chrome is themed by --eb-* (pierces shadow
 // DOM); the canvas is walled off from BOTH host CSS and the chrome theme. The
 // bleed-proof is the whole point — truthful email preview depends on it.
 test.describe("two-surface theming", () => {

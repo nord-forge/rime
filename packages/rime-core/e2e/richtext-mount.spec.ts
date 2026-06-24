@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-// ENV-27: a headless Lexical editor mounts on a focused TextBlock element INSIDE
+// A headless Lexical editor mounts on a focused TextBlock element INSIDE
 // the iframe canvas and edits the same node the canvas painted. Real-browser
 // verification (chromium + webkit) — contenteditable + selection + the Lexical
 // reconciler all behave differently in WebKit, which is why this is an e2e, not a
@@ -60,7 +60,7 @@ async function mountOnTextBlock(host: import("@playwright/test").Locator) {
   }, DOC);
 }
 
-test.describe("ENV-27 headless Lexical mount in canvas", () => {
+test.describe("headless Lexical mount in canvas", () => {
   test("mounts on the TextBlock element and seeds it editable", async ({ page }) => {
     await page.goto("/e2e/richtext-harness.html");
     await page.waitForSelector("rime-editor");

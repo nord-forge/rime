@@ -1,5 +1,5 @@
 // The single owner of host-pointer ↔ canvas-iframe coordinate translation and
-// hit-testing (PRD §6.4). DnD, drop-zone detection, and selection all go through
+// hit-testing. DnD, drop-zone detection, and selection all go through
 // here so the math lives in one place — re-deriving it per consumer is how it
 // breaks (especially in WebKit, which has diverged on iframe rects under scroll
 // and on elementFromPoint's coordinate basis).

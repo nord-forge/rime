@@ -1,4 +1,4 @@
-// The canvas is a same-origin `srcdoc` iframe (PRD §6.4). Two consequences make
+// The canvas is a same-origin `srcdoc` iframe. Two consequences make
 // this the right shape: host-app CSS physically cannot reach the email preview
 // (the iframe boundary), and hit-testing has a clean, iframe-local coordinate
 // system (elementFromPoint answers about the canvas, not the host).

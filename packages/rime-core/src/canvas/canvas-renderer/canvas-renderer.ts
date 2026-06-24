@@ -1,7 +1,7 @@
-// Orchestrates doc → preview DOM (PRD §6.2) with INCREMENTAL updates: re-rendering
+// Orchestrates doc → preview DOM with INCREMENTAL updates: re-rendering
 // the whole tree on every keystroke/drag would blow the perf budget. We keep a
 // Map<NodeId, element> and the previous doc; on update we reuse element identity
-// for unchanged subtrees (ENV-06 structural sharing makes them referentially
+// for unchanged subtrees (structural sharing makes them referentially
 // equal, so we can skip them entirely) and only touch what changed. Preserving
 // element identity also keeps an in-progress editor/drag state alive across a
 // sibling change.

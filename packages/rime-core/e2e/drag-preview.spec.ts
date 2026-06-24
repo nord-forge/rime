@@ -92,7 +92,7 @@ test.describe("drag preview", () => {
   // async teardown doesn't always complete. The controller hardening in this PR
   // (#begin ends a prior drag; DragPreview clears stragglers; #onMove destroys the
   // previous preview) removed the multi-node pile-up but not this last edge.
-  // Passes locally; flakes on CI. Not an ENV-28 regression — tracked as a
+  // Passes locally; flakes on CI. Not a regression — tracked as a
   // follow-up DnD task. Re-enable once the final-drag teardown is made
   // deterministic on slow machines.
   test.fixme("only one preview node exists across repeated drags", async ({ page }) => {
