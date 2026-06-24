@@ -34,6 +34,7 @@ export {
   resolveMove,
 } from "./dnd/keyboard-move";
 export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu";
+export { type LexicalMount, mountLexical } from "./richtext/lexical-editor";
 export { LiveAnnouncer } from "./a11y/live-region";
 export {
   blockLabel,

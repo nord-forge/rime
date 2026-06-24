@@ -1,7 +1,7 @@
 ---
 id: ENV-27
 title: Integrate Lexical headless in the canvas
-status: ready
+status: done
 priority: P0
 milestone: 5 — Inline rich text
 depends_on: [ENV-16]
@@ -126,3 +126,11 @@ bun run e2e    # chromium + webkit: focus a TextBlock → editor mounts in ifram
 ## Definition of done
 See `_conventions.md`. Headless Lexical mounted in-iframe per the spike approach,
 budget measured + recorded; status → `review`.
+
+## Outcome (OD-1/OD-4 budget hard-confirm)
+With Lexical fully wired (`lexical`, `@lexical/rich-text`, `@lexical/utils`),
+measured `@enveloppe/core` = **50.58 kB gzip** (188.12 kB raw, 42.16 kB brotli) —
+~51% of the ~100 kB budget. Confirms OD-1's engine choice: wired Lexical is far
+under budget where Tiptap's rich text alone (~128 kB) would have blown it. The
+mount API (`mountLexical` / `LexicalMount`) is exported from `src/index.ts` for
+ENV-28's focus-driven lifecycle.

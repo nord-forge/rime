@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enveloppe rich-text E2E harness</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        block-size: 100%;
+      }
+      enveloppe-editor {
+        display: block;
+        block-size: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <enveloppe-editor></enveloppe-editor>
+    <!-- Like harness.html, but also exposes mountLexical so the spec can mount a
+         headless editor on a real TextBlock element inside the iframe canvas. The
+         focus-driven lifecycle is a later ticket; here we drive the mount API
+         directly. -->
+    <script type="module">
+      import { mountLexical } from "../src/index.ts";
+      import { $getSelection, $isRangeSelection } from "lexical";
+      window.__mountLexical = mountLexical;
+      // Expose Lexical selection helpers so the spec can drive a real edit through
+      // the LIVE in-iframe editor (Playwright's synthetic key/beforeinput events
+      // are untrusted and Lexical ignores them in a srcdoc iframe).
+      window.__lexical = { $getSelection, $isRangeSelection };
+    </script>
+  </body>
+</html>
