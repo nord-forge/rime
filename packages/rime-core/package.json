@@ -41,6 +41,9 @@
     "@nord-forge/rime-model": "workspace:*",
     "lexical": "^0.23.1"
   },
+  "devDependencies": {
+    "@nord-forge/rime-mjml": "workspace:*"
+  },
   "peerDependencies": {
     "lit": "^3.2.1"
   }

@@ -40,6 +40,11 @@ import { canonicalize, richTextEqual } from "../richtext/serialize/serialize";
 import { RichTextToolbar } from "../richtext/ui/rich-text-toolbar";
 import { type LinkApplyDetail, LinkPopover } from "../richtext/ui/link-popover";
 import { makeCommands } from "../richtext/ui/rich-text-commands";
+import { registerCoreBlocks } from "../blocks/core/index";
+
+// Built-in blocks register through the same registerBlock path as third-party
+// blocks. Idempotent, so importing core once wires them up.
+registerCoreBlocks();
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {

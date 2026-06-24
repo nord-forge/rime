@@ -55,6 +55,17 @@ export {
   renderNodeViaRegistry,
   toMjmlBlockRenderer,
 } from "./blocks/registry";
+export {
+  buttonBlock,
+  columnBlock,
+  CORE_BLOCKS,
+  dividerBlock,
+  imageBlock,
+  registerCoreBlocks,
+  sectionBlock,
+  spacerBlock,
+  textBlock,
+} from "./blocks/core/index";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
 export {
   $applyRichTextJSON,

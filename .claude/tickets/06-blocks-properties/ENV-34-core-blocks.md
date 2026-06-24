@@ -1,7 +1,7 @@
 ---
 id: ENV-34
 title: Core blocks (Section, Column, Text, Image, Button, Divider, Spacer)
-status: ready
+status: done
 priority: P0
 milestone: 6 — Blocks & properties
 depends_on: [ENV-33]

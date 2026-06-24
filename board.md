@@ -3,7 +3,7 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 33 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
+**Progress: 34 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
 properties) in progress — the block catalog was expanded (ENV-57–64 added, ENV-65
 schema field-types) so the registration interface lands a real library, not just
 seven blocks. Core 68.71 kB gzip vs ~100 kB budget.
@@ -20,7 +20,7 @@ seven blocks. Core 68.71 kB gzip vs ~100 kB budget.
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
-| 6 — Blocks & properties | 🔶 1 / 15 |
+| 6 — Blocks & properties | 🔶 2 / 15 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
@@ -110,7 +110,7 @@ Conventions:
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-33 | ✅ | **Block registration interface** — `registerBlock({schema, renderCanvas, renderExport, palette})`; built-ins use same path | P0 | ENV-16, ENV-11 | §6.8 |
-| ENV-34 | ⬜ | **Core blocks** — Section (styled container: full-bleed bg + padding, holds blocks), Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
+| ENV-34 | ✅ | **Core blocks** — Section (styled container: full-bleed bg + padding, holds blocks), Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
 | ENV-35 | ⬜ | **Properties panel** — schema-driven forms (padding, colors, alignment, columns, etc.) | P0 | ENV-33 | §6.5 |
 | ENV-36 | ⬜ | **Palette** — categorized, icons, drag source | P0 | ENV-33, ENV-19 | §6.5 |
 | ENV-37 | ⬜ | **Example custom block** — documented end-to-end (the SDK proof) | P1 | ENV-33 | §12 |
