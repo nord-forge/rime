@@ -3,8 +3,9 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 26 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
-rich text) is next.
+**Progress: 27 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
+rich text) in progress — ENV-27 done (headless Lexical mounted in-iframe,
+core measured 50.58 kB gzip vs ~100 kB budget).
 
 | Milestone | Done |
 |-----------|------|
@@ -13,7 +14,7 @@ rich text) is next.
 | 2 — Export renderer (MJML) | ✅ 4 / 4 |
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
-| 5 — Inline rich text | ⬜ 0 / 6 |
+| 5 — Inline rich text | 🔶 1 / 6 |
 | 6 — Blocks & properties | ⬜ 0 / 6 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
@@ -88,11 +89,11 @@ Conventions:
 | ENV-25 | ✅ | **Cross-browser DnD E2E** — Playwright incl. WebKit; touch path | P0 | ENV-20 | §9 |
 | ENV-26 | ✅ | **Memory-leak guard** — no leaked listeners/observers/rAF across drag ops (verified) | P0 | ENV-19 | §10 |
 
-## Milestone 5 — Inline rich text ⬜
+## Milestone 5 — Inline rich text 🔶
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
-| ENV-27 | ⬜ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@enveloppe/core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
+| ENV-27 | ✅ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@enveloppe/core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
 | ENV-28 | ⬜ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
 | ENV-29 | ⬜ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-27 | §6.5 |
 | ENV-30 | ⬜ | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-27, ENV-09 | §6.1 |
@@ -152,7 +153,7 @@ Conventions:
   self-contained `ENV-NN-slug.md` each (read `_conventions.md` first). IDs are
   contiguous `ENV-01`…`ENV-52`. Ticket frontmatter `status:` is the source of
   truth; this board is the rollup.
-- **Critical path to a usable demo:** ENV-01 → ENV-05/06 → ENV-14/15/16 → ENV-19/20 → ENV-27 → ENV-33/34 → ENV-11 → ENV-46. (Through ENV-26 is done; ENV-27 is the next critical-path item.)
+- **Critical path to a usable demo:** ENV-01 → ENV-05/06 → ENV-14/15/16 → ENV-19/20 → ENV-27 → ENV-33/34 → ENV-11 → ENV-46. (Through ENV-27 is done; ENV-33/34 is the next critical-path item.)
 - **Highest-risk remaining tickets:** ENV-27/32 (Lexical integration + Safari/IME, elevated R-1). Do/verify these carefully.
 - **Resolved decisions:** OD-1 (engine→Lexical), OD-2 (toolchain→rolldown-vite), OD-3 (DnD perf budget), OD-4 (core budget ~100 kB), OD-5 (raw-table fallback), OD-6 (canvas DnD→custom pointer events). See PRD "Open decisions".
 - Done spikes (not tickets): OD-2 (toolchain), OD-1/OD-4 (engine→Lexical, budget).
