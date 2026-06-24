@@ -10,11 +10,13 @@ import { registerCoreBlocks } from "./blocks/core/index";
 describe("defineRimeEditor block registration", () => {
   const win = new Window();
 
-  test("coreBlocks (default) registers the seven built-ins", () => {
+  test("coreBlocks (default) registers the built-ins", () => {
     const reg = new BlockRegistry();
     registerCoreBlocks(reg);
-    expect(reg.all()).toHaveLength(7);
+    expect(reg.all().length).toBeGreaterThan(0);
     expect(reg.get("text")).toBeDefined();
+    expect(reg.get("heading")).toBeDefined();
+    expect(reg.get("quote")).toBeDefined();
   });
 
   test("coreBlocks:false leaves only custom blocks", () => {

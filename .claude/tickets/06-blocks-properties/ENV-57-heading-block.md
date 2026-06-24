@@ -1,7 +1,7 @@
 ---
 id: ENV-57
 title: Heading block (layout-level h1/h2/h3)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]

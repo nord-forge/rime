@@ -1,7 +1,7 @@
 ---
 id: ENV-58
 title: Quote (pull-quote) block
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]
