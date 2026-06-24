@@ -23,6 +23,7 @@
          focus-driven lifecycle is a later ticket; here we drive the mount API
          directly. -->
     <script type="module">
+      import "../src/register.ts";
       import { mountLexical } from "../src/index.ts";
       import { $getSelection, $isRangeSelection } from "lexical";
       window.__mountLexical = mountLexical;

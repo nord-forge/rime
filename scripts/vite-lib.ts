@@ -13,6 +13,13 @@ export interface LibOptions {
   root: string;
   /** Entry file relative to root. Defaults to src/index.ts. */
   entry?: string;
+  /**
+   * Extra named entry points relative to root (besides the default index),
+   * keyed by output basename. E.g. `{ register: "src/register.ts" }` emits
+   * dist/register.js. Each becomes its own chunk so consumers import only what
+   * they use.
+   */
+  entries?: Record<string, string>;
   /** Additional externals beyond the always-external Lit/workspace set. */
   external?: (string | RegExp)[];
   /**
@@ -30,7 +37,12 @@ const NODE_BUILTINS =
   /^(node:)?(fs|path|os|util|stream|events|crypto|url|http|https|zlib|buffer|child_process|module|assert)$/;
 
 export function libConfig(opts: LibOptions): UserConfig {
-  const entry = resolve(opts.root, opts.entry ?? "src/index.ts");
+  const entry: Record<string, string> = {
+    index: resolve(opts.root, opts.entry ?? "src/index.ts"),
+  };
+  for (const [name, file] of Object.entries(opts.entries ?? {})) {
+    entry[name] = resolve(opts.root, file);
+  }
   const external = [...ALWAYS_EXTERNAL, ...(opts.external ?? [])];
   if (opts.node) external.push(NODE_BUILTINS);
 
@@ -49,7 +61,7 @@ export function libConfig(opts: LibOptions): UserConfig {
       lib: {
         entry,
         formats: ["es"],
-        fileName: () => "index.js",
+        fileName: (_format, entryName) => `${entryName}.js`,
       },
       rollupOptions: {
         external,
