@@ -1,7 +1,7 @@
 ---
 id: ENV-29
 title: Custom rich-text UI (toolbar / bubble / link popover)
-status: ready
+status: done
 priority: P0
 milestone: 5 — Inline rich text
 depends_on: [ENV-27]

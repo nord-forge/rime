@@ -11,7 +11,7 @@ import {
   type TextFormatType,
 } from "lexical";
 import { HeadingNode, QuoteNode, registerRichText } from "@lexical/rich-text";
-import { ListItemNode, ListNode } from "@lexical/list";
+import { ListItemNode, ListNode, registerList } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils";
 import type { Mark, RichTextJSON } from "@nord-forge/rime-model";
@@ -38,7 +38,7 @@ export function mountLexical(blockEl: HTMLElement, initial: RichTextJSON): Lexic
   });
   editor.setRootElement(blockEl);
 
-  const cleanup = mergeRegister(registerRichText(editor));
+  const cleanup = mergeRegister(registerRichText(editor), registerList(editor));
 
   // Lexical defers updates by default; seed discretely so a sync read isn't empty.
   editor.update(() => $applyRichTextJSON(initial), { discrete: true });

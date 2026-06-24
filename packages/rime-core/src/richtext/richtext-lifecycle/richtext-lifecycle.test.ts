@@ -170,6 +170,25 @@ describe("RichTextLifecycle", () => {
     expect(lc.activeNodeId).toBeNull();
   });
 
+  test("onActiveChange fires with the mount on focus and null on blur", () => {
+    const probe: Probe = { live: 0, peak: 0, events: [] };
+    const changes: Array<"mount" | "null"> = [];
+    const lc = new RichTextLifecycle({
+      getDoc: () => doc0,
+      elementForNode: (id) => blocks[id] ?? null,
+      onCommit: () => {},
+      onActiveChange: (active) => changes.push(active ? "mount" : "null"),
+      mount: fakeMounter(probe, () => ({ type: "doc", content: [] })),
+    });
+    const [a, b] = ids();
+    lc.focus(a!);
+    expect(lc.activeMount).not.toBeNull();
+    lc.focus(b!); // blur a (null) then mount b
+    lc.blur();
+    expect(lc.activeMount).toBeNull();
+    expect(changes).toEqual(["mount", "null", "mount", "null"]);
+  });
+
   test("destroy() blurs the active editor and refuses further focus", () => {
     const probe: Probe = { live: 0, peak: 0, events: [] };
     const lc = makeLifecycle(probe);

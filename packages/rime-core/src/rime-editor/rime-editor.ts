@@ -37,6 +37,9 @@ import {
 } from "../a11y/announce-messages/announce-messages";
 import { RichTextLifecycle } from "../richtext/richtext-lifecycle/richtext-lifecycle";
 import { canonicalize, richTextEqual } from "../richtext/serialize/serialize";
+import { RichTextToolbar } from "../richtext/ui/rich-text-toolbar";
+import { type LinkApplyDetail, LinkPopover } from "../richtext/ui/link-popover";
+import { makeCommands } from "../richtext/ui/rich-text-commands";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -120,6 +123,8 @@ export class RimeEditor extends LitElement {
   #keyboard: KeyboardMoveController | null = null;
   #announcer: LiveAnnouncer | null = null;
   #richtext: RichTextLifecycle | null = null;
+  #toolbar: RichTextToolbar | null = null;
+  #linkPopover: LinkPopover | null = null;
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -176,6 +181,8 @@ export class RimeEditor extends LitElement {
         moveNode,
       });
 
+      this.#setupRichTextUi(doc);
+
       this.#richtext = new RichTextLifecycle({
         getDoc: () => this.#doc,
         elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
@@ -187,6 +194,11 @@ export class RimeEditor extends LitElement {
           this.#dispatch(setRichText(this.#doc, nodeId, json));
         },
         repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
+        onActiveChange: (mount) => {
+          this.#toolbar?.bind(mount?.editor ?? null);
+          if (!mount) this.#linkPopover?.hide();
+          this.#repositionToolbar();
+        },
       });
 
       // Entering edit mode is driven by `click` below; blurring here mid-gesture
@@ -263,6 +275,10 @@ export class RimeEditor extends LitElement {
     this.#onKeydown = null;
     this.#richtext?.destroy();
     this.#richtext = null;
+    this.#toolbar?.remove();
+    this.#toolbar = null;
+    this.#linkPopover?.remove();
+    this.#linkPopover = null;
     this.#dnd?.destroy();
     this.#dnd = null;
     this.#keyboard = null;
@@ -286,6 +302,76 @@ export class RimeEditor extends LitElement {
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
     this.dispatchEvent(new CustomEvent<RimeChangeDetail>("change", { detail: { doc: op.doc } }));
+  }
+
+  #setupRichTextUi(canvasDoc: Document): void {
+    const root = this.renderRoot as ShadowRoot;
+    const toolbar = new RichTextToolbar();
+    const popover = new LinkPopover();
+    root.append(toolbar, popover);
+    this.#toolbar = toolbar;
+    this.#linkPopover = popover;
+
+    toolbar.addEventListener("eb-request-link", () => {
+      this.#positionPopover();
+      popover.show(this.#currentLinkHref());
+    });
+
+    popover.addEventListener("eb-link-apply", (e: Event) => {
+      const detail = (e as CustomEvent<LinkApplyDetail>).detail;
+      const mount = this.#richtext?.activeMount;
+      if (mount) makeCommands(mount.editor).setLink(detail.href);
+      mount?.editor.focus();
+    });
+    popover.addEventListener("eb-link-cancel", () => this.#richtext?.activeMount?.editor.focus());
+
+    // Reposition the toolbar as the in-iframe selection moves.
+    canvasDoc.addEventListener("selectionchange", () => this.#repositionToolbar());
+  }
+
+  #currentLinkHref(): string | null {
+    const el = this.#richtext?.activeNodeId
+      ? this.#renderer?.elementForNode(this.#richtext.activeNodeId)
+      : null;
+    const sel = this.#canvas?.document?.getSelection();
+    if (!sel || sel.rangeCount === 0 || !el) return null;
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    while (node && node !== el) {
+      if (node instanceof HTMLAnchorElement) return node.getAttribute("href");
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  #repositionToolbar(): void {
+    const toolbar = this.#toolbar;
+    const coords = this.#coords;
+    const canvasDoc = this.#canvas?.document;
+    if (!toolbar || !coords || !canvasDoc) return;
+    if (!this.#richtext?.activeNodeId) {
+      toolbar.open = false;
+      return;
+    }
+    const sel = canvasDoc.getSelection();
+    if (!sel || sel.rangeCount === 0) {
+      toolbar.open = false;
+      return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    // A collapsed caret has a zero-width rect; still show the bar above the line.
+    const host = coords.canvasClientToHost({ x: rect.left, y: rect.top });
+    const hostRect = this.getBoundingClientRect();
+    toolbar.style.left = `${host.x - hostRect.left}px`;
+    toolbar.style.top = `${host.y - hostRect.top - 40}px`;
+    toolbar.open = true;
+  }
+
+  #positionPopover(): void {
+    const popover = this.#linkPopover;
+    const toolbar = this.#toolbar;
+    if (!popover || !toolbar) return;
+    popover.style.left = toolbar.style.left;
+    popover.style.top = `${parseFloat(toolbar.style.top || "0") + 36}px`;
   }
 
   // Make leaf blocks keyboard-reachable so a user can select one to move.

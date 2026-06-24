@@ -26,6 +26,8 @@ export interface RichTextLifecycleDeps {
    * leaves its element empty/annotated). Called after `destroy()`, before re-focus.
    */
   repaint?(nodeId: NodeId): void;
+  /** Notified whenever the active mount changes (mount on focus, null on blur). */
+  onActiveChange?(active: LexicalMount | null): void;
   /** Mount implementation; defaults to the real headless Lexical mounter. */
   mount?: Mounter;
 }
@@ -54,6 +56,11 @@ export class RichTextLifecycle {
     return this.#active?.nodeId ?? null;
   }
 
+  /** The live mount currently being edited, or null. */
+  get activeMount(): LexicalMount | null {
+    return this.#active?.mount ?? null;
+  }
+
   /**
    * Focus a TextBlock: tear down any active editor (committing it first), then
    * mount exactly one editor on the target. Re-focusing the active block is a
@@ -75,6 +82,7 @@ export class RichTextLifecycle {
 
     const mount = this.#mount(el, node.content);
     this.#active = { nodeId, mount, el };
+    this.deps.onActiveChange?.(mount);
   }
 
   /**
@@ -87,6 +95,7 @@ export class RichTextLifecycle {
     // Null the ref BEFORE destroy so a re-entrant focus during onCommit can't see
     // a half-destroyed mount.
     this.#active = null;
+    this.deps.onActiveChange?.(null);
     try {
       this.deps.onCommit(active.nodeId, active.mount.toJSON());
     } finally {
