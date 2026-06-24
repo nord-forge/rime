@@ -32,7 +32,7 @@ There is no great open-source email template builder. The good ones are closed/c
 ```html
 <rime-editor id="editor"></rime-editor>
 <script type="module">
-  import '@nord-forge/rime-core';
+  import '@nord-forge/rime-core/register'; // defines <rime-editor> + core blocks
   const el = document.getElementById('editor');
   el.config = {
     theme: { '--eb-color-accent': '#5b5bd6', '--eb-radius': '10px' },
@@ -67,15 +67,25 @@ import { RimeEditor } from '@nord-forge/rime-vue';
 
 ### Custom block (the extension model)
 ```ts
-import { registerBlock } from '@nord-forge/rime-core';
+import { defineRimeEditor } from '@nord-forge/rime-core/register';
+import type { BlockDefinition } from '@nord-forge/rime-core';
 
-registerBlock({
-  schema: { /* props that drive the properties panel */ },
-  palette: { label: 'Coupon', icon: '🎟️', category: 'Marketing' },
-  renderCanvas: (props) => /* preview DOM */,
-  renderExport: (props) => /* MJML or raw-table HTML */,
-});
+const couponBlock: BlockDefinition = {
+  type: 'coupon',
+  schema: { fields: [/* props that drive the properties panel */] },
+  palette: { label: 'Coupon', icon: '🎟️', category: 'Marketing', defaults: {} },
+  renderCanvas: (node, ctx) => /* preview DOM */,
+  renderExport: (node, ctx) => /* { mjml } or { raw } */,
+};
+
+// Config-driven init: define the element, include the built-ins, add your blocks.
+defineRimeEditor({ blocks: [couponBlock] });
 ```
+
+The pure root import (`@nord-forge/rime-core`) carries the SDK — types,
+`registerBlock`, helpers — with no editor side effects, so importing a type or
+helper stays tree-shakeable. `@nord-forge/rime-core/register` is the entry that
+defines `<rime-editor>` (and is the only module marked as having side effects).
 
 ### Export to email HTML
 ```ts

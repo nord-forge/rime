@@ -18,7 +18,7 @@
   </head>
   <body>
     <rime-editor></rime-editor>
-    <!-- The real shell. Importing @nord-forge/rime-core defines <rime-editor>. -->
-    <script type="module" src="../src/index.ts"></script>
+    <!-- The /register entrypoint defines <rime-editor> + registers core blocks. -->
+    <script type="module" src="../src/register.ts"></script>
   </body>
 </html>
