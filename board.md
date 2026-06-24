@@ -3,10 +3,11 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 30 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
-rich text) in progress — ENV-27/28/29/30 done (headless Lexical in-iframe,
-one-instance lifecycle, lossless round-trip incl. headings/lists/links, custom
-bubble toolbar + link popover; core 68.11 kB gzip vs ~100 kB budget).
+**Progress: 31 / 52 tickets done.** Milestones 0–4 complete; Milestone 5 (inline
+rich text) nearly done — ENV-27/28/29/30/31 done (headless Lexical in-iframe,
+one-instance lifecycle, lossless round-trip, bubble toolbar + link popover,
+paste sanitization). Only ENV-32 (IME/Safari manual QA) remains. Core 68.15 kB
+gzip vs ~100 kB budget.
 
 | Milestone | Done |
 |-----------|------|
@@ -15,7 +16,7 @@ bubble toolbar + link popover; core 68.11 kB gzip vs ~100 kB budget).
 | 2 — Export renderer (MJML) | ✅ 4 / 4 |
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
-| 5 — Inline rich text | 🔶 4 / 6 |
+| 5 — Inline rich text | 🔶 5 / 6 |
 | 6 — Blocks & properties | ⬜ 0 / 6 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
@@ -98,7 +99,7 @@ Conventions:
 | ENV-28 | ✅ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
 | ENV-29 | ✅ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-27 | §6.5 |
 | ENV-30 | ✅ | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-27, ENV-09 | §6.1 |
-| ENV-31 | ⬜ | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-27 | §6.7 |
+| ENV-31 | ✅ | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-27 | §6.7 |
 | ENV-32 | ⬜ | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-27 | §9 |
 
 ## Milestone 6 — Blocks & properties ⬜
