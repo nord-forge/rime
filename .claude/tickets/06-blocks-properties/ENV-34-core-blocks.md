@@ -71,6 +71,17 @@ a `BlockDefinition`, plus a barrel `index.ts` with `registerCoreBlocks()`.
      adding/removing `ColumnNode` children (via ENV-06 ops in ENV-35); the block here
      just renders whatever columns exist and declares the schema field. Columns in a
      section sum to 100% (ENV-05 invariant) — when count changes, distribute evenly.
+   - **Section is a styled container** — this is a primary requirement: a Section is a
+     full-width band with a **consistent background colour** and **padding** that
+     **contains other blocks**. Blocks live in the Section's Column(s) (a
+     single 100%-width Column is the "just put blocks in a styled box" case — a 1-column
+     Section). On the canvas the section's `backgroundColor`/padding apply to the whole
+     band and wrap the column row + its leaf blocks; on export, `<mj-section
+     background-color padding>` does the same, with the **background spanning the full
+     email width while the content stays within `contentWidth`** (mj-section's native
+     full-bleed behaviour — mirror it on the canvas so preview == export). A freshly
+     dropped Section starts as 1 column so the user immediately has a styled container
+     they can drop blocks into.
    - **Canvas = divs/flex, never tables** (§6.2). **Export = MJML** mirroring ENV-11.
 3. **Stay DRY with ENV-11.** Core export handlers must produce MJML identical to
    ENV-11's hardcoded mapping for the same node. Import the shared
@@ -94,6 +105,11 @@ a `BlockDefinition`, plus a barrel `index.ts` with `registerCoreBlocks()`.
       all resolve).
 - [ ] Each block's `renderCanvas` produces divs/flex DOM with `data-node-id` and
       applied `BlockStyle`; columns lay out side-by-side; **no `<table>`** on canvas.
+- [ ] A **Section is a styled container**: its `backgroundColor` + padding render as a
+      full-width band wrapping its column(s) and their blocks, on canvas and on export
+      (`<mj-section>`), with the background full-bleed while content stays within
+      `contentWidth`. A new Section starts with one 100%-width Column so blocks can be
+      dropped into it immediately.
 - [ ] Each block's `renderExport` emits MJML matching ENV-11's mapping for the same
       node (parity asserted in a test).
 - [ ] Each block's `schema` drives a sensible properties form (fields cover padding,

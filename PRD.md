@@ -192,7 +192,12 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 
 ## 12. v1 "done" bar (release scope)
 
-- Single unified canvas with core blocks: **Section, Column(s), Text, Image, Button, Divider, Spacer** (plus Social as stretch).
+- Single unified canvas with **core blocks**: **Section, Column(s), Text, Image, Button, Divider, Spacer**.
+  - **Section is a styled container** — a full-width band with consistent background + padding that holds blocks (in its columns); the background is full-bleed while content stays within `contentWidth`.
+- **Expanded block catalog** (all via the same `registerBlock` path, no privileged internal API):
+  - **P1 (target for v1):** Heading (layout-level h1–3), Quote (pull-quote), Menu/Nav (`<mj-navbar>`), Social (`<mj-social>`), Hero (`<mj-hero>`: bg image + text + CTA), Column-layout presets (2-col, 3-col, sidebar, image+text).
+  - **P2 (stretch/post-demo):** HTML/Code passthrough (`<mj-raw>`), Video (poster + play overlay linking out), Table (raw-table data table).
+  - Inline **heading/list/link** formatting also lives *inside* the Text block; standalone Heading/Quote are for layout-level styling. No standalone List block (lists are in-text).
 - **Inline rich-text** editing with custom UI.
 - **Properties panel** for structural/style editing.
 - **MJML export** + **JSON save/load**.
