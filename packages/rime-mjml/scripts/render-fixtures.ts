@@ -1,5 +1,5 @@
 // Render every golden fixture to test/golden/<name>.html — the files a human
-// sends through real email clients for the §11 verification matrix. Reuses the
+// sends through real email clients for the verification matrix. Reuses the
 // same fixture docs the snapshot test uses (single source of truth).
 //
 // Run: bun run render:fixtures

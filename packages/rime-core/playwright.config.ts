@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 // Cross-browser harness. WebKit is mandatory — most iframe/srcdoc, pointer, and
-// contenteditable quirks live there (PRD §9, R-1/R-2).
+// contenteditable quirks live there.
 //
 // Served over HTTP (never file://) by the Vite DEV server so bare `lit` imports
 // and module loading resolve, and srcdoc iframes get a real same-origin. The dev

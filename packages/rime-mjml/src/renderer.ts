@@ -1,4 +1,4 @@
-// The swappable export contract (PRD §6.3). Export is decoupled from MJML: the
+// The swappable export contract. Export is decoupled from MJML: the
 // v1 default is MjmlRenderer, but a future hand-rolled renderer must be a
 // non-breaking swap. This module is therefore renderer-NEUTRAL — it must never
 // import the `mjml` library or any MJML type, so a non-MJML renderer can
@@ -44,9 +44,9 @@ export interface RenderContext {
 
 /**
  * Maps one block node-type to a fragment of the renderer's target markup
- * (an MJML string for MjmlRenderer; a raw email table for the fallback). ENV-11
- * wires a registry of these; ENV-12 registers a raw-table fallback. This module
- * only declares the seam — no concrete block logic lives here.
+ * (an MJML string for MjmlRenderer; a raw email table for the fallback). A
+ * registry of these is wired up elsewhere, including a raw-table fallback. This
+ * module only declares the seam — no concrete block logic lives here.
  */
 export interface BlockRenderer<TNode extends AnyNode = AnyNode> {
   /** The `node.type` this handles, e.g. "button". */

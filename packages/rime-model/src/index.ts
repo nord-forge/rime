@@ -1,5 +1,4 @@
 // @nord-forge/rime-model — headless JSON document model (the single source of truth).
-// See PRD §6.1.
 //
 // This package: schema (types), validation, factory helpers, portable rich-text
 // shape, the immutable patch engine, undo/redo, and serialize/load.

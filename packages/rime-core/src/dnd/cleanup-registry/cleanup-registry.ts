@@ -1,5 +1,5 @@
 // A countable, disposable registry for every listener / rAF / node-removal a
-// drag operation sets up (PRD §10: no leaked listeners/observers across drags).
+// drag operation sets up: no leaked listeners/observers across drags.
 // Routing all transient registrations through one place lets a test assert the
 // live count returns to baseline after each drag and that destroy() reaches zero.
 

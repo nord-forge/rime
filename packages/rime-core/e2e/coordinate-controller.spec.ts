@@ -26,7 +26,7 @@ function tallDoc() {
   };
 }
 
-// ENV-17: the coordinate controller must resolve the right node under a HOST
+// The coordinate controller must resolve the right node under a HOST
 // pointer with page scrolled + canvas scrolled + a non-zero iframe offset.
 // WebKit is the hard case.
 test.describe("coordinate controller (cross-browser)", () => {

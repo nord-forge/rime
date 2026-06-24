@@ -2,7 +2,7 @@ import { expect, test } from "./fixtures";
 
 // Build-success ≠ runs. Cross-browser smoke: the harness mounts the element in
 // BOTH chromium and webkit and the load/get-doc round-trip works through the real
-// element instance. (The canvas iframe arrives in ENV-15; see editor-shell.spec.)
+// element instance.
 test.describe("editor harness smoke", () => {
   test("element is defined and visible", async ({ editor, page }) => {
     await expect(editor.host).toBeVisible();

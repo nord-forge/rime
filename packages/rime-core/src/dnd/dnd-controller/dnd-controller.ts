@@ -1,7 +1,7 @@
-// The single owner of canvas drag-and-drop (PRD §6.6, OD-6). The canvas lives in
+// The single owner of canvas drag-and-drop. The canvas lives in
 // a same-origin srcdoc iframe; a host-document drag library (Pragmatic) can't see
 // iframe-originated drags and native HTML5 drag isn't reliably testable, so we
-// drive dragging with POINTER EVENTS and resolve every drop through the ENV-17
+// drive dragging with POINTER EVENTS and resolve every drop through the
 // coordinate controller. Two sources:
 //   - host palette items (pointerdown on a host element → insert a new block)
 //   - canvas leaf blocks (delegated pointerdown in the iframe → move existing)

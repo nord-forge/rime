@@ -41,7 +41,7 @@ const DOC = {
   ],
 };
 
-// ENV-16: doc → canvas preview DOM, verified in a real browser (chromium + webkit).
+// Doc → canvas preview DOM, verified in a real browser (chromium + webkit).
 test.describe("doc → canvas render", () => {
   test("renders into #eb-root with data-node-id stamps and no <table>", async ({ editor }) => {
     const result = await editor.host.evaluate(async (host, doc) => {

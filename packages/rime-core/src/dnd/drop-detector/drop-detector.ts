@@ -1,5 +1,5 @@
-// rAF-gated drop detection (PRD §6.6: detection must be throttled /
-// requestAnimationFrame-disciplined). A burst of pointer moves collapses to one
+// rAF-gated drop detection: detection must be throttled /
+// requestAnimationFrame-disciplined. A burst of pointer moves collapses to one
 // hit-test per frame: onMove() does O(1) work (stash the latest point + schedule
 // a frame); all rect-math runs in flush(). The scheduler is injectable so the
 // coalescing is unit-testable with a fake rAF.

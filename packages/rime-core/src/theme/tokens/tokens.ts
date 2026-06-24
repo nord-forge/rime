@@ -1,5 +1,5 @@
-// Chrome theming tokens — the source of truth for the editor's two-surface model
-// (PRD §6.5). These --eb-* custom properties theme the CHROME (palette, panels,
+// Chrome theming tokens — the source of truth for the editor's two-surface model.
+// These --eb-* custom properties theme the CHROME (palette, panels,
 // toolbars in the Lit shadow DOM) and intentionally pierce shadow boundaries when
 // set on the host or any ancestor.
 //

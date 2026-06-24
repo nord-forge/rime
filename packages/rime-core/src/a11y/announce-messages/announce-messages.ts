@@ -1,4 +1,4 @@
-// Pure message builders for ARIA live announcements (PRD §6.6). Kept free of the
+// Pure message builders for ARIA live announcements. Kept free of the
 // DOM/live-region so the wording — block label, "Column N", "position X of Y" —
 // is unit-testable.
 

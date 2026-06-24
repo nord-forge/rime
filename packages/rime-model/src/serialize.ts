@@ -1,5 +1,5 @@
 // The save/load boundary. Persistence is headless: the library emits/accepts a
-// versioned JSON envelope and the host owns storage (PRD §6.10). Losslessness is
+// versioned JSON envelope and the host owns storage. Losslessness is
 // the core guarantee — deserialize(serialize(doc)) deep-equals doc — because doc
 // nodes are plain serializable data (the schema forbids functions). On load we always
 // re-validate via the schema validator and never throw.

@@ -1,5 +1,5 @@
 // A realistic newsletter doc: several sections, multi-column rows, dozens of leaf
-// blocks — the drag-over target for the DnD perf benchmark (ENV-21) and other
+// blocks — the drag-over target for the DnD perf benchmark and other
 // integration tests. Deterministic ids so geometry is stable.
 
 import type { DocumentNode } from "@nord-forge/rime-model";

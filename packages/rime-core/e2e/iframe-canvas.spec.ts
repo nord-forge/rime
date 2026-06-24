@@ -1,6 +1,6 @@
 import { expect, test } from "./fixtures";
 
-// ENV-15: the same-origin srcdoc canvas. Verified in chromium + webkit.
+// The same-origin srcdoc canvas. Verified in chromium + webkit.
 test.describe("iframe canvas", () => {
   test("exactly one canvas-frame iframe is mounted in part=canvas", async ({ editor }) => {
     const count = await editor.host.evaluate((host) => {

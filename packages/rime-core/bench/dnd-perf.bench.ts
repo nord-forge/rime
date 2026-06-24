@@ -2,18 +2,18 @@ import { chromium, type CDPSession } from "@playwright/test";
 import { spawn } from "node:child_process";
 import { newsletterDoc } from "../test/fixtures/newsletter";
 
-// Instrumented DnD perf benchmark (ENV-21, resolves OD-3). Drives a long drag
+// Instrumented DnD perf benchmark. Drives a long drag
 // across the realistic newsletter fixture under CPU throttling that approximates
 // the low-end ("potato PC") reference machine, and gates on:
 //   - frame cadence: ≥95% of drag frames ≤ 16.6 ms (≈60fps)
 //   - detection latency: p95 of the per-frame (resolve + indicator-position) work
-//     ≤ the committed OD-3 budget.
+//     ≤ the committed budget.
 // Exits non-zero if either gate is breached so it can gate CI / the perf sign-off.
 
 const CPU_THROTTLE = 4; // emulate ~4x slower CPU (low-end reference profile)
 const FRAME_MS = 1000 / 60; // 16.6ms
 const FRAME_BUDGET_RATIO = 0.95; // ≥95% of frames within one frame
-const DETECTION_P95_BUDGET_MS = 8; // OD-3: half a frame, paint headroom
+const DETECTION_P95_BUDGET_MS = 8; // half a frame, paint headroom
 
 const PORT = Number(process.env.BENCH_PORT ?? 4318);
 const BASE_URL = `http://localhost:${PORT}`;

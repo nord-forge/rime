@@ -1,5 +1,5 @@
 // <eb-move-to-menu> — a keyboard-operable popover listing valid destinations for
-// the selected block (the non-pointer way to reorder, PRD §6.6). Themed via
+// the selected block (the non-pointer way to reorder). Themed via
 // --eb-* tokens. Emits an `eb-move-select` event with the chosen DropTarget; the
 // editor applies it through the same moveNode op as keyboard/pointer moves.
 

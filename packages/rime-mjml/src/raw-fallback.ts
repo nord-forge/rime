@@ -1,9 +1,9 @@
-// Per-block escape hatch (OD-5): a block that can't be expressed as MJML supplies
+// Per-block escape hatch: a block that can't be expressed as MJML supplies
 // hand-authored, Outlook-safe table HTML instead. MJML's <mj-raw> passes its inner
 // HTML through to the compiled output verbatim — that is the splice point.
 //
 // This is a bounded, per-block seam, NOT a second renderer: a raw block is just a
-// BlockRenderer (the ENV-10 seam) whose renderExport returns <mj-raw>…</mj-raw>,
+// BlockRenderer (the renderer seam) whose renderExport returns <mj-raw>…</mj-raw>,
 // registered through the same path as the built-in MJML handlers.
 
 import type { AnyNode } from "@nord-forge/rime-model";

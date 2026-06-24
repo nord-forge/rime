@@ -1,7 +1,7 @@
 // The v1 default export renderer: doc → MJML → bulletproof, Outlook-safe HTML via
 // the `mjml` library (inherits MJML's mso conditionals, VML buttons, ghost
 // tables). Runs at export time, Node-side — outside the @nord-forge/rime-core bundle
-// budget (separate package). Implements the ENV-10 Renderer contract.
+// budget (separate package). Implements the Renderer contract.
 
 import mjml2html from "mjml";
 import type { RimeDoc } from "@nord-forge/rime-model";

@@ -1,5 +1,5 @@
 // Keyboard reordering — the mandatory parallel input model for users who can't
-// drag (PRD §6.6). Select a leaf block, then move it up/down within its column or
+// drag. Select a leaf block, then move it up/down within its column or
 // across to an adjacent column. Like pointer DnD, every move goes through an
 // immutable moveNode op, so behaviour + undo stay identical across input methods.
 //
@@ -114,7 +114,7 @@ export class KeyboardMoveController {
     this.#deps = deps;
   }
 
-  /** Apply a move via ENV-06 moveNode; update selection + focus + announce. */
+  /** Apply a move via moveNode; update selection + focus + announce. */
   move(id: NodeId, dir: MoveDirection): boolean {
     const doc = this.#deps.getDoc();
     const target = resolveMove(doc, id, dir);

@@ -1,6 +1,6 @@
 import { expect, test } from "./fixtures";
 
-// ENV-14: the shell's three-region layout, parts, and --eb-* theming, verified in
+// The shell's three-region layout, parts, and --eb-* theming, verified in
 // a real browser (chromium + webkit).
 test.describe("editor shell", () => {
   test("renders palette / canvas / properties parts", async ({ editor }) => {
