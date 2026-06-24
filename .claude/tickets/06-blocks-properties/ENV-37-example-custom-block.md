@@ -19,7 +19,7 @@ block" (§12). This is the **proof** that a third-party developer can add a bloc
 to end using only the public `registerBlock` path — schema → properties form, canvas
 preview, MJML export, palette entry — with **zero** access to core internals. It
 doubles as the canonical copy-paste template the docs (ENV-51) reference. The example
-must NOT live in `@enveloppe/core`'s shipped bundle (it's a sample, not a built-in).
+must NOT live in `@nord-forge/rime-core`'s shipped bundle (it's a sample, not a built-in).
 
 ## Goal
 A fully-documented example custom block (e.g. a "Coupon" block) implemented purely via
@@ -36,8 +36,8 @@ internal imports.
    dedicated `examples/` dir) — **not** in `packages/core/src`. It must import only
    from the package public entry:
    ```ts
-   import { registerBlock } from "@enveloppe/core";
-   // NO deep imports like "@enveloppe/core/src/..." — public surface only.
+   import { registerBlock } from "@nord-forge/rime-core";
+   // NO deep imports like "@nord-forge/rime-core/src/..." — public surface only.
    ```
 2. **The block** — a "Coupon" block (a marketing block MJML can't fully express, so it
    also exercises the raw-table fallback path):
@@ -74,7 +74,7 @@ internal imports.
 
 ## Acceptance criteria
 - [ ] A documented example custom block exists outside `packages/core/src`, importing
-      only `@enveloppe/core`'s public entry (no deep/internal imports).
+      only `@nord-forge/rime-core`'s public entry (no deep/internal imports).
 - [ ] Registering it makes it appear in the palette, produce a schema-driven properties
       form, render on canvas (with `data-node-id`), and export to email-safe HTML.
 - [ ] `renderExport` uses the `{ raw }` raw-table path (exercising ENV-12), with all
@@ -84,7 +84,7 @@ internal imports.
 - [ ] If anything needed a non-public import, ENV-33's public surface was fixed instead.
 
 ## Out of scope
-- Shipping this block inside `@enveloppe/core` (it's a sample, not a built-in).
+- Shipping this block inside `@nord-forge/rime-core` (it's a sample, not a built-in).
 - The docs site itself (ENV-51) — this just supplies the canonical example.
 - Social block (ENV-38).
 

@@ -1,7 +1,7 @@
 {
-  "name": "@enveloppe/vue",
+  "name": "@nord-forge/rime-vue",
   "version": "0.0.0",
-  "description": "Thin Vue wrapper for the <enveloppe-editor> web component.",
+  "description": "Thin Vue wrapper for the <rime-editor> web component.",
   "license": "MIT",
   "files": [
     "dist"
@@ -26,7 +26,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@enveloppe/core": "workspace:*"
+    "@nord-forge/rime-core": "workspace:*"
   },
   "peerDependencies": {
     "vue": ">=3"

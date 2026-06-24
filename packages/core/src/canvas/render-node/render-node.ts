@@ -16,7 +16,7 @@ import type {
   SectionNode,
   SpacerBlock,
   TextBlock,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 
 /** Create an element stamped with the node's identity for hit-testing. */
 export function el(doc: Document, node: BaseNode, tag = "div"): HTMLElement {

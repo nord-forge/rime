@@ -33,7 +33,7 @@ losslessly through the doc model, and exports to `{{var}}` text via the MJML ren
 - ENV-11 (`richTextToInlineHtml` — must learn to emit token output).
 
 ## Implementation notes
-1. **Portable shape (`@enveloppe/doc-model` `rich-text.ts`).** Extend the run/inline
+1. **Portable shape (`@nord-forge/rime-model` `rich-text.ts`).** Extend the run/inline
    union with a token inline:
    ```ts
    export interface TokenInline {
@@ -57,7 +57,7 @@ losslessly through the doc model, and exports to `{{var}}` text via the MJML ren
 4. **Insertion API.** Export `insertToken(token: string, label?: string)` that inserts a
    token node at the current selection in the live editor (the picker UI in ENV-40
    calls this). One live editor instance only (ENV-28) — operate on the active one.
-5. **Export (`@enveloppe/renderer-mjml`).** Teach `richTextToInlineHtml` to emit a token
+5. **Export (`@nord-forge/rime-mjml`).** Teach `richTextToInlineHtml` to emit a token
    inline as the literal string `{{` + escapedKey + `}}` (so ESPs do the substitution).
    The key is escaped for HTML safety but braces are literal. Token chips therefore
    become real merge tags in the sent email.

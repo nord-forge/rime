@@ -1,4 +1,4 @@
-// <enveloppe-editor> — the single public custom element the product ships as.
+// <rime-editor> — the single public custom element the product ships as.
 // This is the SHELL: the three-region layout (palette / canvas / properties),
 // the slots + parts later features mount into, and the typed `config` surface.
 // No feature logic lives here yet. Chrome is themed exclusively via --eb-* custom
@@ -13,14 +13,14 @@ import {
   createImageBlock,
   createSpacerBlock,
   createTextBlock,
-  type EnveloppeDoc,
+  type RimeDoc,
   type IdFactory,
   insertNode,
   type LeafBlock,
   moveNode,
   type OpResult,
   removeNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
 import {
@@ -46,7 +46,7 @@ export interface TokenSource {
 }
 
 /** The public configuration surface for the editor. */
-export interface EnveloppeConfig {
+export interface RimeConfig {
   /** --eb-* token overrides applied to the chrome (host-piercing). */
   theme?: Record<`--eb-${string}`, string>;
   /** Block type ids enabled in the palette; undefined = all built-ins. */
@@ -58,11 +58,11 @@ export interface EnveloppeConfig {
 }
 
 /** Detail payload of the `change` event. */
-export interface EnveloppeChangeDetail {
-  doc: EnveloppeDoc;
+export interface RimeChangeDetail {
+  doc: RimeDoc;
 }
 
-export class EnveloppeEditor extends LitElement {
+export class RimeEditor extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: grid;
@@ -107,13 +107,13 @@ export class EnveloppeEditor extends LitElement {
   `;
 
   /** Public configuration. Set as a property (not an attribute). */
-  @property({ attribute: false }) config: EnveloppeConfig = {};
+  @property({ attribute: false }) config: RimeConfig = {};
 
   @query('[part="canvas"]') private canvasRegion!: HTMLElement;
 
   // Current document. The real load/get + change-event wiring is ENV-42; this
   // shell only holds it so the public method shapes are stable now.
-  #doc: EnveloppeDoc | null = null;
+  #doc: RimeDoc | null = null;
 
   // The same-origin srcdoc canvas (PRD §6.4). Created once the shell first
   // renders; the doc→DOM renderer awaits whenReady() to draw into #eb-root.
@@ -254,9 +254,7 @@ export class EnveloppeEditor extends LitElement {
     this.#renderer?.update(op.doc);
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
-    this.dispatchEvent(
-      new CustomEvent<EnveloppeChangeDetail>("change", { detail: { doc: op.doc } }),
-    );
+    this.dispatchEvent(new CustomEvent<RimeChangeDetail>("change", { detail: { doc: op.doc } }));
   }
 
   // Make leaf blocks keyboard-reachable so a user can select one to move.
@@ -360,7 +358,7 @@ export class EnveloppeEditor extends LitElement {
    * Load a document into the editor and paint it onto the canvas. (The public
    * change-event side of persistence still lands in ENV-42.)
    */
-  loadDoc(doc: EnveloppeDoc): void {
+  loadDoc(doc: RimeDoc): void {
     const isUpdate = this.#doc !== null && this.#renderer !== null;
     this.#doc = doc;
     if (!this.#renderer) return; // canvas not ready yet; firstUpdated paints it
@@ -384,7 +382,7 @@ export class EnveloppeEditor extends LitElement {
    * Read the current document.
    * STUB — full wiring lands in ENV-42.
    */
-  getDoc(): EnveloppeDoc {
+  getDoc(): RimeDoc {
     if (!this.#doc) throw new Error("no document loaded");
     return this.#doc;
   }
@@ -398,12 +396,12 @@ export class EnveloppeEditor extends LitElement {
   }
 }
 
-if (!customElements.get("enveloppe-editor")) {
-  customElements.define("enveloppe-editor", EnveloppeEditor);
+if (!customElements.get("rime-editor")) {
+  customElements.define("rime-editor", RimeEditor);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "enveloppe-editor": EnveloppeEditor;
+    "rime-editor": RimeEditor;
   }
 }

@@ -55,9 +55,9 @@ async function main(): Promise<void> {
   await client.send("Emulation.setCPUThrottlingRate", { rate: CPU_THROTTLE });
 
   await page.goto(`${BASE_URL}/e2e/harness.html`);
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
     };
@@ -69,7 +69,7 @@ async function main(): Promise<void> {
   // over the REAL rendered geometry, sampling many points across the canvas.
   const detection = await page.evaluate(async () => {
     const mod = await import("/src/index.ts");
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const iframe = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
     const cdoc = iframe.contentDocument!;
     const el = host as unknown as { getDoc(): any };

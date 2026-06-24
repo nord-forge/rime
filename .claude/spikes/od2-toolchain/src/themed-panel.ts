@@ -30,7 +30,7 @@ export class ThemedPanel extends LitElement {
     }
   `;
 
-  @property({ type: String }) heading = "Enveloppe";
+  @property({ type: String }) heading = "Rime";
 
   render() {
     return html`

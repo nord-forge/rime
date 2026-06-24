@@ -13,7 +13,7 @@ Closes:
 - [ ] `bun run format:check` (oxfmt) clean
 - [ ] `bun run typecheck` (tsc) clean
 - [ ] `bun run build` succeeds
-- [ ] **`@enveloppe/core` bundle still within budget** (`bun run size`)
+- [ ] **`@nord-forge/rime-core` bundle still within budget** (`bun run size`)
 - [ ] All commits are **signed off** per the DCO (see below)
 
 ## Developer Certificate of Origin (DCO)

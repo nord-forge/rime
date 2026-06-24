@@ -3,6 +3,6 @@
 # e.g.:
 #   contact_links:
 #     - name: Question or idea
-#       url: https://github.com/<org>/enveloppe/discussions
+#       url: https://github.com/<org>/rime/discussions
 #       about: For open-ended questions, please use Discussions.
 blank_issues_enabled: true

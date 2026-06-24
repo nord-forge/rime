@@ -14,7 +14,7 @@ estimate: S
 # ENV-18 — Two-surface theming + no-CSS-bleed guarantee
 
 ## Context
-Enveloppe has two visually distinct surfaces with deliberately separate styling
+Rime has two visually distinct surfaces with deliberately separate styling
 channels (§6.5): the **chrome** (palette, panels, toolbars — Lit shadow DOM) themed
 by `--eb-*` CSS custom properties that intentionally pierce shadow boundaries, and
 the **canvas** (the email preview iframe) styled by an injected base stylesheet that
@@ -54,7 +54,7 @@ host CSS nor `--eb-*` reaches inside the canvas — in Chromium + WebKit.
    ```
    Every chrome component reads tokens with a fallback, e.g.
    `color: var(--eb-color-accent, #5b5bd6)` — never hard-codes the themed value.
-2. **Chrome channel** — confirm `EnveloppeEditor` applies `config.theme` overrides as
+2. **Chrome channel** — confirm `RimeEditor` applies `config.theme` overrides as
    `--eb-*` on the host (ENV-14). No host stylesheet is ever read or copied.
 3. **Canvas channel** — the iframe's only styles come from `#eb-base`
    (`CanvasController.setBaseStyles`, ENV-15) plus what ENV-16 writes into `#eb-root`.

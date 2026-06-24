@@ -7,7 +7,7 @@
 //   - canvas leaf blocks (delegated pointerdown in the iframe → move existing)
 // Every drop goes through an immutable doc op; we never mutate canvas DOM directly.
 
-import type { EnveloppeDoc, LeafBlock, NodeId, OpResult } from "@enveloppe/doc-model";
+import type { RimeDoc, LeafBlock, NodeId, OpResult } from "@nord-forge/rime-model";
 import type { CanvasRenderer } from "../../canvas/canvas-renderer/canvas-renderer";
 import type {
   DragCoordinateController,
@@ -33,15 +33,15 @@ export interface DndDeps {
   /** Where the insertion indicator (chrome overlay) is appended — e.g. the shadow
    *  root, so --eb-* tokens cascade to it. */
   overlayHost: ParentNode & { ownerDocument: Document };
-  getDoc: () => EnveloppeDoc;
+  getDoc: () => RimeDoc;
   createBlock: (blockType: LeafBlock["type"]) => LeafBlock;
   /** Apply an op result: the editor merges patch into doc + undo history + re-renders. */
   dispatch: (op: OpResult) => void;
   /** Announce a completed drop (insert for palette, move for canvas) against the result doc. */
-  announceDrop?: (kind: "insert" | "move", resultDoc: EnveloppeDoc, nodeId: NodeId) => void;
+  announceDrop?: (kind: "insert" | "move", resultDoc: RimeDoc, nodeId: NodeId) => void;
   ops: {
-    insertNode: (doc: EnveloppeDoc, parentId: NodeId, index: number, node: LeafBlock) => OpResult;
-    moveNode: (doc: EnveloppeDoc, id: NodeId, newParentId: NodeId, newIndex: number) => OpResult;
+    insertNode: (doc: RimeDoc, parentId: NodeId, index: number, node: LeafBlock) => OpResult;
+    moveNode: (doc: RimeDoc, id: NodeId, newParentId: NodeId, newIndex: number) => OpResult;
   };
   /** Injectable rAF (for tests). Defaults to requestAnimationFrame. */
   scheduler?: Scheduler;

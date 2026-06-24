@@ -18,7 +18,7 @@ The library stores nothing (§6.10): images are uploaded via a host-provided
 `onImageUpload(file) → Promise<string>` callback that returns the final URL, and the
 image block just stores that URL. No CDN, no storage, no backend in any published
 package. This ticket wires the image block (ENV-34) to that callback (already typed on
-`EnveloppeConfig`, ENV-14). The demo (ENV-46) provides a stub uploader to be runnable.
+`RimeConfig`, ENV-14). The demo (ENV-46) provides a stub uploader to be runnable.
 
 ## Goal
 The image block lets a user pick a file, calls `config.onImageUpload(file)`, and stores
@@ -27,7 +27,7 @@ library and graceful handling when no callback is provided.
 
 ## Prerequisites
 - ENV-34 done (the `image` block: `ImageBlock { src; alt; href?; style }`).
-- ENV-14's `EnveloppeConfig.onImageUpload?: (file: File) => Promise<string>`.
+- ENV-14's `RimeConfig.onImageUpload?: (file: File) => Promise<string>`.
 - ENV-06 ops (to write `src` into the doc immutably) and ENV-35 (the image block's
   properties form where the upload control lives).
 

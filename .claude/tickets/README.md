@@ -1,4 +1,4 @@
-# Enveloppe Tickets
+# Rime Tickets
 
 Agent-ready implementation tickets, derived from [`PRD.md`](../../PRD.md) and the
 spike findings under [`.claude/spikes/`](../spikes/). Each ticket is **self-contained**:

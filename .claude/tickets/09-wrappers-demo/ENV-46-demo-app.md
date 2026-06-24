@@ -17,12 +17,12 @@ estimate: M
 v1 ships a runnable demo (§4, §12) that proves the **end-user** experience is excellent
 by default — the secondary persona (marketers using the builder inside an integrator's
 product). It's also the integration reference: it consumes the public surface only
-(`<enveloppe-editor>` + ENV-42 JSON in/out + ENV-43 `onImageUpload` stub + `--eb-*`
+(`<rime-editor>` + ENV-42 JSON in/out + ENV-43 `onImageUpload` stub + `--eb-*`
 theming), uses a trivial **local store** (no backend, per §6.10), and showcases
 theming. It registers the example custom block (ENV-37) to prove the SDK in context.
 
 ## Goal
-`apps/demo` is a runnable app embedding `<enveloppe-editor>`, wired to a local-storage
+`apps/demo` is a runnable app embedding `<rime-editor>`, wired to a local-storage
 save/load, a stub `onImageUpload`, a theme switcher, and the example custom block —
 demonstrating the full v1 done-bar UX.
 
@@ -30,7 +30,7 @@ demonstrating the full v1 done-bar UX.
 - ENV-34 done (core blocks render/drag/edit) and ENV-42 done (`loadDoc`/`getDoc`/
   `change`). ENV-43 (`onImageUpload`) and ENV-37 (example block) land here if ready;
   otherwise stub/flag and note.
-- `apps/demo` exists in the workspace (ENV-01); `@enveloppe/core` (+ `renderer-mjml` for
+- `apps/demo` exists in the workspace (ENV-01); `@nord-forge/rime-core` (+ `renderer-mjml` for
   an export preview) are `workspace:*` deps.
 
 ## Implementation notes
@@ -38,7 +38,7 @@ Build `apps/demo` as a minimal Vite app (Bun). Keep it dependency-light; it's a 
 not a framework showcase — vanilla/Lit or a tiny shell is fine (no need for React/Vue
 here; the wrappers have their own examples).
 
-1. **Embed the editor.** Mount `<enveloppe-editor>` filling the viewport. Set `config`
+1. **Embed the editor.** Mount `<rime-editor>` filling the viewport. Set `config`
    with a theme, an `onImageUpload` stub, and the demo's enabled blocks.
 2. **Local store (headless persistence demo).**
    - On `change`, `serialize(e.detail.doc)` (ENV-09) → `localStorage`.
@@ -63,7 +63,7 @@ here; the wrappers have their own examples).
 
 ## Acceptance criteria
 - [ ] `apps/demo` runs via `bun run dev` with no backend/config and shows a working
-      `<enveloppe-editor>` with the core blocks (drag, edit, properties).
+      `<rime-editor>` with the core blocks (drag, edit, properties).
 - [ ] Edits persist to `localStorage` via `serialize`/`change`; reload restores via
       `deserialize`/`loadDoc`; Save/Load/Reset controls work.
 - [ ] A stub `onImageUpload` lets the user add an image (object-URL/data-URI), proving

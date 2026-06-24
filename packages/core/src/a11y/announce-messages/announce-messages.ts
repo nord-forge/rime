@@ -2,7 +2,7 @@
 // DOM/live-region so the wording — block label, "Column N", "position X of Y" —
 // is unit-testable.
 
-import type { AnyNode, BaseNode, EnveloppeDoc, NodeId } from "@enveloppe/doc-model";
+import type { AnyNode, BaseNode, RimeDoc, NodeId } from "@nord-forge/rime-model";
 
 const TYPE_LABELS: Record<string, string> = {
   text: "Text",
@@ -21,7 +21,7 @@ export function blockLabel(node: BaseNode): string {
 }
 
 /** Human, 1-based label for a parent column/section by its position in the tree. */
-export function parentLabel(doc: EnveloppeDoc, parentId: NodeId): string {
+export function parentLabel(doc: RimeDoc, parentId: NodeId): string {
   for (let s = 0; s < doc.children.length; s += 1) {
     const section = doc.children[s]!;
     if (section.id === parentId) return `Section ${s + 1}`;
@@ -34,7 +34,7 @@ export function parentLabel(doc: EnveloppeDoc, parentId: NodeId): string {
 
 /** Find a node's parent id + index + sibling count in the doc. */
 export function locateForAnnounce(
-  doc: EnveloppeDoc,
+  doc: RimeDoc,
   id: NodeId,
 ): { parentId: NodeId; index: number; total: number } | null {
   const visit = (node: AnyNode): { parentId: NodeId; index: number; total: number } | null => {
@@ -52,7 +52,7 @@ export function locateForAnnounce(
 }
 
 /** "Moved Button to Column 2, position 1 of 3" — computed from the RESULT doc. */
-export function moveMessage(doc: EnveloppeDoc, id: NodeId): string {
+export function moveMessage(doc: RimeDoc, id: NodeId): string {
   const node = findNodeById(doc, id);
   const loc = locateForAnnounce(doc, id);
   if (!node || !loc) return "Moved block";
@@ -60,7 +60,7 @@ export function moveMessage(doc: EnveloppeDoc, id: NodeId): string {
 }
 
 /** "Inserted Image into Column 1, position 2 of 2" — from the RESULT doc. */
-export function insertMessage(doc: EnveloppeDoc, id: NodeId): string {
+export function insertMessage(doc: RimeDoc, id: NodeId): string {
   const node = findNodeById(doc, id);
   const loc = locateForAnnounce(doc, id);
   if (!node || !loc) return "Inserted block";
@@ -68,11 +68,11 @@ export function insertMessage(doc: EnveloppeDoc, id: NodeId): string {
 }
 
 /** "Removed Divider from Column 3" — parentLabel resolved against the BEFORE doc. */
-export function removeMessage(beforeDoc: EnveloppeDoc, node: BaseNode, parentId: NodeId): string {
+export function removeMessage(beforeDoc: RimeDoc, node: BaseNode, parentId: NodeId): string {
   return `Removed ${blockLabel(node)} from ${parentLabel(beforeDoc, parentId)}`;
 }
 
-export function findNodeById(doc: EnveloppeDoc, id: NodeId): AnyNode | null {
+export function findNodeById(doc: RimeDoc, id: NodeId): AnyNode | null {
   const visit = (node: AnyNode): AnyNode | null => {
     if (node.id === id) return node;
     for (const child of (node as { children?: AnyNode[] }).children ?? []) {

@@ -15,38 +15,38 @@ estimate: M
 
 ## Context
 Persistence is headless (§6.10): the library emits and accepts JSON, the host owns
-storage. This ticket wires the **public persistence surface** on `<enveloppe-editor>`
+storage. This ticket wires the **public persistence surface** on `<rime-editor>`
 that ENV-14 stubbed — `loadDoc(doc)`, `getDoc()`, and a `change` event emitting the
 current doc — using the doc-model codec (ENV-09) for validation on load and the doc as
 the single source of truth. The React/Vue wrappers (ENV-44/91) and demo (ENV-46) all
 sit on top of this; get the contract right here.
 
 ## Goal
-`<enveloppe-editor>` exposes `loadDoc(doc)`, `getDoc()`, and a `change` CustomEvent
+`<rime-editor>` exposes `loadDoc(doc)`, `getDoc()`, and a `change` CustomEvent
 (`detail: { doc }`) that together let a host load JSON in, read it back out, and react
 to every edit — all validated through ENV-09.
 
 ## Prerequisites
 - ENV-09 done (`serialize`/`deserialize`, `validateDoc` via the codec — use these;
   don't re-validate by hand).
-- ENV-14 done (the `loadDoc`/`getDoc`/`change` stubs + `EnveloppeConfig`).
+- ENV-14 done (the `loadDoc`/`getDoc`/`change` stubs + `RimeConfig`).
 - The editor's internal doc state + the edit pipeline (ENV-06/32/62 emit new docs).
 
 ## Implementation notes
-In `packages/core/src/enveloppe-editor.ts` (and a small `persistence/` helper if it
+In `packages/core/src/rime-editor.ts` (and a small `persistence/` helper if it
 keeps the element lean):
 
-1. **Internal source of truth.** The editor holds the current `EnveloppeDoc` (one
+1. **Internal source of truth.** The editor holds the current `RimeDoc` (one
    immutable doc; edits replace it with a new doc + patch from ENV-06). Every consumer
    (canvas ENV-16, panel ENV-35) reads/writes through this single field.
-2. **`loadDoc(input: EnveloppeDoc): void`.** Validate via the codec. Accept a doc object
-   directly; for a string, the host uses `deserialize` from `@enveloppe/doc-model`
+2. **`loadDoc(input: RimeDoc): void`.** Validate via the codec. Accept a doc object
+   directly; for a string, the host uses `deserialize` from `@nord-forge/rime-model`
    first (document this — the element takes a doc object; the wrappers/demo handle
    string ↔ doc). On invalid input, **throw** a typed error listing validation errors
    (don't silently no-op — the host needs to know its save was bad). On valid input,
    replace internal state, reset the canvas/selection, and **do not** emit `change`
    (loading is host-driven, not a user edit — prevents save loops).
-3. **`getDoc(): EnveloppeDoc`.** Return the current doc. Return a **structurally stable**
+3. **`getDoc(): RimeDoc`.** Return the current doc. Return a **structurally stable**
    reference (the immutable doc) — callers may `serialize` it. Never return internal
    mutable scratch state.
 4. **`change` event.** Emit a `CustomEvent("change", { detail: { doc } })` whenever a
@@ -60,7 +60,7 @@ keeps the element lean):
 6. **Wrapper-friendliness.** Keep the surface plain DOM (methods + a `CustomEvent`) so
    the React/Vue wrappers (ENV-44/91) map props/events/refs onto it without special
    cases. `getDoc()` + `change` enable controlled-value usage.
-7. **Budget** — no new runtime dep; reuse `@enveloppe/doc-model`.
+7. **Budget** — no new runtime dep; reuse `@nord-forge/rime-model`.
 
 ## Acceptance criteria
 - [ ] `loadDoc(doc)` validates via ENV-09, replaces editor state, repaints the canvas,

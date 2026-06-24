@@ -1,7 +1,7 @@
 import { defineConfig, type UserConfig } from "vite";
 import { resolve } from "node:path";
 
-// Shared library-build config for the five publishable @enveloppe/* packages.
+// Shared library-build config for the five publishable @nord-forge/* packages.
 // rolldown-vite is the decided bundler; stock vite is a drop-in fallback,
 // so this config is engine-agnostic. JS is emitted here; .d.ts via `tsc`.
 //
@@ -23,7 +23,7 @@ export interface LibOptions {
   node?: boolean;
 }
 
-const ALWAYS_EXTERNAL: (string | RegExp)[] = ["lit", /^lit\//, /^@lit\//, /^@enveloppe\//];
+const ALWAYS_EXTERNAL: (string | RegExp)[] = ["lit", /^lit\//, /^@lit\//, /^@nord-forge\//];
 
 // Node built-ins to externalize in node-target builds (both bare and node: form).
 const NODE_BUILTINS =

@@ -4,7 +4,7 @@
 // import the `mjml` library or any MJML type, so a non-MJML renderer can
 // implement `Renderer` without touching MJML.
 
-import type { AnyNode, EnveloppeDoc } from "@enveloppe/doc-model";
+import type { AnyNode, RimeDoc } from "@nord-forge/rime-model";
 
 /** Options common to any renderer; concrete renderers may extend with their own. */
 export interface RenderOptions {
@@ -18,7 +18,7 @@ export interface RenderOptions {
  * in-browser canvas hot path.
  */
 export interface Renderer {
-  render(doc: EnveloppeDoc, options?: RenderOptions): Promise<string>;
+  render(doc: RimeDoc, options?: RenderOptions): Promise<string>;
 }
 
 /** Thrown by a renderer for a doc it cannot turn into HTML (vs. emitting junk). */

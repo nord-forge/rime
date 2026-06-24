@@ -21,14 +21,14 @@ Inline rich text is edited by **Lexical, headless** — chosen by OD-1 because t
 inside the iframe canvas** and is used headless (no Lexical UI — that is ENV-29).
 The working, sanitization-correct integration already exists in
 `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (read it first) — this ticket
-**ports** that adapter into `@enveloppe/core` and re-confirms the budget against
+**ports** that adapter into `@nord-forge/rime-core` and re-confirms the budget against
 real measured core weight. Spikes are throwaway; copy the approach, do not import
 from `.claude/spikes/`.
 
 ## Goal
-`@enveloppe/core` mounts a single headless Lexical editor onto a focused
+`@nord-forge/rime-core` mounts a single headless Lexical editor onto a focused
 TextBlock node inside the iframe, seeded from the doc's `RichTextJSON`, with
-bold/italic/underline working — and the measured `@enveloppe/core` gzip is
+bold/italic/underline working — and the measured `@nord-forge/rime-core` gzip is
 recorded against the ~100 kB budget.
 
 ## Prerequisites
@@ -46,9 +46,9 @@ recorded against the ~100 kB budget.
 Create under `packages/core/src/richtext/`:
 
 1. **`lexical-editor.ts`** — port the spike adapter to the production
-   `RichTextJSON` from `@enveloppe/doc-model` (ENV-05's `rich-text.ts`, which adds
+   `RichTextJSON` from `@nord-forge/rime-model` (ENV-05's `rich-text.ts`, which adds
    `link?: string` to runs). Keep the spike's proven moves:
-   - `createEditor({ namespace: "enveloppe", nodes: [HeadingNode, QuoteNode], onError })`
+   - `createEditor({ namespace: "rime", nodes: [HeadingNode, QuoteNode], onError })`
      — **curated node set is the sanitization boundary** (the rationale ENV-31
      hardens). `ParagraphNode`/`TextNode` are built-in; add nodes only as ENV-29
      features require (e.g. list nodes).
@@ -83,7 +83,7 @@ Create under `packages/core/src/richtext/`:
    write-back is ENV-30; here just expose the read.
 4. **Budget hard-confirm (the OD-1/OD-4 gate)** — after integrating, run the core
    size measurement and record the real gzip:
-   - If `@enveloppe/core` (with Lexical wired) is **≤ ~100 kB gzip** → confirmed;
+   - If `@nord-forge/rime-core` (with Lexical wired) is **≤ ~100 kB gzip** → confirmed;
      note the number.
    - If it **exceeds ~100 kB**, note it loudly in the PR + a `RICHTEXT-BUDGET.md`.
      **Do NOT switch back to Tiptap** — Tiptap is heavier and only revives if the
@@ -103,7 +103,7 @@ Create under `packages/core/src/richtext/`:
 - [ ] `toJSON()` returns the portable `RichTextJSON` (paragraphs → runs → marks).
 - [ ] `destroy()` runs `cleanup()`, `setRootElement(null)`, and releases refs.
 - [ ] No spike imports; no Lexical-shipped UI/CSS imported.
-- [ ] **Measured `@enveloppe/core` gzip is recorded** vs the ~100 kB budget;
+- [ ] **Measured `@nord-forge/rime-core` gzip is recorded** vs the ~100 kB budget;
       over-budget is flagged (not silently switched off Lexical).
 - [ ] Works in Chromium + WebKit (mount + seed + format).
 
@@ -119,7 +119,7 @@ cd packages/core
 bun test     # mount seeds from RichTextJSON; format → toJSON reflects marks; destroy cleans up
 bun run build
 bun run lint
-bun run size   # MEASURE: record @enveloppe/core gzip vs ~100 kB (OD-4 measure.ts)
+bun run size   # MEASURE: record @nord-forge/rime-core gzip vs ~100 kB (OD-4 measure.ts)
 bun run e2e    # chromium + webkit: focus a TextBlock → editor mounts in iframe, type + format works
 ```
 
@@ -129,7 +129,7 @@ budget measured + recorded; status → `review`.
 
 ## Outcome (OD-1/OD-4 budget hard-confirm)
 With Lexical fully wired (`lexical`, `@lexical/rich-text`, `@lexical/utils`),
-measured `@enveloppe/core` = **50.58 kB gzip** (188.12 kB raw, 42.16 kB brotli) —
+measured `@nord-forge/rime-core` = **50.58 kB gzip** (188.12 kB raw, 42.16 kB brotli) —
 ~51% of the ~100 kB budget. Confirms OD-1's engine choice: wired Lexical is far
 under budget where Tiptap's rich text alone (~128 kB) would have blown it. The
 mount API (`mountLexical` / `LexicalMount`) is exported from `src/index.ts` for

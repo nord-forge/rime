@@ -9,7 +9,7 @@ import {
   insertNode,
   moveNode,
   updateNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import { CanvasRenderer } from "./canvas-renderer";
 
 // Inject happy-dom's document — the renderer takes a Document by design, so no

@@ -2,10 +2,10 @@ import { brotliCompressSync, gzipSync } from "node:zlib";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-// Bundle-size gate. Reports @enveloppe/core's shipped size (Lit + framework
+// Bundle-size gate. Reports @nord-forge/rime-core's shipped size (Lit + framework
 // peers externalized) and fails CI on regressions beyond the budget.
 //
-// Budget: ~100 kB gzip for @enveloppe/core. CI wires this into
+// Budget: ~100 kB gzip for @nord-forge/rime-core. CI wires this into
 // CI. The renderer-mjml package is excluded from this budget (separate package,
 // runs at export time, off the in-browser hot path).
 const BUDGET_GZIP = Number(process.env.BUDGET_GZIP ?? 100 * 1024);

@@ -20,7 +20,7 @@ enter the doc model (§6.7). This is **de-risked**: the spike proved that Lexica
 `registerRichText` + a **curated node set** strips mso/font/script in both
 Chromium and WebKit (see `.claude/spikes/od1-richtext/FINDINGS.md` §4/§4b and the wired
 `.claude/spikes/od1-richtext/src/lexical-adapter.ts`). This ticket **ports** that proven
-approach into `@enveloppe/core`, hardens it (explicit allow-list confirmation,
+approach into `@nord-forge/rime-core`, hardens it (explicit allow-list confirmation,
 edge cases), and adds Playwright coverage so a regression can't silently let
 garbage through.
 

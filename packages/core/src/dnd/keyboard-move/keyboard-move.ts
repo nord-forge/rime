@@ -6,7 +6,7 @@
 // The pure move-resolution logic (resolveMove) is separated from key handling so
 // the boundary cases are unit-testable.
 
-import type { EnveloppeDoc, NodeId, OpResult } from "@enveloppe/doc-model";
+import type { RimeDoc, NodeId, OpResult } from "@nord-forge/rime-model";
 import type { DropTarget } from "../dnd-types/dnd-types";
 
 export type MoveDirection = "up" | "down" | "into-prev-column" | "into-next-column";
@@ -21,7 +21,7 @@ interface LeafLocation {
 }
 
 /** Locate a leaf block by id within the document tree. */
-export function locateLeaf(doc: EnveloppeDoc, id: NodeId): LeafLocation | null {
+export function locateLeaf(doc: RimeDoc, id: NodeId): LeafLocation | null {
   for (let s = 0; s < doc.children.length; s += 1) {
     const section = doc.children[s]!;
     for (let c = 0; c < section.children.length; c += 1) {
@@ -48,7 +48,7 @@ export function locateLeaf(doc: EnveloppeDoc, id: NodeId): LeafLocation | null {
  *   column of the SAME section (to its end/start) if one exists.
  * - into-prev/next-column moves to the END of the adjacent column.
  */
-export function resolveMove(doc: EnveloppeDoc, id: NodeId, dir: MoveDirection): DropTarget | null {
+export function resolveMove(doc: RimeDoc, id: NodeId, dir: MoveDirection): DropTarget | null {
   const loc = locateLeaf(doc, id);
   if (!loc) return null;
   const section = doc.children[loc.sectionIndex]!;
@@ -89,13 +89,13 @@ export function resolveMove(doc: EnveloppeDoc, id: NodeId, dir: MoveDirection): 
 }
 
 export interface KeyboardMoveDeps {
-  getDoc(): EnveloppeDoc;
+  getDoc(): RimeDoc;
   dispatch(op: OpResult): void;
   getSelected(): NodeId | null;
   setSelected(id: NodeId | null): void;
   focusNode(id: NodeId): void;
   announce(message: string): void;
-  moveNode: (doc: EnveloppeDoc, id: NodeId, parentId: NodeId, index: number) => OpResult;
+  moveNode: (doc: RimeDoc, id: NodeId, parentId: NodeId, index: number) => OpResult;
   /** True when a live rich-text editor is focused (don't hijack arrows then). */
   isEditing?: () => boolean;
 }

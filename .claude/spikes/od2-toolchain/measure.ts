@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'node:fs';
 
 // Bundle-size gate (OD-4). Reports our component's shipped size (Lit external)
 // and enforces a budget so CI fails on regressions. The budget here is for the
-// SPIKE component only; the real @enveloppe/core budget is set in ENV-57.
+// SPIKE component only; the real @nord-forge/rime-core budget is set in ENV-57.
 const BUDGET_GZIP = Number(process.env.BUDGET_GZIP ?? 8 * 1024); // 8 kB default
 
 const kb = (n: number) => (n / 1024).toFixed(2) + ' kB';
@@ -23,8 +23,8 @@ function report(label: string, path: string) {
 }
 
 console.log('OD-2 bundle gate (component code only, Lit externalized)\n');
-const vite = report('vite', 'dist/vite/enveloppe-core.js');
-const rolldown = report('rolldown', 'dist/rolldown/enveloppe-core.js');
+const vite = report('vite', 'dist/vite/rime-core.js');
+const rolldown = report('rolldown', 'dist/rolldown/rime-core.js');
 
 if (vite != null && rolldown != null) {
   const diff = rolldown - vite;

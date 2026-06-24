@@ -22,14 +22,14 @@ the worked SDK example. Accurate, runnable, matching the real exported APIs — 
 aspirational prose.
 
 ## Goal
-A docs site / API reference documents `EnveloppeConfig`/`init`, `registerBlock`,
+A docs site / API reference documents `RimeConfig`/`init`, `registerBlock`,
 `registerToken`, and the `--eb-*` theming tokens — accurate to the shipped public APIs,
 with the ENV-37 example as the SDK walkthrough.
 
 ## Prerequisites
 - ENV-33 done (`registerBlock`/`BlockDefinition`/schema) and ENV-41 done
   (`registerToken`/token sources) — the SDKs being documented.
-- ENV-14 (`EnveloppeConfig`), ENV-18 (the `--eb-*` token catalog), ENV-37 (the example
+- ENV-14 (`RimeConfig`), ENV-18 (the `--eb-*` token catalog), ENV-37 (the example
   custom block), ENV-44/91/93 (framework usage snippets).
 
 ## Implementation notes
@@ -38,7 +38,7 @@ with the ENV-37 example as the SDK walkthrough.
    with the README content and expand into reference pages. Don't over-build; the bar is
    accurate + navigable.
 2. **Pages (the four surfaces):**
-   - **Getting started / `init` config:** the `EnveloppeConfig` shape (`theme`,
+   - **Getting started / `init` config:** the `RimeConfig` shape (`theme`,
      `enabledBlocks`, `onImageUpload`, `tokenSources`) with the vanilla/React/Vue
      embedding snippets (link ENV-44/91/93). Show `loadDoc`/`getDoc`/`change` (ENV-42).
    - **`registerBlock` (custom blocks SDK):** document `BlockDefinition`
@@ -58,7 +58,7 @@ with the ENV-37 example as the SDK walkthrough.
    release artifacts referenced by ENV-52.
 
 ## Acceptance criteria
-- [ ] Docs cover all four surfaces: `init`/`EnveloppeConfig`, `registerBlock`,
+- [ ] Docs cover all four surfaces: `init`/`RimeConfig`, `registerBlock`,
       `registerToken`, and `--eb-*` theming tokens — accurate to the shipped exports.
 - [ ] The `registerBlock` page embeds the ENV-37 example as a complete, runnable
       walkthrough (schema → properties → canvas → export, incl. raw-table fallback).

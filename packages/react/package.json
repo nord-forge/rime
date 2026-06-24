@@ -1,7 +1,7 @@
 {
-  "name": "@enveloppe/react",
+  "name": "@nord-forge/rime-react",
   "version": "0.0.0",
-  "description": "Thin React wrapper for the <enveloppe-editor> web component.",
+  "description": "Thin React wrapper for the <rime-editor> web component.",
   "license": "MIT",
   "files": [
     "dist"
@@ -26,7 +26,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@enveloppe/core": "workspace:*",
+    "@nord-forge/rime-core": "workspace:*",
     "@lit/react": "^1.0.6"
   },
   "peerDependencies": {

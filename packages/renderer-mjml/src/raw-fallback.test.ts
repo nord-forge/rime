@@ -5,7 +5,7 @@ import {
   createEmptyDoc,
   createSection,
   type DocumentNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import {
   createRawBlockRenderer,
   docToMjml,

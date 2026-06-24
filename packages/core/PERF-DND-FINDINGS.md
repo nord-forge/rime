@@ -45,5 +45,5 @@ No further tightening was required — both gates pass with wide margin.
 ## How to run
 
 ```bash
-bun run --filter='@enveloppe/core' bench:dnd
+bun run --filter='@nord-forge/rime-core' bench:dnd
 ```

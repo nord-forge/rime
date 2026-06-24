@@ -14,7 +14,7 @@ estimate: M
 # ENV-23 — Keyboard reordering path (a11y)
 
 ## Context
-Accessibility is owned by Enveloppe regardless of the DnD engine (§6.6).
+Accessibility is owned by Rime regardless of the DnD engine (§6.6).
 Screen-reader and keyboard users cannot drag, so a **parallel** input model is
 mandatory, not optional: select a block, then move it up/down or into a sibling
 column via the keyboard or a "move to" menu. Like DnD, every move mutates the doc
@@ -44,7 +44,7 @@ Create under `packages/core/src/dnd/`:
    export type MoveDirection = "up" | "down" | "into-prev-column" | "into-next-column";
 
    export interface KeyboardMoveDeps {
-     getDoc(): EnveloppeDoc;
+     getDoc(): RimeDoc;
      dispatch(op: OpResult): void;             // ENV-06 result → editor
      getSelected(): NodeId | null;
      setSelected(id: NodeId | null): void;

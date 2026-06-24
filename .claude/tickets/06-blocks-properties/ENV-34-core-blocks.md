@@ -22,7 +22,7 @@ them, with no internal shortcut. This is also the reference every custom block (
 imitates.
 
 ## Goal
-`@enveloppe/core` registers the seven core blocks through `registerBlock`, each with a
+`@nord-forge/rime-core` registers the seven core blocks through `registerBlock`, each with a
 schema (drives ENV-35), palette entry (feeds ENV-36), canvas renderer (paints into the
 ENV-15 iframe), and export renderer (emits MJML matching ENV-11), wired by a single
 `registerCoreBlocks()` the editor calls on init.
@@ -42,7 +42,7 @@ a `BlockDefinition`, plus a barrel `index.ts` with `registerCoreBlocks()`.
 1. **Per-block definition pattern** (e.g. `text.ts`):
    ```ts
    import type { BlockDefinition } from "../types";
-   import type { TextBlock } from "@enveloppe/doc-model";
+   import type { TextBlock } from "@nord-forge/rime-model";
 
    export const textBlock: BlockDefinition<TextBlock> = {
      type: "text",
@@ -74,7 +74,7 @@ a `BlockDefinition`, plus a barrel `index.ts` with `registerCoreBlocks()`.
    - **Canvas = divs/flex, never tables** (§6.2). **Export = MJML** mirroring ENV-11.
 3. **Stay DRY with ENV-11.** Core export handlers must produce MJML identical to
    ENV-11's hardcoded mapping for the same node. Import the shared
-   `styleToMjmlAttrs`/`richTextToInlineHtml` from `@enveloppe/renderer-mjml` (or a
+   `styleToMjmlAttrs`/`richTextToInlineHtml` from `@nord-forge/rime-mjml` (or a
    shared util) rather than duplicating — document the single source. ENV-11's
    standalone handlers remain the renderer's default; these registry handlers are the
    SDK-path equivalent and MUST match for core types (assert parity in tests).

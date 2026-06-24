@@ -17,12 +17,12 @@ estimate: L
 This is the v1 default export renderer. It maps each core block to MJML, then compiles MJML to
 bulletproof, Outlook-safe HTML via the `mjml` library — inheriting MJML's battle-tested handling
 of `mso` conditionals, VML buttons, and ghost tables (PRD §6.3). It runs at **export**, not on
-the canvas hot path, so it can be Node-side and is **excluded from the `@enveloppe/core` bundle
+the canvas hot path, so it can be Node-side and is **excluded from the `@nord-forge/rime-core` bundle
 budget** (it lives in its own package). `MjmlRenderer` implements the ENV-10 `Renderer` contract.
 
 ## Goal
-`@enveloppe/renderer-mjml` exports `MjmlRenderer implements Renderer` that turns any valid
-`EnveloppeDoc` (all core block types) into Outlook-safe email HTML by emitting MJML and compiling
+`@nord-forge/rime-mjml` exports `MjmlRenderer implements Renderer` that turns any valid
+`RimeDoc` (all core block types) into Outlook-safe email HTML by emitting MJML and compiling
 it with the `mjml` library.
 
 ## Prerequisites
@@ -37,13 +37,13 @@ package only (it is Node-side and outside the core budget — note this in the P
 1. **`mjml-renderer.ts`** — the class:
    ```ts
    import mjml2html from "mjml";
-   import type { EnveloppeDoc } from "@enveloppe/doc-model";
+   import type { RimeDoc } from "@nord-forge/rime-model";
    import type { Renderer, RenderOptions } from "./renderer";
    import { RenderError } from "./renderer";
    import { docToMjml } from "./to-mjml";
 
    export class MjmlRenderer implements Renderer {
-     async render(doc: EnveloppeDoc, options: RenderOptions = {}): Promise<string> {
+     async render(doc: RimeDoc, options: RenderOptions = {}): Promise<string> {
        const mjmlSrc = docToMjml(doc, options);
        const { html, errors } = mjml2html(mjmlSrc, { validationLevel: "soft", minify: options.minify });
        if (errors?.length) throw new RenderError("MJML compile errors", errors);
@@ -94,7 +94,7 @@ package only (it is Node-side and outside the core budget — note this in the P
       markup) for a doc with a button + section — asserted by substring.
 - [ ] MJML compile errors surface as a thrown `RenderError` (not a silent empty/garbage string).
 - [ ] An unknown node type throws `RenderError` naming the type/path.
-- [ ] `mjml` is a dependency of **renderer-mjml only**; nothing here is imported by `@enveloppe/core`
+- [ ] `mjml` is a dependency of **renderer-mjml only**; nothing here is imported by `@nord-forge/rime-core`
       (does not affect the core bundle budget). PR notes the dep.
 - [ ] Unit tests cover each block mapping, the rich-text conversion + escaping, and the error paths
       (`bun test`).

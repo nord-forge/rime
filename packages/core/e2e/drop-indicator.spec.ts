@@ -43,9 +43,9 @@ const DOC = {
 
 async function setup(page: Page): Promise<void> {
   await page.goto("/e2e/harness.html");
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
       registerPaletteItem(elm: HTMLElement, t: string): () => void;
@@ -66,7 +66,7 @@ function indicatorState(page: Page) {
     // The indicator updates on the next animation frame (rAF-gated detection),
     // so wait one frame before reading.
     await new Promise((r) => requestAnimationFrame(() => r(null)));
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const ind = host.shadowRoot!.querySelector(
       '[data-eb-overlay="drop-indicator"]',
     ) as HTMLElement | null;
@@ -83,7 +83,7 @@ function indicatorState(page: Page) {
 
 async function nodeCenter(page: Page, id: string) {
   return page.evaluate((nodeId) => {
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const f = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
     const fr = f.getBoundingClientRect();
     const r = f

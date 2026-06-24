@@ -2,7 +2,7 @@
 // structural sharing (only nodes on the changed path are cloned; siblings keep
 // their original references). Patches — not snapshots — are what undo/redo stores.
 
-import type { EnveloppeDoc } from "./types";
+import type { RimeDoc } from "./types";
 
 /** Structural path from the document root, e.g. ["children", 0, "children", 2]. */
 export type Path = (string | number)[];
@@ -116,10 +116,10 @@ function applyOp(root: Json, op: PatchOp): Json {
 }
 
 /** Apply a patch immutably; the input doc is never mutated. */
-export function applyPatch(doc: EnveloppeDoc, patch: Patch): EnveloppeDoc {
+export function applyPatch(doc: RimeDoc, patch: Patch): RimeDoc {
   let current: Json = doc;
   for (const op of patch) current = applyOp(current, op);
-  return current as EnveloppeDoc;
+  return current as RimeDoc;
 }
 
 /**
@@ -129,7 +129,7 @@ export function applyPatch(doc: EnveloppeDoc, patch: Patch): EnveloppeDoc {
  * Ops are inverted in reverse order, each against the document state it would
  * actually see when the forward patch is replayed up to that point.
  */
-export function invertPatch(doc: EnveloppeDoc, patch: Patch): Patch {
+export function invertPatch(doc: RimeDoc, patch: Patch): Patch {
   // Reconstruct the intermediate states so each op is inverted against its own
   // "before" snapshot. states[i] is the doc state just before patch[i].
   const states: Json[] = [doc];

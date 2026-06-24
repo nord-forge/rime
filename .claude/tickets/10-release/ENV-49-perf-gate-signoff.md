@@ -18,7 +18,7 @@ The §10 performance budgets are **hard release gates**, measured on a low-end (
 PC") reference machine as well as a high-end one. This ticket is the formal sign-off
 that all of them are met before release: 60fps drag, bounded drop-detection latency, a
 single live rich-text instance, no leaked listeners/observers across drag ops, and
-`@enveloppe/core` ≤ ~100 kB gzip. Most are verified by upstream tickets — this collects
+`@nord-forge/rime-core` ≤ ~100 kB gzip. Most are verified by upstream tickets — this collects
 the evidence, runs the gates on the reference machine, and records pass/fail.
 
 ## Goal
@@ -50,7 +50,7 @@ WebKit/Safari).
 4. **No leaked listeners/observers.** Re-run ENV-26's leak guard over repeated
    drag/drop/edit cycles; assert listener/observer counts return to baseline (no
    monotonic growth). Capture before/after.
-5. **Bundle ≤ ~100 kB gzip.** Run `measure.ts` on `@enveloppe/core` (renderer-mjml
+5. **Bundle ≤ ~100 kB gzip.** Run `measure.ts` on `@nord-forge/rime-core` (renderer-mjml
    excluded); record the number; confirm the CI gate is green.
 6. **Record the matrix.** A short report (PR / `docs/perf-signoff.md`): reference-machine
    spec, each budget, measured value, pass/fail, and links to the runs. Any miss is a
@@ -65,7 +65,7 @@ WebKit/Safari).
       cycling.
 - [ ] No listener/observer leaks across repeated drag/edit cycles (baseline-returning
       counts recorded).
-- [ ] `@enveloppe/core` ≤ ~100 kB gzip (`measure.ts` value recorded; CI gate green).
+- [ ] `@nord-forge/rime-core` ≤ ~100 kB gzip (`measure.ts` value recorded; CI gate green).
 - [ ] All results captured in a durable sign-off note; any miss filed back to its ticket
       as a blocker.
 
@@ -77,7 +77,7 @@ WebKit/Safari).
 ```bash
 # bundle gate
 bun run build
-bun run size   # measure.ts → @enveloppe/core gzip ≤ ~100 kB
+bun run size   # measure.ts → @nord-forge/rime-core gzip ≤ ~100 kB
 # perf/leak/instance runs (reuse ENV-21/47/51 harnesses), on the reference machine:
 bun run e2e    # chromium + webkit perf + leak + single-instance assertions
 ```

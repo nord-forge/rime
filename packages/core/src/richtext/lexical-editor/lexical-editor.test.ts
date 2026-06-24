@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { Window } from "happy-dom";
-import type { RichTextJSON } from "@enveloppe/doc-model";
+import type { RichTextJSON } from "@nord-forge/rime-model";
 import { mountLexical } from "./lexical-editor";
 
 // Lexical's reconciler reads global `window`/`document`/DOM constructors, so the

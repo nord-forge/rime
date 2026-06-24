@@ -1,4 +1,4 @@
-// @enveloppe/renderer-mjml — default Renderer implementation.
+// @nord-forge/rime-mjml — default Renderer implementation.
 // See PRD §6.3.
 //
 // The swappable Renderer contract + shared seam types. The concrete MjmlRenderer

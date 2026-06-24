@@ -14,14 +14,14 @@ estimate: S
 # ENV-47 — Astro / vanilla usage example
 
 ## Context
-The README leads with the vanilla/Astro embedding path (§7) — `import '@enveloppe/core'`,
+The README leads with the vanilla/Astro embedding path (§7) — `import '@nord-forge/rime-core'`,
 set `config`, listen for `change`, call `loadDoc`. Developers embedding without React/Vue
 need a copy-pasteable, verified example proving the web component drops into a plain
 page / Astro island. P2 polish that supports the <30-min embed promise (§11).
 
 ## Goal
 A verified, copy-pasteable Astro/vanilla usage example in the README/docs showing
-embedding `<enveloppe-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and
+embedding `<rime-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and
 save/load via `change` + `loadDoc`.
 
 ## Prerequisites
@@ -34,9 +34,9 @@ save/load via `change` + `loadDoc`.
    Keep it tiny and dependency-light.
 2. **Vanilla HTML/JS example** — make the README snippet actually run:
    ```html
-   <enveloppe-editor id="editor" style="height:100vh"></enveloppe-editor>
+   <rime-editor id="editor" style="height:100vh"></rime-editor>
    <script type="module">
-     import "@enveloppe/core";
+     import "@nord-forge/rime-core";
      const el = document.getElementById("editor");
      el.config = {
        theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
@@ -47,19 +47,19 @@ save/load via `change` + `loadDoc`.
      if (saved) el.loadDoc(JSON.parse(saved));
    </script>
    ```
-3. **Astro note.** Show the same as an Astro component: import `@enveloppe/core` in a
+3. **Astro note.** Show the same as an Astro component: import `@nord-forge/rime-core` in a
    `<script>` and use `client:only`/`client:load` semantics so the custom element
    registers on the client. Call out that it's a client-side web component (no SSR of the
    editor). Reuse the same `config`/`change`/`loadDoc` wiring.
 4. **Theming pointer.** Link to the `--eb-*` token reference (ENV-51) and show one or
    two overrides inline so theming is obviously CSS-custom-property driven.
-5. **Verify it runs.** The example must actually load the built `@enveloppe/core` (e.g.
+5. **Verify it runs.** The example must actually load the built `@nord-forge/rime-core` (e.g.
    via the demo dev server or a one-file static page) — not a snippet that was never
    executed. Note the exact steps so a reader reproduces it.
 
 ## Acceptance criteria
 - [ ] The README/docs contain a runnable vanilla HTML example embedding
-      `<enveloppe-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and save/load
+      `<rime-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and save/load
       via `change` + `loadDoc`.
 - [ ] An Astro usage note shows the client-only registration pattern with the same API.
 - [ ] The example matches the actual public API (no stale/aspirational calls) and has

@@ -34,9 +34,9 @@ const DOC = {
 
 async function setup(page: Page): Promise<void> {
   await page.goto("/e2e/harness.html");
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
       registerPaletteItem(elm: HTMLElement, t: string): () => void;
@@ -54,7 +54,7 @@ async function setup(page: Page): Promise<void> {
 
 function previewState(page: Page) {
   return page.evaluate(() => {
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const el = host.shadowRoot!.querySelector(
       '[data-eb-overlay="drag-preview"]',
     ) as HTMLElement | null;
@@ -97,7 +97,7 @@ test.describe("drag preview", () => {
       await page.mouse.up();
     }
     const count = await page.evaluate(() => {
-      const host = document.querySelector("enveloppe-editor")!;
+      const host = document.querySelector("rime-editor")!;
       return host.shadowRoot!.querySelectorAll('[data-eb-overlay="drag-preview"]').length;
     });
     expect(count).toBe(0);

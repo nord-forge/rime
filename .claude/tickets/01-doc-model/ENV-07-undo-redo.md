@@ -23,7 +23,7 @@ history entry so a sentence isn't 40 undo steps. Pure, headless, framework-free 
 DOM, no Lexical here.
 
 ## Goal
-`@enveloppe/doc-model` exports a `History` that records patch/inverse pairs and exposes
+`@nord-forge/rime-model` exports a `History` that records patch/inverse pairs and exposes
 `undo()` / `redo()` / `canUndo` / `canRedo`, with a configurable depth cap and same-target
 coalescing.
 
@@ -38,7 +38,7 @@ Create in `packages/doc-model/src/`:
    push the result of an ENV-06 operation, and the history tracks the resulting tree so
    `undo`/`redo` can return the right doc. Sketch (refine as needed):
    ```ts
-   import type { EnveloppeDoc } from "./types";
+   import type { RimeDoc } from "./types";
    import type { Patch } from "./patch";
    import { applyPatch } from "./patch";
 
@@ -61,9 +61,9 @@ Create in `packages/doc-model/src/`:
    }
 
    export class History {
-     constructor(initialDoc: EnveloppeDoc, options?: HistoryOptions);
+     constructor(initialDoc: RimeDoc, options?: HistoryOptions);
 
-     get doc(): EnveloppeDoc;          // current document
+     get doc(): RimeDoc;          // current document
      get canUndo(): boolean;
      get canRedo(): boolean;
 
@@ -74,10 +74,10 @@ Create in `packages/doc-model/src/`:
       * there is no redo stack, merge: keep the FIRST entry's `inverse`, replace its
       * `patch` with the new one, and adopt `next` as current doc.
       */
-     push(next: EnveloppeDoc, patch: Patch, inverse: Patch, coalesceKey?: string): void;
+     push(next: RimeDoc, patch: Patch, inverse: Patch, coalesceKey?: string): void;
 
-     undo(): EnveloppeDoc;   // applies inverse of top undo entry; throws if !canUndo
-     redo(): EnveloppeDoc;   // re-applies patch of top redo entry; throws if !canRedo
+     undo(): RimeDoc;   // applies inverse of top undo entry; throws if !canUndo
+     redo(): RimeDoc;   // re-applies patch of top redo entry; throws if !canRedo
 
      clear(): void;          // reset both stacks (keeps current doc)
    }
@@ -99,7 +99,7 @@ Create in `packages/doc-model/src/`:
 4. **Convenience wrapper (optional but recommended).** Add `record(result, coalesceKey?)`
    taking an ENV-06 op result `{ doc, patch, inverse }` so callers don't destructure:
    ```ts
-   record(result: { doc: EnveloppeDoc; patch: Patch; inverse: Patch }, coalesceKey?: string): void;
+   record(result: { doc: RimeDoc; patch: Patch; inverse: Patch }, coalesceKey?: string): void;
    ```
 5. **Purity / determinism.** No `Date.now()` / `Math.random()` at module top level; the clock
    is injectable via `options.now` (mirrors ENV-05's id-factory rule). `History` holds mutable

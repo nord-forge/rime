@@ -1,6 +1,6 @@
 ---
 id: ENV-45
-title: "@enveloppe/vue wrapper"
+title: "@nord-forge/rime-vue wrapper"
 status: ready
 priority: P1
 milestone: 9 — Framework wrappers & demo
@@ -11,38 +11,38 @@ prd: [§7]
 estimate: M
 ---
 
-# ENV-45 — `@enveloppe/vue` wrapper
+# ENV-45 — `@nord-forge/rime-vue` wrapper
 
 ## Context
-The Vue counterpart to ENV-44: a **thin** wrapper over `<enveloppe-editor>` (§7) giving
+The Vue counterpart to ENV-44: a **thin** wrapper over `<rime-editor>` (§7) giving
 Vue devs an idiomatic component with `v-model` for the doc, plus `theme` and
 `onImageUpload`. It owns no editor logic — it maps Vue props/events/`v-model` onto the
 custom element and matches the README Vue snippet exactly.
 
 ## Goal
-`@enveloppe/vue` exports `<EnveloppeEditor>` supporting `v-model` for the doc,
+`@nord-forge/rime-vue` exports `<RimeEditor>` supporting `v-model` for the doc,
 `:on-image-upload`, and `:theme`, matching the README Vue snippet, with all editor
-logic delegated to `@enveloppe/core`.
+logic delegated to `@nord-forge/rime-core`.
 
 ## Prerequisites
-- ENV-14 done (the element + `EnveloppeConfig`) and ENV-42 (`loadDoc`/`getDoc`/`change`)
+- ENV-14 done (the element + `RimeConfig`) and ENV-42 (`loadDoc`/`getDoc`/`change`)
   for `v-model`. Wire against ENV-14 stubs and tighten when ENV-42 lands.
-- `@enveloppe/core` is `workspace:*`; `vue` is a **peer dep** (not bundled).
+- `@nord-forge/rime-core` is `workspace:*`; `vue` is a **peer dep** (not bundled).
 
 ## Implementation notes
 Create under `packages/vue/src/`:
 
-1. **`EnveloppeEditor.ts`** (SFC or `defineComponent`) — match the README:
+1. **`RimeEditor.ts`** (SFC or `defineComponent`) — match the README:
    ```ts
-   // <EnveloppeEditor v-model="doc" :on-image-upload="uploadToMyCdn" :theme="..." />
+   // <RimeEditor v-model="doc" :on-image-upload="uploadToMyCdn" :theme="..." />
    import { defineComponent, h, ref, watch, onMounted, onBeforeUnmount } from "vue";
-   import "@enveloppe/core";
-   import type { EnveloppeDoc, EnveloppeConfig } from "@enveloppe/core";
+   import "@nord-forge/rime-core";
+   import type { RimeDoc, RimeConfig } from "@nord-forge/rime-core";
 
    export default defineComponent({
      props: {
-       modelValue: { type: Object as () => EnveloppeDoc, default: undefined }, // v-model
-       theme: { type: Object as () => EnveloppeConfig["theme"], default: undefined },
+       modelValue: { type: Object as () => RimeDoc, default: undefined }, // v-model
+       theme: { type: Object as () => RimeConfig["theme"], default: undefined },
        enabledBlocks: { type: Array as () => string[], default: undefined },
        onImageUpload: { type: Function as unknown as () => (f: File) => Promise<string>, default: undefined },
      },
@@ -60,22 +60,22 @@ Create under `packages/vue/src/`:
 4. **Custom-element handling.** Tell Vue the tag is a custom element so it doesn't warn
    /try to resolve it — document the `compilerOptions.isCustomElement` (or
    `app.config.compilerOptions.isCustomElement`) requirement for consumers, and ensure
-   the wrapper renders the element via `h("enveloppe-editor", ...)` so prop binding is
+   the wrapper renders the element via `h("rime-editor", ...)` so prop binding is
    explicit.
 5. **Cleanup.** Remove the `change` listener `onBeforeUnmount` (no leaks).
 6. **Build/peer deps.** `vue` is a peer + dev dependency, externalized in the Vite lib
-   build; `@enveloppe/core` external too. Emit ESM + `.d.ts`.
+   build; `@nord-forge/rime-core` external too. Emit ESM + `.d.ts`.
 7. **No re-implementation.** Wrapper holds no doc state beyond the `v-model` sync.
 
 ## Acceptance criteria
-- [ ] `<EnveloppeEditor v-model="doc" :on-image-upload :theme>` matches the README Vue
+- [ ] `<RimeEditor v-model="doc" :on-image-upload :theme>` matches the README Vue
       snippet.
 - [ ] `v-model` works both ways: external `doc` change → `loadDoc`; an edit →
       `update:modelValue` with the new doc; no feedback loop.
 - [ ] `theme`/`enabledBlocks`/`onImageUpload` map into the element's `config` property
       and update on prop change.
 - [ ] The `change` listener is removed on unmount (no leaks).
-- [ ] `vue`/`@enveloppe/core` are peer/external — not bundled; ESM + `.d.ts` emitted.
+- [ ] `vue`/`@nord-forge/rime-core` are peer/external — not bundled; ESM + `.d.ts` emitted.
 - [ ] Consumer guidance for `isCustomElement` is documented.
 - [ ] Unit tests (Bun + `@vue/test-utils` or equivalent) cover `v-model` both ways and
       config mapping.

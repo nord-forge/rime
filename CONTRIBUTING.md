@@ -1,6 +1,6 @@
-# Contributing to Enveloppe
+# Contributing to Rime
 
-Thanks for your interest! Enveloppe is an open-source, framework-agnostic email
+Thanks for your interest! Rime is an open-source, framework-agnostic email
 template builder. This guide covers the essentials; the authoritative engineering
 rules live in [`.claude/tickets/_conventions.md`](./.claude/tickets/_conventions.md)
 — this file points at them rather than duplicating them.
@@ -10,7 +10,7 @@ By participating you agree to abide by our
 
 ## Getting set up
 
-Enveloppe uses [Bun](https://bun.sh) for the runtime, package management, and
+Rime uses [Bun](https://bun.sh) for the runtime, package management, and
 tests.
 
 ```bash
@@ -27,7 +27,7 @@ bun run format:check  # oxfmt (run `bun run format` to fix)
 bun run typecheck     # tsc
 bun test              # unit tests
 bun run build         # build all packages
-bun run size          # @enveloppe/core bundle-size gate
+bun run size          # @nord-forge/rime-core bundle-size gate
 bun run e2e           # cross-browser Playwright (chromium + webkit)
 ```
 
@@ -39,12 +39,12 @@ oxlint clean · oxfmt applied · tsc clean · core bundle within budget.
 ## Project layout
 
 ```
-packages/doc-model      @enveloppe/doc-model      headless JSON document model
-packages/core           @enveloppe/core           the <enveloppe-editor> Lit web component
-packages/renderer-mjml  @enveloppe/renderer-mjml  doc JSON → MJML → email HTML
-packages/react          @enveloppe/react          React wrapper
-packages/vue            @enveloppe/vue            Vue wrapper
-apps/demo               @enveloppe/demo           runnable demo app
+packages/doc-model      @nord-forge/rime-model      headless JSON document model
+packages/core           @nord-forge/rime-core           the <rime-editor> Lit web component
+packages/renderer-mjml  @nord-forge/rime-mjml  doc JSON → MJML → email HTML
+packages/react          @nord-forge/rime-react          React wrapper
+packages/vue            @nord-forge/rime-vue            Vue wrapper
+apps/demo               @nord-forge/rime-demo           runnable demo app
 ```
 
 The work is planned as tickets — see [`board.md`](./board.md) for the rollup and
@@ -53,7 +53,7 @@ The work is planned as tickets — see [`board.md`](./board.md) for the rollup a
 
 ## The bundle budget
 
-`@enveloppe/core` must stay **≤ ~100 kB gzip** (editor only; the MJML renderer is
+`@nord-forge/rime-core` must stay **≤ ~100 kB gzip** (editor only; the MJML renderer is
 a separate package and excluded). CI fails over budget. If a change pushes core
 over, that's a blocker, not a warning. **Any new runtime dependency must declare
 its gzip cost in the PR description.**

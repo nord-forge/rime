@@ -14,11 +14,11 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
-      fileName: () => 'enveloppe-core.js',
+      fileName: () => 'rime-core.js',
     },
     rollupOptions: {
       // Lit is a real peer dep in the lib; externalize it so we measure OUR code,
-      // not Lit's runtime (mirrors how @enveloppe/core will ship).
+      // not Lit's runtime (mirrors how @nord-forge/rime-core will ship).
       external: ['lit', /^lit\//],
     },
     reportCompressedSize: true,

@@ -17,7 +17,7 @@ estimate: M
 Every later ticket leans on a green CI to prove "done". This ticket stands up the
 GitHub Actions pipeline that runs the same checks the local `_conventions.md` gate
 demands — install, lint, format-check, unit tests, build — plus the one gate that
-cannot be left to a human: the **`@enveloppe/core` ≤ ~100 kB gzip budget** (§10,
+cannot be left to a human: the **`@nord-forge/rime-core` ≤ ~100 kB gzip budget** (§10,
 OD-4). The toolchain is already proven (OD-2): `.claude/spikes/od2-toolchain/measure.ts`
 is the working prototype of the size gate and `.claude/spikes/od2-toolchain/FINDINGS.md`
 shows the exact pipeline stages that pass in Chromium + WebKit. Reuse them; do not
@@ -69,7 +69,7 @@ build, or the core gzip budget regresses — green on a clean `main`.
 ## Acceptance criteria
 - [ ] `.github/workflows/ci.yml` runs on push + pull_request and executes, in order:
       install (frozen) · oxlint · oxfmt-check · `bun test` · build · size gate.
-- [ ] The size gate measures `@enveloppe/core`'s built gzip and **fails (exit 1)**
+- [ ] The size gate measures `@nord-forge/rime-core`'s built gzip and **fails (exit 1)**
       when it exceeds `BUDGET_GZIP` (default 100 kB); passes when under.
 - [ ] Budget is overridable via the `BUDGET_GZIP` env var.
 - [ ] A deliberate over-budget core build turns the `size` step red (demonstrated

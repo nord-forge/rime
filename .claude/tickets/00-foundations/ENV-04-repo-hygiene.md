@@ -14,7 +14,7 @@ estimate: S
 # ENV-04 — Repo hygiene — README, CONTRIBUTING, templates, LICENSE
 
 ## Context
-Enveloppe is an OSS project whose primary persona is the embedding developer (§1,
+Rime is an OSS project whose primary persona is the embedding developer (§1,
 §4). First impressions are the README and contribution scaffolding; a clean,
 welcoming repo is part of the product. A README draft already exists at the repo
 root — refine it (don't rewrite from scratch) — and add the standard OSS files a
@@ -55,7 +55,7 @@ MIT LICENSE — all consistent with the PRD/board.
    - Branch + commit conventions from `_conventions.md`: branch off default; commit
      message `type(ENV-NN): summary`; **no AI/`Co-Authored-By` attribution** in
      commits or PRs.
-   - Note the bundle budget (`@enveloppe/core` ≤ ~100 kB gzip) and that new runtime
+   - Note the bundle budget (`@nord-forge/rime-core` ≤ ~100 kB gzip) and that new runtime
      deps must declare their gzip cost in the PR.
    - Point to `board.md` for the ticket plan and to the `.claude/tickets/` files.
 3. **`CODE_OF_CONDUCT.md`** (root) — adopt **Contributor Covenant v2.1** verbatim;
@@ -69,7 +69,7 @@ MIT LICENSE — all consistent with the PRD/board.
    - `PULL_REQUEST_TEMPLATE.md` — checklist mirroring the Done gate: tests pass,
      oxlint/oxfmt clean, `tsc` clean, **core bundle within budget**, cross-browser
      where applicable, linked ticket `ENV-NN`.
-5. **LICENSE** — confirm root `LICENSE` is MIT (it is: "MIT License", 2026 Enveloppe
+5. **LICENSE** — confirm root `LICENSE` is MIT (it is: "MIT License", 2026 Rime
    contributors). Add an SPDX line / `"license": "MIT"` to any package.json missing
    it. No change if already correct — just verify and note in the PR.
 

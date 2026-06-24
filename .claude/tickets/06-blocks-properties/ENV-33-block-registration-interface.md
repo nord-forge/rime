@@ -24,7 +24,7 @@ MJML renderer (ENV-11) all read from. Getting this seam right is what makes ENV-
 target shape — match it exactly.
 
 ## Goal
-`@enveloppe/core` exports `registerBlock(def)` plus a `BlockRegistry` such that a
+`@nord-forge/rime-core` exports `registerBlock(def)` plus a `BlockRegistry` such that a
 single definition (`{ schema, renderCanvas, renderExport, palette }`) wires a block
 into the palette, properties panel, canvas preview, and export — and the seven core
 blocks are registered through this same function with no special-case path.
@@ -59,7 +59,7 @@ Create under `packages/core/src/blocks/`:
    ```
 2. **`types.ts`** — the `BlockDefinition` (match README):
    ```ts
-   import type { BaseNode, BlockStyle } from "@enveloppe/doc-model";
+   import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
    import type { BlockSchema } from "./schema";
 
    /** Palette metadata + the default node props a freshly-dropped block gets. */
@@ -120,7 +120,7 @@ Create under `packages/core/src/blocks/`:
    - **Export (ENV-11):** expose a function that turns `renderExport` output into the
      `BlockRenderer` shape `docToMjml` already consumes (`{ mjml }` → inline,
      `{ raw }` → raw-table passthrough for ENV-12). Keep the renderer-mjml package
-     free of a `@enveloppe/core` import — pass the registry's export functions **in**
+     free of a `@nord-forge/rime-core` import — pass the registry's export functions **in**
      (the editor calls the renderer with a doc; the renderer stays standalone). For
      core-block export, ENV-34 registers handlers that mirror ENV-11's built-in
      mapping; document that the registry is the SDK seam, ENV-11's hardcoded handlers

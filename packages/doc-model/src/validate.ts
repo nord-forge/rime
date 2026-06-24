@@ -3,7 +3,7 @@
 // shapes, legal parent→child nesting, unique ids, and column-width sums, and
 // reports every problem with a precise JSON-ish `path`.
 
-import { type EnveloppeDoc, LEAF_TYPES } from "./types";
+import { type RimeDoc, LEAF_TYPES } from "./types";
 import type { Mark } from "./rich-text";
 
 /** A single validation problem, located by `path`. */
@@ -13,15 +13,13 @@ export interface ValidationError {
   message: string;
 }
 
-export type ValidateResult =
-  | { ok: true; doc: EnveloppeDoc }
-  | { ok: false; errors: ValidationError[] };
+export type ValidateResult = { ok: true; doc: RimeDoc } | { ok: false; errors: ValidationError[] };
 
 const VALID_MARKS = new Set<Mark>(["bold", "italic", "underline"]);
 const VALID_ALIGN = new Set(["left", "center", "right"]);
 const COLUMN_SUM_TOLERANCE = 1; // ±1% for rounding
 
-/** Validate an unknown value as an EnveloppeDoc. */
+/** Validate an unknown value as an RimeDoc. */
 export function validateDoc(value: unknown): ValidateResult {
   const errors: ValidationError[] = [];
   const seenIds = new Set<string>();
@@ -29,7 +27,7 @@ export function validateDoc(value: unknown): ValidateResult {
   validateDocument(value, "$", errors, seenIds);
 
   if (errors.length > 0) return { ok: false, errors };
-  return { ok: true, doc: value as EnveloppeDoc };
+  return { ok: true, doc: value as RimeDoc };
 }
 
 function isObject(v: unknown): v is Record<string, unknown> {

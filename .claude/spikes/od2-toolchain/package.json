@@ -1,5 +1,5 @@
 {
-  "name": "@enveloppe/spike-od2-toolchain",
+  "name": "@nord-forge/rime-spike-od2-toolchain",
   "version": "0.0.0",
   "private": true,
   "description": "OD-2 spike: build a real Lit + CSS + iframe web component with stock Vite vs rolldown-vite; establish the bundle-size gate (OD-4).",

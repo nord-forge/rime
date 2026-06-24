@@ -30,8 +30,8 @@ What actually happened (include errors, screenshots, or a screen recording).
 - **Browser(s):** <!-- e.g. Chrome 124, Safari 17.4. Safari/WebKit issues are
   high-priority — most rendering/pointer/contenteditable quirks live there, so
   please call it out explicitly if you saw it there. -->
-- **Package + version:** <!-- e.g. @enveloppe/core 0.1.0 -->
-- **Framework wrapper (if any):** <!-- @enveloppe/react / @enveloppe/vue / none -->
+- **Package + version:** <!-- e.g. @nord-forge/rime-core 0.1.0 -->
+- **Framework wrapper (if any):** <!-- @nord-forge/rime-react / @nord-forge/rime-vue / none -->
 - **OS:**
 
 ## Additional context

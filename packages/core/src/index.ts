@@ -1,16 +1,16 @@
-// @enveloppe/core — the <enveloppe-editor> Lit web component.
+// @nord-forge/rime-core — the <rime-editor> Lit web component.
 // See PRD §6.4–§6.8.
 //
-// Importing this module defines the <enveloppe-editor> custom element. The canvas
+// Importing this module defines the <rime-editor> custom element. The canvas
 // iframe, drag-and-drop, rich text, palette, and properties panel mount into the
 // shell's regions in later milestones.
 
 export {
-  EnveloppeEditor,
-  type EnveloppeChangeDetail,
-  type EnveloppeConfig,
+  RimeEditor,
+  type RimeChangeDetail,
+  type RimeConfig,
   type TokenSource,
-} from "./enveloppe-editor/enveloppe-editor";
+} from "./rime-editor/rime-editor";
 export { EB_TOKENS, type EbTheme, type EbToken } from "./theme/tokens/tokens";
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer/canvas-renderer";

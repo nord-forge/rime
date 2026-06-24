@@ -122,7 +122,7 @@ declare global {
 
 /** Build the destination list for a leaf block from the current doc. */
 export function destinationsFor(
-  doc: import("@enveloppe/doc-model").EnveloppeDoc,
+  doc: import("@nord-forge/rime-model").RimeDoc,
   id: string,
 ): MoveDestination[] {
   const out: MoveDestination[] = [];

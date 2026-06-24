@@ -19,18 +19,18 @@ An agent implementing any ticket MUST follow these. They are the implicit
 
 ## Monorepo layout (Bun workspaces)
 ```
-packages/doc-model      @enveloppe/doc-model     (headless JSON model)
-packages/core           @enveloppe/core          (<enveloppe-editor> Lit WC)
-packages/renderer-mjml  @enveloppe/renderer-mjml (doc → MJML → HTML)
-packages/react          @enveloppe/react
-packages/vue            @enveloppe/vue
-apps/demo               @enveloppe/demo
+packages/doc-model      @nord-forge/rime-model     (headless JSON model)
+packages/core           @nord-forge/rime-core          (<rime-editor> Lit WC)
+packages/renderer-mjml  @nord-forge/rime-mjml (doc → MJML → HTML)
+packages/react          @nord-forge/rime-react
+packages/vue            @nord-forge/rime-vue
+apps/demo               @nord-forge/rime-demo
 .claude/spikes/*                throwaway proofs — DO NOT import from production code
 ```
 Cross-package deps use `workspace:*`.
 
 ## Hard product constraints (from PRD — every ticket inherits these)
-- **`@enveloppe/core` ≤ ~100 kB gzip** (editor only; MJML renderer is a separate
+- **`@nord-forge/rime-core` ≤ ~100 kB gzip** (editor only; MJML renderer is a separate
   package and excluded). CI fails over budget. If a change pushes core over,
   that's a blocker, not a warning.
 - **One document model** = source of truth. Immutable JSON tree; undo via patch

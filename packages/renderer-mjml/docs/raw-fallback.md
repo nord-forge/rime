@@ -13,7 +13,7 @@ ordinary `BlockRenderer` registered through the same path as the built-ins.
 A custom "coupon" leaf block that renders as a raw table:
 
 ```ts
-import { MjmlRenderer, createRawBlockRenderer } from "@enveloppe/renderer-mjml";
+import { MjmlRenderer, createRawBlockRenderer } from "@nord-forge/rime-mjml";
 
 const couponRenderer = createRawBlockRenderer("coupon", (node) => `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

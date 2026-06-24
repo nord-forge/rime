@@ -8,7 +8,7 @@
 // through immutable applyPatch. The clock is injectable so tests are
 // deterministic without faking timers.
 
-import type { EnveloppeDoc } from "./types";
+import type { RimeDoc } from "./types";
 import { applyPatch, type Patch } from "./patch";
 
 export interface HistoryEntry {
@@ -33,7 +33,7 @@ export interface HistoryOptions {
 
 /** An applied operation's result, as produced by the operations layer. */
 export interface AppliedOp {
-  doc: EnveloppeDoc;
+  doc: RimeDoc;
   patch: Patch;
   inverse: Patch;
 }
@@ -42,14 +42,14 @@ const DEFAULT_MAX_DEPTH = 100;
 const DEFAULT_COALESCE_WINDOW_MS = 500;
 
 export class History {
-  #doc: EnveloppeDoc;
+  #doc: RimeDoc;
   readonly #maxDepth: number;
   readonly #coalesceWindowMs: number;
   readonly #now: () => number;
   #undoStack: HistoryEntry[] = [];
   #redoStack: HistoryEntry[] = [];
 
-  constructor(initialDoc: EnveloppeDoc, options: HistoryOptions = {}) {
+  constructor(initialDoc: RimeDoc, options: HistoryOptions = {}) {
     this.#doc = initialDoc;
     this.#maxDepth = Math.max(1, options.maxDepth ?? DEFAULT_MAX_DEPTH);
     this.#coalesceWindowMs = options.coalesceWindowMs ?? DEFAULT_COALESCE_WINDOW_MS;
@@ -57,7 +57,7 @@ export class History {
   }
 
   /** The current document. */
-  get doc(): EnveloppeDoc {
+  get doc(): RimeDoc {
     return this.#doc;
   }
 
@@ -80,7 +80,7 @@ export class History {
    * `coalesceKey` matches the previous entry within the window (and no redo is
    * pending), the two merge into one entry that a single undo reverts.
    */
-  push(next: EnveloppeDoc, patch: Patch, inverse: Patch, coalesceKey?: string): void {
+  push(next: RimeDoc, patch: Patch, inverse: Patch, coalesceKey?: string): void {
     const time = this.#now();
     const previous = this.#undoStack[this.#undoStack.length - 1];
 
@@ -116,7 +116,7 @@ export class History {
   }
 
   /** Step backward: apply the top entry's inverse. Throws if `!canUndo`. */
-  undo(): EnveloppeDoc {
+  undo(): RimeDoc {
     const entry = this.#undoStack.pop();
     if (!entry) throw new Error("nothing to undo");
     this.#doc = applyPatch(this.#doc, entry.inverse);
@@ -125,7 +125,7 @@ export class History {
   }
 
   /** Step forward: re-apply the top redo entry's patch. Throws if `!canRedo`. */
-  redo(): EnveloppeDoc {
+  redo(): RimeDoc {
     const entry = this.#redoStack.pop();
     if (!entry) throw new Error("nothing to redo");
     this.#doc = applyPatch(this.#doc, entry.patch);

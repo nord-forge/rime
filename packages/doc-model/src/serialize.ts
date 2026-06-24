@@ -4,7 +4,7 @@
 // nodes are plain serializable data (the schema forbids functions). On load we always
 // re-validate via the schema validator and never throw.
 
-import type { EnveloppeDoc } from "./types";
+import type { RimeDoc } from "./types";
 import { validateDoc, type ValidationError } from "./validate";
 
 /** Bump when the on-disk shape changes; deserialize migrates older versions forward. */
@@ -13,7 +13,7 @@ export const SCHEMA_VERSION = 1;
 /** The persisted wrapper around a document. */
 export interface DocEnvelope {
   version: number;
-  doc: EnveloppeDoc;
+  doc: RimeDoc;
 }
 
 /** Options for `serialize`. */
@@ -23,13 +23,13 @@ export interface SerializeOptions {
 }
 
 /** Serialize a doc into a stable, versioned string (compact by default). */
-export function serialize(doc: EnveloppeDoc, options: SerializeOptions = {}): string {
+export function serialize(doc: RimeDoc, options: SerializeOptions = {}): string {
   const envelope: DocEnvelope = { version: SCHEMA_VERSION, doc };
   return options.pretty ? JSON.stringify(envelope, null, 2) : JSON.stringify(envelope);
 }
 
 export type DeserializeResult =
-  | { ok: true; doc: EnveloppeDoc; version: number }
+  | { ok: true; doc: RimeDoc; version: number }
   | { ok: false; errors: ValidationError[] };
 
 function isObject(v: unknown): v is Record<string, unknown> {

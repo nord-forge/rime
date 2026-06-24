@@ -17,18 +17,18 @@ estimate: S
 Integrators must declare their own merge-tag set (`{{first_name}}`, `{{order_total}}`,
 …) — this is the personalization parallel to `registerBlock` (§6.8/6.9). Tokens come
 two ways, matching the hybrid extensibility philosophy: **declarative** via
-`config.tokenSources` (JSON at init, already typed on `EnveloppeConfig` in ENV-14) and
+`config.tokenSources` (JSON at init, already typed on `RimeConfig` in ENV-14) and
 **programmatic** via `registerToken`. Both feed one token registry that the picker
 (ENV-40) reads. No conditionals/loops — just a named, labeled token set.
 
 ## Goal
-`@enveloppe/core` exports `registerToken` + a `TokenRegistry`, and the editor merges
+`@nord-forge/rime-core` exports `registerToken` + a `TokenRegistry`, and the editor merges
 `config.tokenSources` into it at init, so the token picker has a single authoritative,
 grouped token list.
 
 ## Prerequisites
 - ENV-39 done (the token node + `insertToken`; tokens are inserted by `key`).
-- ENV-14's `EnveloppeConfig.tokenSources` (`TokenSource { id; label; tokens: { key;
+- ENV-14's `RimeConfig.tokenSources` (`TokenSource { id; label; tokens: { key;
   label }[] }`) — the declarative channel already typed there.
 
 ## Implementation notes

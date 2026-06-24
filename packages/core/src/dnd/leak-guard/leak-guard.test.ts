@@ -8,7 +8,7 @@ import {
   type DocumentNode,
   insertNode,
   moveNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import { CanvasRenderer } from "../../canvas/canvas-renderer/canvas-renderer";
 import { DragCoordinateController } from "../../canvas/coordinate-controller/coordinate-controller";
 import { CleanupRegistry } from "../cleanup-registry/cleanup-registry";

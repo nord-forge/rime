@@ -14,7 +14,7 @@ estimate: S
 # ENV-48 — <30-min embed test
 
 ## Context
-The primary success metric (§11) is DX: "a developer can embed `<enveloppe-editor>`,
+The primary success metric (§11) is DX: "a developer can embed `<rime-editor>`,
 theme it, and save/load a template in **< 30 minutes** from the README." This ticket is
 the measured proof — a fresh developer (or a developer simulating one, on a clean
 machine/checkout, README only, no tribal knowledge) does exactly that and **times it**.
@@ -34,9 +34,9 @@ friction filed as fixes.
 ## Implementation notes
 1. **Set up a clean consumer.** Outside the monorepo (or a throwaway dir), create a
    minimal app (React via the wrapper, and/or vanilla per ENV-47). Install
-   `@enveloppe/*` from a local tarball/link as a real consumer would.
+   `@nord-forge/*` from a local tarball/link as a real consumer would.
 2. **Follow the README literally.** Only the README's usage section — embed
-   `<EnveloppeEditor>` (or the element), apply a `theme` override, wire `onChange`/
+   `<RimeEditor>` (or the element), apply a `theme` override, wire `onChange`/
    `loadDoc` to a trivial store, set an `onImageUpload`. No reading source, no asking the
    author.
 3. **Time it.** Record wall-clock from "empty project" to "themed editor that saves and
@@ -52,7 +52,7 @@ friction filed as fixes.
    vanilla path (ENV-47) since they share the README.
 
 ## Acceptance criteria
-- [ ] A clean-room consumer project installs `@enveloppe/*` as a real dependency
+- [ ] A clean-room consumer project installs `@nord-forge/*` as a real dependency
       (tarball/link), not via monorepo internals.
 - [ ] Following only the README, the tester embeds, themes (`--eb-*`), and save/loads a
       template — working end to end.

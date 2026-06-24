@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✉️ Enveloppe
+# ✉️ Rime
 
 **An open-source, framework-agnostic email template builder.**
 
@@ -16,11 +16,11 @@ The polish of Unlayer · the clean editing of Tiptap · the drag-and-drop power 
 
 ## Why
 
-There is no great open-source email template builder. The good ones are closed/commercial (Unlayer, Stripo, Beefree); the open one (GrapesJS) is powerful but unpolished and not email-specific. Enveloppe fills that gap — a beautiful, embeddable, themeable email builder any developer can drop into an Astro/JS, React, or Vue app and extend with custom blocks.
+There is no great open-source email template builder. The good ones are closed/commercial (Unlayer, Stripo, Beefree); the open one (GrapesJS) is powerful but unpolished and not email-specific. Rime fills that gap — a beautiful, embeddable, themeable email builder any developer can drop into an Astro/JS, React, or Vue app and extend with custom blocks.
 
 ## What it is
 
-- **`<enveloppe-editor>`** — a Lit web component you embed anywhere.
+- **`<rime-editor>`** — a Lit web component you embed anywhere.
 - **One unified canvas** — drag blocks to build, click text to edit inline, tune structure in a properties panel (the Unlayer model, cleaner skin).
 - **Bulletproof output** — compiles to Outlook-safe email HTML via **MJML**.
 - **Headless & themeable** — JSON in / JSON out, image uploads via your callback, theme via CSS custom properties.
@@ -30,9 +30,9 @@ There is no great open-source email template builder. The good ones are closed/c
 
 ### Vanilla / Astro
 ```html
-<enveloppe-editor id="editor"></enveloppe-editor>
+<rime-editor id="editor"></rime-editor>
 <script type="module">
-  import '@enveloppe/core';
+  import '@nord-forge/rime-core';
   const el = document.getElementById('editor');
   el.config = {
     theme: { '--eb-color-accent': '#5b5bd6', '--eb-radius': '10px' },
@@ -45,9 +45,9 @@ There is no great open-source email template builder. The good ones are closed/c
 
 ### React
 ```tsx
-import { EnveloppeEditor } from '@enveloppe/react';
+import { RimeEditor } from '@nord-forge/rime-react';
 
-<EnveloppeEditor
+<RimeEditor
   doc={doc}
   theme={{ '--eb-color-accent': '#5b5bd6' }}
   onImageUpload={uploadToMyCdn}
@@ -58,16 +58,16 @@ import { EnveloppeEditor } from '@enveloppe/react';
 ### Vue
 ```vue
 <script setup>
-import { EnveloppeEditor } from '@enveloppe/vue';
+import { RimeEditor } from '@nord-forge/rime-vue';
 </script>
 <template>
-  <EnveloppeEditor v-model="doc" :on-image-upload="uploadToMyCdn" />
+  <RimeEditor v-model="doc" :on-image-upload="uploadToMyCdn" />
 </template>
 ```
 
 ### Custom block (the extension model)
 ```ts
-import { registerBlock } from '@enveloppe/core';
+import { registerBlock } from '@nord-forge/rime-core';
 
 registerBlock({
   schema: { /* props that drive the properties panel */ },
@@ -79,7 +79,7 @@ registerBlock({
 
 ### Export to email HTML
 ```ts
-import { MjmlRenderer } from '@enveloppe/renderer-mjml';
+import { MjmlRenderer } from '@nord-forge/rime-mjml';
 const html = await new MjmlRenderer().render(doc); // Outlook-safe HTML
 ```
 
@@ -87,11 +87,11 @@ const html = await new MjmlRenderer().render(doc); // Outlook-safe HTML
 
 | Package | Purpose |
 |---|---|
-| `@enveloppe/doc-model` | Headless JSON document model, patch-based undo, validation |
-| `@enveloppe/core` | The `<enveloppe-editor>` Lit web component (canvas, DnD, rich text, chrome) |
-| `@enveloppe/renderer-mjml` | Default `Renderer` — doc JSON → MJML → email HTML |
-| `@enveloppe/react` | Thin React wrapper |
-| `@enveloppe/vue` | Thin Vue wrapper |
+| `@nord-forge/rime-model` | Headless JSON document model, patch-based undo, validation |
+| `@nord-forge/rime-core` | The `<rime-editor>` Lit web component (canvas, DnD, rich text, chrome) |
+| `@nord-forge/rime-mjml` | Default `Renderer` — doc JSON → MJML → email HTML |
+| `@nord-forge/rime-react` | Thin React wrapper |
+| `@nord-forge/rime-vue` | Thin Vue wrapper |
 
 ## Architecture at a glance
 
@@ -116,7 +116,7 @@ bun test              # unit tests
 bun run lint          # oxlint
 bun run format:check  # oxfmt
 bun run typecheck     # tsc
-bun run size          # @enveloppe/core bundle-size gate (~100 kB gzip)
+bun run size          # @nord-forge/rime-core bundle-size gate (~100 kB gzip)
 bun run e2e           # cross-browser Playwright (chromium + webkit)
 ```
 
@@ -126,4 +126,4 @@ This is early — the best contribution right now is feedback on the [PRD](./PRD
 
 ## License
 
-[MIT](./LICENSE) © Enveloppe contributors
+[MIT](./LICENSE) © Rime contributors

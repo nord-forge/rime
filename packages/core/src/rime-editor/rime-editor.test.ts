@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import type { EnveloppeConfig, TokenSource } from "./enveloppe-editor";
+import type { RimeConfig, TokenSource } from "./rime-editor";
 
 // The element's DOM behaviour (registration, parts, theme application) is verified
 // in the browser by e2e/editor-shell.spec.ts — bun test has no DOM. Here we assert
 // the public config CONTRACT type-checks, which is the part that must stay stable.
 
-describe("EnveloppeConfig contract", () => {
+describe("RimeConfig contract", () => {
   test("accepts theme tokens, enabledBlocks, onImageUpload, tokenSources", () => {
-    const config: EnveloppeConfig = {
+    const config: RimeConfig = {
       theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
       enabledBlocks: ["text", "image"],
       onImageUpload: async (file: File) => `https://cdn.test/${file.name}`,
@@ -21,7 +21,7 @@ describe("EnveloppeConfig contract", () => {
   });
 
   test("an empty config is valid", () => {
-    const config: EnveloppeConfig = {};
+    const config: RimeConfig = {};
     expect(config).toEqual({});
   });
 

@@ -5,7 +5,7 @@ import {
   createSection,
   createTextBlock,
   type DocumentNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import {
   blockLabel,
   insertMessage,

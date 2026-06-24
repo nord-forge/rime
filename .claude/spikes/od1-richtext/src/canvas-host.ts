@@ -5,7 +5,7 @@ import { EMPTY_DOC } from './adapter';
 // Reproduces the real canvas condition: a Lit web component whose shadow root
 // hosts a same-origin srcdoc iframe; the engine mounts on a plain node INSIDE
 // the iframe document. Exercises the one-instance lifecycle (mount on focus,
-// destroy on blur) that caps memory in @enveloppe/core.
+// destroy on blur) that caps memory in @nord-forge/rime-core.
 
 export class CanvasHost extends LitElement {
   static styles = css`

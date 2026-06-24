@@ -33,7 +33,7 @@ export class LexicalAdapter implements EngineAdapter {
     this.rootEl = editable;
 
     const editor = createEditor({
-      namespace: 'enveloppe-spike',
+      namespace: 'rime-spike',
       // Curated node set = the sanitization boundary.
       nodes: [HeadingNode, QuoteNode],
       onError: (e) => {

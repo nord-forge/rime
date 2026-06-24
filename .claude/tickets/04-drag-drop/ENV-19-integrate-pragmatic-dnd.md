@@ -56,7 +56,7 @@ Create under `packages/core/src/dnd/`:
 
 1. **`dnd-types.ts`** — the typed payloads carried on drags.
    ```ts
-   import type { NodeId, LeafBlock } from "@enveloppe/doc-model";
+   import type { NodeId, LeafBlock } from "@nord-forge/rime-model";
 
    // What a palette item offers, and what an existing block carries.
    export type DragData =

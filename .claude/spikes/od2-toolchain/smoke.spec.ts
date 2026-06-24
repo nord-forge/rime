@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 // Lit is externalized in the lib build, so we import it from a CDN at runtime.
 for (const engine of ['vite', 'rolldown']) {
   test(`${engine} bundle renders themed-panel with applied CSS vars`, async ({ page }) => {
-    const code = readFileSync(`dist/${engine}/enveloppe-core.js`, 'utf8').replace(
+    const code = readFileSync(`dist/${engine}/rime-core.js`, 'utf8').replace(
       /from\s*["']lit["']/g,
       'from "https://esm.sh/lit@3.3.3"',
     ).replace(/from\s*["']lit\/(.*?)["']/g, 'from "https://esm.sh/lit@3.3.3/$1"');

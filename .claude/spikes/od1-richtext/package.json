@@ -1,5 +1,5 @@
 {
-  "name": "@enveloppe/spike-od1-richtext",
+  "name": "@nord-forge/rime-spike-od1-richtext",
   "version": "0.0.0",
   "private": true,
   "description": "OD-1 spike: Tiptap-core vs Lexical inside a Lit + iframe canvas. Measures bundle, Safari, paste, JSON round-trip.",

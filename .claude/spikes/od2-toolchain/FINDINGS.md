@@ -45,7 +45,7 @@ Run through the full intended pipeline with **both** engines.
 
 ## OD-4 input (the bundle gate this establishes)
 `measure.ts` is the prototype of the CI bundle gate ENV-57/OD-4 needs. For the
-real `@enveloppe/core`, set `BUDGET_GZIP` to the agreed budget; the script exits
+real `@nord-forge/rime-core`, set `BUDGET_GZIP` to the agreed budget; the script exits
 non-zero on regression. **Reminder from ENV-56:** the engine choice (Tiptap ~128 kB
 vs Lexical ~43 kB rich text) should be made against whatever total budget OD-4 sets.
 

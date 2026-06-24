@@ -10,7 +10,7 @@ import {
   type DocumentNode,
   type IdFactory,
   type RichTextJSON,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 
 /** Deterministic id factory: `<prefix>_<n>`, no randomness. */
 function seq(): IdFactory {

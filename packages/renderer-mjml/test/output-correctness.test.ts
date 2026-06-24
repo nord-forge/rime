@@ -2,14 +2,14 @@
 // committed test/golden/<name>.html. An unintended renderer change fails here.
 //
 // To intentionally update goldens after a deliberate output change:
-//   bun run --filter='@enveloppe/renderer-mjml' render:fixtures
+//   bun run --filter='@nord-forge/rime-mjml' render:fixtures
 // then review the diff and commit.
 
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { type DocumentNode, validateDoc } from "@enveloppe/doc-model";
+import { type DocumentNode, validateDoc } from "@nord-forge/rime-model";
 import { MjmlRenderer } from "../src/index";
 import { fixtures } from "./fixtures/index";
 import { normalizeHtml } from "./normalize";

@@ -1,5 +1,5 @@
 {
-  "name": "enveloppe",
+  "name": "rime",
   "version": "0.0.0",
   "private": true,
   "description": "An open-source, framework-agnostic email template builder.",
@@ -14,10 +14,10 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "bun test --path-ignore-patterns='**/e2e/**' --path-ignore-patterns='**/spikes/**'",
-    "build": "bun run --filter='@enveloppe/*' build",
-    "typecheck": "bun run --filter='@enveloppe/*' typecheck",
-    "size": "bun run --filter='@enveloppe/core' build && bun run scripts/measure.ts",
-    "e2e": "bun run --filter='@enveloppe/core' e2e"
+    "build": "bun run --filter='@nord-forge/*' build",
+    "typecheck": "bun run --filter='@nord-forge/*' typecheck",
+    "size": "bun run --filter='@nord-forge/rime-core' build && bun run scripts/measure.ts",
+    "e2e": "bun run --filter='@nord-forge/rime-core' e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",

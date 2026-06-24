@@ -30,7 +30,7 @@ entirely with `--eb-*`.
 - ENV-33 done (`BlockSchema`, `FieldDef`, `FieldType`, `blockRegistry`).
 - ENV-06 done (immutable update / `setNodeProps`-style ops that produce a new doc +
   patch). The panel calls these; it does not mutate nodes in place.
-- ENV-14 (`<enveloppe-editor>` shell — `part="properties"` mount + theming pattern).
+- ENV-14 (`<rime-editor>` shell — `part="properties"` mount + theming pattern).
 - A selection signal: which `NodeId` is selected (from ENV-19/canvas selection). If
   selection isn't landed yet, accept the selected node id as a property and document
   the wiring point.
@@ -41,7 +41,7 @@ Create under `packages/core/src/properties/`:
 1. **`properties-panel.ts`** — `EbPropertiesPanel extends LitElement`
    (`eb-properties-panel`):
    ```ts
-   @property({ attribute: false }) doc!: EnveloppeDoc;
+   @property({ attribute: false }) doc!: RimeDoc;
    @property({ attribute: false }) selectedId: NodeId | null = null;
    // emits `eb-doc-change` { detail: { doc, patch } } when a field edits the doc
    ```

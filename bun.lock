@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "enveloppe",
+      "name": "rime",
       "devDependencies": {
         "@playwright/test": "^1.50.1",
         "@types/bun": "^1.1.14",
@@ -16,24 +16,24 @@
       },
     },
     "apps/demo": {
-      "name": "@enveloppe/demo",
+      "name": "@nord-forge/rime-demo",
       "version": "0.0.0",
       "dependencies": {
-        "@enveloppe/core": "workspace:*",
-        "@enveloppe/renderer-mjml": "workspace:*",
+        "@nord-forge/rime-core": "workspace:*",
+        "@nord-forge/rime-mjml": "workspace:*",
         "lit": "^3.2.1",
       },
     },
     "packages/core": {
-      "name": "@enveloppe/core",
+      "name": "@nord-forge/rime-core",
       "version": "0.0.0",
       "dependencies": {
-        "@enveloppe/doc-model": "workspace:*",
         "@lexical/clipboard": "^0.23.1",
         "@lexical/html": "^0.23.1",
         "@lexical/rich-text": "^0.23.1",
         "@lexical/selection": "^0.23.1",
         "@lexical/utils": "^0.23.1",
+        "@nord-forge/rime-model": "workspace:*",
         "lexical": "^0.23.1",
       },
       "peerDependencies": {
@@ -41,15 +41,15 @@
       },
     },
     "packages/doc-model": {
-      "name": "@enveloppe/doc-model",
+      "name": "@nord-forge/rime-model",
       "version": "0.0.0",
     },
     "packages/react": {
-      "name": "@enveloppe/react",
+      "name": "@nord-forge/rime-react",
       "version": "0.0.0",
       "dependencies": {
-        "@enveloppe/core": "workspace:*",
         "@lit/react": "^1.0.6",
+        "@nord-forge/rime-core": "workspace:*",
       },
       "peerDependencies": {
         "react": ">=18",
@@ -57,18 +57,18 @@
       },
     },
     "packages/renderer-mjml": {
-      "name": "@enveloppe/renderer-mjml",
+      "name": "@nord-forge/rime-mjml",
       "version": "0.0.0",
       "dependencies": {
-        "@enveloppe/doc-model": "workspace:*",
+        "@nord-forge/rime-model": "workspace:*",
         "mjml": "^4.15.3",
       },
     },
     "packages/vue": {
-      "name": "@enveloppe/vue",
+      "name": "@nord-forge/rime-vue",
       "version": "0.0.0",
       "dependencies": {
-        "@enveloppe/core": "workspace:*",
+        "@nord-forge/rime-core": "workspace:*",
       },
       "peerDependencies": {
         "vue": ">=3",
@@ -95,18 +95,6 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-c95qOXkHdydNKhscBTebqEC1CVAZpyqOfVfBzQ1qgzyl3gfeldUjIggDbIZgDKsHLgnsM+igH7TJ/eAasaVuMA=="],
 
-    "@enveloppe/core": ["@enveloppe/core@workspace:packages/core"],
-
-    "@enveloppe/demo": ["@enveloppe/demo@workspace:apps/demo"],
-
-    "@enveloppe/doc-model": ["@enveloppe/doc-model@workspace:packages/doc-model"],
-
-    "@enveloppe/react": ["@enveloppe/react@workspace:packages/react"],
-
-    "@enveloppe/renderer-mjml": ["@enveloppe/renderer-mjml@workspace:packages/renderer-mjml"],
-
-    "@enveloppe/vue": ["@enveloppe/vue@workspace:packages/vue"],
-
     "@isaacs/cliui": ["@isaacs/cliui@8.0.2", "", { "dependencies": { "string-width": "^5.1.2", "string-width-cjs": "npm:string-width@^4.2.0", "strip-ansi": "^7.0.1", "strip-ansi-cjs": "npm:strip-ansi@^6.0.1", "wrap-ansi": "^8.1.0", "wrap-ansi-cjs": "npm:wrap-ansi@^7.0.0" } }, "sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
@@ -132,6 +120,18 @@
     "@lit/reactive-element": ["@lit/reactive-element@2.1.2", "", { "dependencies": { "@lit-labs/ssr-dom-shim": "^1.5.0" } }, "sha512-pbCDiVMnne1lYUIaYNN5wrwQXDtHaYtg7YEFPeW+hws6U47WeFvISGUWekPGKWOP1ygrs0ef0o1VJMk1exos5A=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.5", "", { "dependencies": { "@tybys/wasm-util": "^0.10.2" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q=="],
+
+    "@nord-forge/rime-core": ["@nord-forge/rime-core@workspace:packages/core"],
+
+    "@nord-forge/rime-demo": ["@nord-forge/rime-demo@workspace:apps/demo"],
+
+    "@nord-forge/rime-mjml": ["@nord-forge/rime-mjml@workspace:packages/renderer-mjml"],
+
+    "@nord-forge/rime-model": ["@nord-forge/rime-model@workspace:packages/doc-model"],
+
+    "@nord-forge/rime-react": ["@nord-forge/rime-react@workspace:packages/react"],
+
+    "@nord-forge/rime-vue": ["@nord-forge/rime-vue@workspace:packages/vue"],
 
     "@one-ini/wasm": ["@one-ini/wasm@0.1.1", "", {}, "sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw=="],
 
@@ -217,7 +217,7 @@
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
-    "@playwright/test": ["@playwright/test@1.61.0", "", { "dependencies": { "playwright": "1.61.0" }, "bin": { "playwright": "cli.js" } }, "sha512-cKA5B6lpFEMyMGjxF54QihfYpB4FkEGH+qZhtArDEG+wezQAJY8Pq6C7T1SjWz+FFzt3TbyoXBQYk/0292TdJA=="],
+    "@playwright/test": ["@playwright/test@1.61.1", "", { "dependencies": { "playwright": "1.61.1" }, "bin": { "playwright": "cli.js" } }, "sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig=="],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.0-beta.53", "", { "os": "android", "cpu": "arm64" }, "sha512-Ok9V8o7o6YfSdTTYA/uHH30r3YtOxLD6G3wih/U9DO0ucBBFq8WPt/DslU53OgfteLRHITZny9N/qCUxMf9kjQ=="],
 
@@ -247,7 +247,7 @@
 
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.0-beta.53", "", {}, "sha512-vENRlFU4YbrwVqNDZ7fLvy+JR1CRkyr01jhSiDpE1u6py3OMzQfztQU2jxykW3ALNxO4kSlqIDeYyD0Y9RcQeQ=="],
 
-    "@tybys/wasm-util": ["@tybys/wasm-util@0.10.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg=="],
+    "@tybys/wasm-util": ["@tybys/wasm-util@0.10.3", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg=="],
 
     "@types/bun": ["@types/bun@1.3.14", "", { "dependencies": { "bun-types": "1.3.14" } }, "sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw=="],
 
@@ -545,9 +545,9 @@
 
     "picomatch": ["picomatch@4.0.4", "", {}, "sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A=="],
 
-    "playwright": ["playwright@1.61.0", "", { "dependencies": { "playwright-core": "1.61.0" }, "optionalDependencies": { "fsevents": "2.3.2" }, "bin": { "playwright": "cli.js" } }, "sha512-Z+7BeeqQPRRzklHsVFP4KTGIyMxKUmfeRA4WisM6G3/XW6nwGeX6fX9qYaDa+CiUqpOkb2f6X3nar05R3kSuJQ=="],
+    "playwright": ["playwright@1.61.1", "", { "dependencies": { "playwright-core": "1.61.1" }, "optionalDependencies": { "fsevents": "2.3.2" }, "bin": { "playwright": "cli.js" } }, "sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ=="],
 
-    "playwright-core": ["playwright-core@1.61.0", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-caX7TrY3Ml6egyDX0WUcTHDxodl/b51y5wJOdCEA36QviK/s2g081hvmGs8eaE3DWb6NYZQ6BjO/QkNRPenoPA=="],
+    "playwright-core": ["playwright-core@1.61.1", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg=="],
 
     "postcss": ["postcss@8.5.15", "", { "dependencies": { "nanoid": "^3.3.12", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A=="],
 

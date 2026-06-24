@@ -1,4 +1,4 @@
-// Shared contract both engines must satisfy, mirroring how @enveloppe/core
+// Shared contract both engines must satisfy, mirroring how @nord-forge/rime-core
 // will use the engine: mount on a plain node inside the iframe canvas,
 // edit one block, serialize to/from the doc-model JSON, then destroy.
 //

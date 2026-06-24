@@ -6,7 +6,7 @@ import { expect, test } from "./fixtures";
 test.describe("editor harness smoke", () => {
   test("element is defined and visible", async ({ editor, page }) => {
     await expect(editor.host).toBeVisible();
-    const defined = await page.evaluate(() => !!customElements.get("enveloppe-editor"));
+    const defined = await page.evaluate(() => !!customElements.get("rime-editor"));
     expect(defined).toBe(true);
   });
 

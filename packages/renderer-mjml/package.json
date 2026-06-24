@@ -1,7 +1,7 @@
 {
-  "name": "@enveloppe/renderer-mjml",
+  "name": "@nord-forge/rime-mjml",
   "version": "0.0.0",
-  "description": "Default Enveloppe Renderer: doc JSON → MJML → Outlook-safe email HTML.",
+  "description": "Default Rime Renderer: doc JSON → MJML → Outlook-safe email HTML.",
   "license": "MIT",
   "files": [
     "dist"
@@ -27,7 +27,7 @@
     "render:fixtures": "bun run scripts/render-fixtures.ts"
   },
   "dependencies": {
-    "@enveloppe/doc-model": "workspace:*",
+    "@nord-forge/rime-model": "workspace:*",
     "mjml": "^4.15.3"
   }
 }

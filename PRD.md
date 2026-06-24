@@ -1,4 +1,4 @@
-# Enveloppe — Product Requirements Document
+# Rime — Product Requirements Document
 
 > An open-source, framework-agnostic email template builder.
 > The look-and-feel of Unlayer, the clean editing of Tiptap, the drag-and-drop power of GrapesJS — without the ugly UI, and without the closed source.
@@ -6,8 +6,8 @@
 - **Status:** Draft v0.1 (pre-implementation)
 - **Last updated:** 2026-06-22
 - **License:** MIT
-- **Package scope:** `@enveloppe/*` · **Custom element:** `<enveloppe-editor>`
-- **Repo:** `~/Documents/open-source/enveloppe`
+- **Package scope:** `@nord-forge/*` · **Custom element:** `<rime-editor>`
+- **Repo:** `~/Documents/open-source/rime`
 
 ---
 
@@ -15,7 +15,7 @@
 
 There is a real gap in the developer landscape: there is **no great open-source email template builder**. The good ones (Unlayer, Stripo, Beefree) are closed/commercial. The open one (GrapesJS) is powerful but visually unpolished and not purpose-built for email. Developers who want to embed an email builder in their own product currently must either pay per-seat for a SaaS widget or bolt together GrapesJS and fight its UI.
 
-Enveloppe closes that gap: a **beautiful, framework-agnostic, embeddable** email builder that developers can drop into Astro/JS, React, and Vue apps, theme to match their product, and extend with custom blocks — released under MIT for the whole ecosystem.
+Rime closes that gap: a **beautiful, framework-agnostic, embeddable** email builder that developers can drop into Astro/JS, React, and Vue apps, theme to match their product, and extend with custom blocks — released under MIT for the whole ecosystem.
 
 ## 2. Vision
 
@@ -42,7 +42,7 @@ Enveloppe closes that gap: a **beautiful, framework-agnostic, embeddable** email
 ## 4. Target users & personas
 
 **Primary (decisions favour this persona): developers embedding the builder.**
-The customer is the integrator who drops `<enveloppe-editor>` into their SaaS/app so *their* users design emails. When priorities conflict, DX, theming, framework wrappers, and the extension APIs win.
+The customer is the integrator who drops `<rime-editor>` into their SaaS/app so *their* users design emails. When priorities conflict, DX, theming, framework wrappers, and the extension APIs win.
 
 **Secondary: the end-users** (marketers/creators) who use the builder inside the integrator's product. The out-of-the-box experience must be excellent by default — the demo app exists to prove this.
 
@@ -93,7 +93,7 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
 
 ### 6.6 Drag-and-drop engine
 - **Canvas DnD = custom pointer-event handling inside the iframe** (OD-6, resolved 2026-06-23). Pragmatic drag-and-drop was the initial choice but binds to the host `document` and uses native HTML5 drag, which the same-origin srcdoc iframe canvas (§6.4) defeats; we use `pointerdown/move/up` via the single drag controller (§6.4) instead. Still purpose-built for **nested drop zones** (sections → columns → blocks), with touch support and a custom drag-preview — just hand-rolled on pointer events rather than a library, which the iframe's clean coordinate system makes straightforward.
-- **Accessibility is owned by Enveloppe regardless of engine:** a parallel keyboard-reordering path (select block → move up/down/into via keyboard or a "move to" menu) and **ARIA live-region announcements** ("Moved Button to Column 2, position 1 of 3"). Screen-reader/keyboard users cannot drag; this parallel input model is mandatory, not optional.
+- **Accessibility is owned by Rime regardless of engine:** a parallel keyboard-reordering path (select block → move up/down/into via keyboard or a "move to" menu) and **ARIA live-region announcements** ("Moved Button to Column 2, position 1 of 3"). Screen-reader/keyboard users cannot drag; this parallel input model is mandatory, not optional.
 - Drop-zone **detection logic** is the stated do-or-die: it must be performant (throttled / `requestAnimationFrame`-disciplined hit-testing) and consistent across browsers and hardware tiers.
 
 ### 6.7 Rich-text editing (inline)
@@ -150,10 +150,10 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
 ## 8. Repository structure
 
 ```
-enveloppe/
+rime/
 ├── packages/
 │   ├── doc-model/        # headless JSON doc model, patch/undo, schema, validation
-│   ├── core/             # Lit <enveloppe-editor> web component (canvas, chrome, DnD, rich text)
+│   ├── core/             # Lit <rime-editor> web component (canvas, chrome, DnD, rich text)
 │   ├── renderer-mjml/    # default Renderer impl (doc JSON → MJML → email HTML)
 │   ├── react/            # thin React wrapper
 │   └── vue/              # thin Vue wrapper
@@ -178,12 +178,12 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 - **Drag at ~60fps** — no visible jank while dragging a block over a realistic newsletter.
 - **Bounded drop-detection latency** — hit-testing/drop-zone detection stays within a defined per-frame budget (target: well under one frame at 60fps; exact ms budget set during the DnD-perf ticket).
 - **Capped memory** — at most one live rich-text instance; patch-based (not snapshot) undo; no leaked listeners/observers across drag operations (verified).
-- **Bundle size budget** — `@enveloppe/core` ≤ **~100 kB gzip** (editor only; MJML renderer excluded). Set by OD-4; enforced in CI via `measure.ts`. This budget drove the Lexical engine choice (OD-1).
+- **Bundle size budget** — `@nord-forge/rime-core` ≤ **~100 kB gzip** (editor only; MJML renderer excluded). Set by OD-4; enforced in CI via `measure.ts`. This budget drove the Lexical engine choice (OD-1).
 
 ## 11. Success metrics
 
 **Primary — developer adoption & DX:**
-- A developer can embed `<enveloppe-editor>`, theme it, and save/load a template in **< 30 minutes** from the README.
+- A developer can embed `<rime-editor>`, theme it, and save/load a template in **< 30 minutes** from the README.
 - GitHub stars / npm installs / real projects integrating it.
 
 **Hard release gates (must pass before any release, regardless of DX):**
@@ -221,7 +221,7 @@ These are release gates, measured on a **low-end ("potato PC") reference machine
 | OD-1 | **Rich-text engine** (Tiptap vs Lexical) | ✅ **RESOLVED 2026-06-22 → Lexical (presumptive), confirm at ENV-27.** Initially Tiptap on ergonomics, but the ~100 kB OD-4 budget (below) is exceeded by Tiptap's rich text alone (~128 kB) — flips to Lexical (~43 kB wired, paste parity proven). Hard-confirm against measured core weight at ENV-27. See `.claude/spikes/od1-richtext/FINDINGS.md` + `ENV-56-FINDINGS.md`. |
 | OD-2 | **Build toolchain** (rolldown-vite + Lit + CSS) stability | ✅ **RESOLVED 2026-06-22 → rolldown-vite.** Spike (`.claude/spikes/od2-toolchain/FINDINGS.md`) proved it builds AND runs a Lit + `css\`\`` + CSS-vars + iframe component, identical to stock Vite, passing browser smoke in Chromium + WebKit. oxlint/oxfmt confirmed Lit-safe. Stock Vite kept as drop-in fallback. Size gate (`measure.ts`) prototyped for OD-4. |
 | OD-3 | Exact **drop-detection latency budget** (ms) | ✅ **RESOLVED 2026-06-23 → drop-detection p95 ≤ 8 ms/frame (half a 16.6 ms frame) + ≥ 95% of drag frames ≤ 16.6 ms (~60fps).** Measured under 4× CPU throttle (low-end proxy) over a realistic newsletter fixture: 99.2% of frames within budget, detection p95 < 0.1 ms (pure arithmetic over pre-snapshotted geometry — no per-frame layout reads). Enforced by `packages/core/bench/dnd-perf.bench.ts`; see `packages/core/PERF-DND-FINDINGS.md`. Physical-hardware sign-off is ENV-49. |
-| OD-4 | **Core bundle-size budget** (gzipped) | ✅ **RESOLVED 2026-06-22 → ~100 kB gzip** for `@enveloppe/core` (editor only; MJML renderer excluded, runs at export). Best-in-class lean, potato-PC-first. Enforced in CI via `measure.ts` (from OD-2). **This budget decides OD-1 (see below).** |
+| OD-4 | **Core bundle-size budget** (gzipped) | ✅ **RESOLVED 2026-06-22 → ~100 kB gzip** for `@nord-forge/rime-core` (editor only; MJML renderer excluded, runs at export). Best-in-class lean, potato-PC-first. Enforced in CI via `measure.ts` (from OD-2). **This budget decides OD-1 (see below).** |
 | OD-5 | Block → MJML mapping gaps | Per-block raw-table fallback authored in the renderer when MJML can't express a block. |
 | OD-6 | **Canvas DnD engine** (Pragmatic vs custom) | ✅ **RESOLVED 2026-06-23 → custom pointer-event DnD for the canvas; Pragmatic dropped.** Pragmatic DnD binds drag listeners to the top-level host `document` and uses the native HTML5 drag API; the canvas lives in a same-origin **srcdoc iframe** (§6.4), so iframe-originated drags never reach Pragmatic and native-drag isn't reliably driveable cross-browser/touch in Playwright. The iframe protects the non-negotiable no-CSS-bleed guarantee (ENV-18) and gives clean iframe-local hit-testing (ENV-17), so the engine yields, not the architecture. Canvas dragging is implemented with pointer events (`pointerdown/move/up`) inside the iframe via the ENV-17 coordinate controller — controllable, `page.mouse`-testable, touch-capable. **Overrides "DnD = Pragmatic"** in §6.6 / `_conventions.md` for the canvas. Accessibility (keyboard reorder + ARIA, §6.6) is unchanged — always ours. |
 | R-1 | contenteditable cross-browser divergence (Safari/iOS) | Headless engine (**Lexical**, per OD-1/OD-4); curated node set gives schema-like sanitization. **Elevated by the Lexical choice:** more manual wiring than Tiptap → budget heavier Safari/IME QA (ENV-32) to offset. |

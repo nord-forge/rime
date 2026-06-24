@@ -1,4 +1,4 @@
-# Enveloppe — Board
+# Rime — Board
 
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
@@ -68,7 +68,7 @@ Conventions:
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
-| ENV-14 | ✅ | **`<enveloppe-editor>` shell** — Lit component, layout regions (palette / canvas / properties) | P0 | ENV-01 | §6.5 |
+| ENV-14 | ✅ | **`<rime-editor>` shell** — Lit component, layout regions (palette / canvas / properties) | P0 | ENV-01 | §6.5 |
 | ENV-15 | ✅ | **iframe canvas** — same-origin `srcdoc`, real preview DOM, injected base stylesheet | P0 | ENV-14 | §6.4 |
 | ENV-16 | ✅ | **Doc → canvas renderer** — render the JSON doc to the clean preview DOM (divs/flex) | P0 | ENV-15, ENV-05 | §6.2 |
 | ENV-17 | ✅ | **Coordinate-translation drag controller** — host pointer space ↔ iframe doc space (single owner) | P0 | ENV-15 | §6.4 |
@@ -93,7 +93,7 @@ Conventions:
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
-| ENV-27 | ✅ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@enveloppe/core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
+| ENV-27 | ✅ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@nord-forge/rime-core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
 | ENV-28 | ⬜ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
 | ENV-29 | ⬜ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-27 | §6.5 |
 | ENV-30 | ⬜ | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-27, ENV-09 | §6.1 |
@@ -143,7 +143,7 @@ Conventions:
 | ENV-49 | ⬜ | **Perf gate sign-off** — §10 budgets met on low-end reference machine | P0 | ENV-21, ENV-26, ENV-28 | §10 |
 | ENV-50 | ⬜ | **Output-correctness sign-off** — email-client matrix passes | P0 | ENV-13 | §11 |
 | ENV-51 | ⬜ | **Docs site / API reference** — `init` config, `registerBlock`, `registerToken`, theming tokens | P1 | ENV-33, ENV-41 | §1 |
-| ENV-52 | ⬜ | **npm publish** `@enveloppe/*` (core, doc-model, renderer-mjml, react, vue) | P1 | ENV-48, ENV-49, ENV-50, ENV-51 | §8 |
+| ENV-52 | ⬜ | **npm publish** `@nord-forge/*` (core, doc-model, renderer-mjml, react, vue) | P1 | ENV-48, ENV-49, ENV-50, ENV-51 | §8 |
 
 ---
 

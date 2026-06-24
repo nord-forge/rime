@@ -21,8 +21,8 @@ is how we hold the line on the potato-PC memory constraint. This is the mutation
 layer over the ENV-05 types.
 
 ## Goal
-`@enveloppe/doc-model` exports pure operations that return
-`{ doc: EnveloppeDoc; patch: Patch; inverse: Patch }`, where applying `inverse`
+`@nord-forge/rime-model` exports pure operations that return
+`{ doc: RimeDoc; patch: Patch; inverse: Patch }`, where applying `inverse`
 to the new doc reproduces the original.
 
 ## Prerequisites
@@ -41,8 +41,8 @@ Create in `packages/doc-model/src/`:
      | { op: 'remove'; path: Path; index: number }      // from children[]
      | { op: 'move'; from: Path; fromIndex: number; to: Path; toIndex: number };
    export type Path = (string | number)[]; // structural path from doc root
-   export function applyPatch(doc: EnveloppeDoc, patch: Patch): EnveloppeDoc; // immutable
-   export function invertPatch(doc: EnveloppeDoc, patch: Patch): Patch;       // for undo
+   export function applyPatch(doc: RimeDoc, patch: Patch): RimeDoc; // immutable
+   export function invertPatch(doc: RimeDoc, patch: Patch): Patch;       // for undo
    ```
    `applyPatch` must use structural sharing (clone only the nodes on the changed
    path, reuse the rest) — do NOT deep-clone the whole tree (memory + perf).

@@ -24,7 +24,7 @@ import {
 } from "lexical";
 import { HeadingNode, QuoteNode, registerRichText } from "@lexical/rich-text";
 import { mergeRegister } from "@lexical/utils";
-import type { Mark, RichTextJSON } from "@enveloppe/doc-model";
+import type { Mark, RichTextJSON } from "@nord-forge/rime-model";
 
 /** The inline marks this engine round-trips. Each is a Lexical text format. */
 const MARKS: readonly Mark[] = ["bold", "italic", "underline"] as const;
@@ -55,7 +55,7 @@ export function mountLexical(blockEl: HTMLElement, initial: RichTextJSON): Lexic
   blockEl.style.outline = "none";
 
   const editor = createEditor({
-    namespace: "enveloppe",
+    namespace: "rime",
     // Curated node set = the sanitization boundary. Built-in Paragraph/Text are
     // always available; add nodes only as UI features require them.
     nodes: [HeadingNode, QuoteNode],

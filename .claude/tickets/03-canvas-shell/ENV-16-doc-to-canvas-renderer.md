@@ -14,7 +14,7 @@ estimate: L
 # ENV-16 — Doc → canvas renderer (WYSIWYG preview DOM)
 
 ## Context
-This is the WYSIWYG: it turns the `EnveloppeDoc` JSON (the single source of truth,
+This is the WYSIWYG: it turns the `RimeDoc` JSON (the single source of truth,
 ENV-05) into the **clean preview DOM** inside the canvas iframe (§6.2). Critically,
 this is **NOT** the email export HTML — it renders modern, edit-friendly markup
 (divs + flexbox), optimised for editing and hit-testing, while ghost-table/`mso`
@@ -23,13 +23,13 @@ must be **incremental** (diff the doc, touch only changed nodes) — full re-ren
 every keystroke/drag would blow the §10 perf budget.
 
 ## Goal
-Given an `EnveloppeDoc`, the renderer paints a divs/flex preview into the canvas
+Given an `RimeDoc`, the renderer paints a divs/flex preview into the canvas
 iframe's `#eb-root`, tags each node with its id for hit-testing, and updates
 efficiently when the doc changes.
 
 ## Prerequisites
 - ENV-15 done (`CanvasController` exposes `#eb-root` mount + `whenReady()`).
-- ENV-05 done (`EnveloppeDoc`, node types, `validateDoc` from `@enveloppe/doc-model`).
+- ENV-05 done (`RimeDoc`, node types, `validateDoc` from `@nord-forge/rime-model`).
 - The doc is immutable and edits arrive as new docs / patches (ENV-06); the renderer
   consumes whole docs and may use patch info later for finer diffing.
 
@@ -65,8 +65,8 @@ Create under `packages/core/src/`:
    ```ts
    export class CanvasRenderer {
      constructor(private mount: HTMLElement, private doc: Document) {}
-     render(doc: EnveloppeDoc): void;      // first paint
-     update(next: EnveloppeDoc): void;     // incremental diff vs current doc
+     render(doc: RimeDoc): void;      // first paint
+     update(next: RimeDoc): void;     // incremental diff vs current doc
      elementForNode(id: NodeId): HTMLElement | null;
      nodeIdAt(x: number, y: number): NodeId | null; // elementFromPoint → closest([data-node-id])
    }

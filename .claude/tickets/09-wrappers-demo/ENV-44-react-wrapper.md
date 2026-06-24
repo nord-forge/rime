@@ -1,6 +1,6 @@
 ---
 id: ENV-44
-title: "@enveloppe/react wrapper"
+title: "@nord-forge/rime-react wrapper"
 status: ready
 priority: P1
 milestone: 9 — Framework wrappers & demo
@@ -11,48 +11,48 @@ prd: [§7]
 estimate: M
 ---
 
-# ENV-44 — `@enveloppe/react` wrapper
+# ENV-44 — `@nord-forge/rime-react` wrapper
 
 ## Context
 v1 ships the Lit web component plus **thin** React and Vue wrappers (§7) so React devs
 get an idiomatic component instead of touching a custom element directly. The wrapper
-owns nothing — it maps React props/events/refs onto `<enveloppe-editor>` (config, the
+owns nothing — it maps React props/events/refs onto `<rime-editor>` (config, the
 `change` event, `onImageUpload`, `loadDoc`/`getDoc`). It must match the README usage
-exactly. Keep it tiny; the editor logic lives in `@enveloppe/core`.
+exactly. Keep it tiny; the editor logic lives in `@nord-forge/rime-core`.
 
 ## Goal
-`@enveloppe/react` exports `<EnveloppeEditor>` — a thin React component over
-`<enveloppe-editor>` taking `doc` as a controlled value plus `theme`, `onImageUpload`,
+`@nord-forge/rime-react` exports `<RimeEditor>` — a thin React component over
+`<rime-editor>` taking `doc` as a controlled value plus `theme`, `onImageUpload`,
 `onChange`, and a forwarded ref — matching the README React snippet.
 
 ## Prerequisites
-- ENV-14 done (the element + `EnveloppeConfig`) and ENV-42 (`loadDoc`/`getDoc`/`change`)
+- ENV-14 done (the element + `RimeConfig`) and ENV-42 (`loadDoc`/`getDoc`/`change`)
   for the controlled-value behavior. If ENV-42 isn't merged, wire props/events against
   ENV-14's stubs and tighten when it lands.
-- `@enveloppe/core` is a `workspace:*` dep; `react`/`react-dom` are **peer deps**
+- `@nord-forge/rime-core` is a `workspace:*` dep; `react`/`react-dom` are **peer deps**
   (not bundled).
 
 ## Implementation notes
 Create under `packages/react/src/`:
 
-1. **`enveloppe-editor.tsx`** — match the README exactly:
+1. **`rime-editor.tsx`** — match the README exactly:
    ```tsx
    import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-   import "@enveloppe/core"; // registers <enveloppe-editor>
-   import type { EnveloppeDoc, EnveloppeConfig } from "@enveloppe/core";
+   import "@nord-forge/rime-core"; // registers <rime-editor>
+   import type { RimeDoc, RimeConfig } from "@nord-forge/rime-core";
 
-   export interface EnveloppeEditorProps {
-     doc?: EnveloppeDoc;                          // controlled value
-     theme?: EnveloppeConfig["theme"];
+   export interface RimeEditorProps {
+     doc?: RimeDoc;                          // controlled value
+     theme?: RimeConfig["theme"];
      enabledBlocks?: string[];
      onImageUpload?: (file: File) => Promise<string>;
-     onChange?: (doc: EnveloppeDoc) => void;
+     onChange?: (doc: RimeDoc) => void;
      className?: string;
      style?: React.CSSProperties;
    }
-   export interface EnveloppeEditorHandle { getDoc(): EnveloppeDoc | undefined; loadDoc(doc: EnveloppeDoc): void; }
+   export interface RimeEditorHandle { getDoc(): RimeDoc | undefined; loadDoc(doc: RimeDoc): void; }
 
-   export const EnveloppeEditor = forwardRef<EnveloppeEditorHandle, EnveloppeEditorProps>(...);
+   export const RimeEditor = forwardRef<RimeEditorHandle, RimeEditorProps>(...);
    ```
 2. **Prop → element mapping.**
    - Build `config` from `theme`/`enabledBlocks`/`onImageUpload` and assign it to the
@@ -66,16 +66,16 @@ Create under `packages/react/src/`:
 4. **Ref.** `useImperativeHandle` exposes `getDoc()`/`loadDoc()` so refs work for
    imperative hosts.
 5. **TS for the custom element.** Add a JSX intrinsic-element declaration for
-   `enveloppe-editor` (or cast) so TSX consumers don’t see type errors; keep it scoped
+   `rime-editor` (or cast) so TSX consumers don’t see type errors; keep it scoped
    to this package.
 6. **Build/peer deps.** `react`/`react-dom` are peerDependencies + devDependencies;
-   externalize them in the Vite lib build (don’t bundle React). `@enveloppe/core`
+   externalize them in the Vite lib build (don’t bundle React). `@nord-forge/rime-core`
    stays external too (consumer dedups). Emit ESM + `.d.ts`.
 7. **No re-implementation.** The wrapper holds no doc state of its own beyond the
    controlled-value sync; all logic is in core.
 
 ## Acceptance criteria
-- [ ] `<EnveloppeEditor>` renders `<enveloppe-editor>` and matches the README React
+- [ ] `<RimeEditor>` renders `<rime-editor>` and matches the README React
       snippet (`doc`, `theme`, `onImageUpload`, `onChange`).
 - [ ] `theme`/`enabledBlocks`/`onImageUpload` map into the element's `config` property
       and update on prop change.
@@ -83,7 +83,7 @@ Create under `packages/react/src/`:
       `onChange(e.detail.doc)`; no load↔change feedback loop.
 - [ ] A forwarded ref exposes `getDoc()`/`loadDoc()`.
 - [ ] `change` listeners are removed on unmount (no leaks).
-- [ ] `react`/`react-dom`/`@enveloppe/core` are peer/external — not bundled.
+- [ ] `react`/`react-dom`/`@nord-forge/rime-core` are peer/external — not bundled.
 - [ ] Unit tests (Bun + a React test renderer / jsdom) cover prop mapping, controlled
       `doc`, and `onChange` plumbing; emits ESM + `.d.ts`.
 

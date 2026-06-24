@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import type { EnveloppeDoc } from "@enveloppe/doc-model";
+import type { RimeDoc } from "@nord-forge/rime-model";
 import { type BlockRenderer, type Renderer, RenderError, type RenderContext } from "./index";
 
-const DOC: EnveloppeDoc = {
+const DOC: RimeDoc = {
   id: "d1",
   type: "document",
   settings: { contentWidth: 600, backgroundColor: "#fff", fontFamily: "Arial" },

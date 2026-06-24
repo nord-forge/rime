@@ -10,10 +10,10 @@ import type {
   AnyNode,
   ColumnNode,
   DocumentNode,
-  EnveloppeDoc,
+  RimeDoc,
   NodeId,
   SectionNode,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import {
   applyStyle,
   renderButton,
@@ -65,7 +65,7 @@ function hasManagedChildren(node: AnyNode): node is DocumentNode | SectionNode |
 export class CanvasRenderer {
   readonly #mount: HTMLElement;
   readonly #doc: Document;
-  #current: EnveloppeDoc | null = null;
+  #current: RimeDoc | null = null;
   #elements = new Map<NodeId, HTMLElement>();
 
   constructor(mount: HTMLElement, doc: Document) {
@@ -74,7 +74,7 @@ export class CanvasRenderer {
   }
 
   /** First paint. */
-  render(doc: EnveloppeDoc): void {
+  render(doc: RimeDoc): void {
     this.#mount.replaceChildren();
     this.#elements.clear();
     const root = this.#renderTree(doc);
@@ -83,7 +83,7 @@ export class CanvasRenderer {
   }
 
   /** Incremental update against the current doc. */
-  update(next: EnveloppeDoc): void {
+  update(next: RimeDoc): void {
     if (!this.#current) {
       this.render(next);
       return;

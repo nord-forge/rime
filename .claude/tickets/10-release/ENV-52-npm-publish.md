@@ -1,6 +1,6 @@
 ---
 id: ENV-52
-title: "npm publish @enveloppe/*"
+title: "npm publish @nord-forge/*"
 status: ready
 priority: P1
 milestone: 10 — Release readiness
@@ -11,18 +11,18 @@ prd: [§8]
 estimate: M
 ---
 
-# ENV-52 — npm publish `@enveloppe/*`
+# ENV-52 — npm publish `@nord-forge/*`
 
 ## Context
-The final release step: publish the five public packages — `@enveloppe/core`,
-`@enveloppe/doc-model`, `@enveloppe/renderer-mjml`, `@enveloppe/react`,
-`@enveloppe/vue` (§8) — to npm under the `@enveloppe` scope, with correct versioning,
+The final release step: publish the five public packages — `@nord-forge/rime-core`,
+`@nord-forge/rime-model`, `@nord-forge/rime-mjml`, `@nord-forge/rime-react`,
+`@nord-forge/rime-vue` (§8) — to npm under the `@nord-forge` scope, with correct versioning,
 provenance, per-package READMEs, and `exports` maps. This is gated on the three hard
 gates (perf ENV-49, output-correctness ENV-50) and DX (ENV-48, ENV-51) passing —
 nothing ships until those are green.
 
 ## Goal
-All five `@enveloppe/*` packages publish to npm with aligned versions, provenance, a
+All five `@nord-forge/*` packages publish to npm with aligned versions, provenance, a
 correct `exports`/`types` map, and a per-package README — installable and usable exactly
 as the docs describe.
 
@@ -33,7 +33,7 @@ as the docs describe.
 
 ## Implementation notes
 1. **Package manifests (each publishable package).**
-   - Scoped name `@enveloppe/<pkg>`, `"type": "module"`, `"license": "MIT"`,
+   - Scoped name `@nord-forge/rime-<pkg>`, `"type": "module"`, `"license": "MIT"`,
      `"sideEffects"` set correctly (core registers the element — mark its entry as having
      a side effect so it isn't tree-shaken away by consumers).
    - **`exports` map**: a clean ESM entry + `types` condition pointing at the emitted
@@ -63,7 +63,7 @@ as the docs describe.
    react/vue).
 
 ## Acceptance criteria
-- [ ] All five packages publish to npm under `@enveloppe/*` with `access: public` and
+- [ ] All five packages publish to npm under `@nord-forge/*` with `access: public` and
       aligned v1 versions.
 - [ ] Each package has a correct `exports`/`types` map (public entry only, `.d.ts`
       resolved) and ships only `dist` + README + LICENSE.
@@ -89,5 +89,5 @@ bun pm pack           # per package; inspect tarball contents + exports/types
 ```
 
 ## Definition of done
-See `_conventions.md`. Five `@enveloppe/*` packages published with provenance, correct
+See `_conventions.md`. Five `@nord-forge/*` packages published with provenance, correct
 exports, and per-package READMEs, gated on all release gates; status → `review`.

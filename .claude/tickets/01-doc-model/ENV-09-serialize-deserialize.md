@@ -15,18 +15,18 @@ estimate: S
 
 ## Context
 Persistence is headless: the library emits and accepts JSON (PRD §6.10), and the host app owns
-storage. This ticket defines the **save/load boundary** — turning an `EnveloppeDoc` into a
+storage. This ticket defines the **save/load boundary** — turning an `RimeDoc` into a
 stable string and back into a **validated** doc — with a versioned envelope so future schema
 migrations are possible without breaking old saves. The core guarantee is a round-trip law:
 `deserialize(serialize(doc))` deep-equals the original doc. Pure, headless, framework-free.
 
 ## Goal
-`@enveloppe/doc-model` exports `serialize(doc) → string` and `deserialize(string) → validated
+`@nord-forge/rime-model` exports `serialize(doc) → string` and `deserialize(string) → validated
 result`, wrapping the doc in a `{ version, doc }` envelope and validating on load via ENV-05's
 `validateDoc`, such that the round-trip is lossless.
 
 ## Prerequisites
-- ENV-05 done (`EnveloppeDoc` types + `validateDoc()` + its `ValidationError` shape).
+- ENV-05 done (`RimeDoc` types + `validateDoc()` + its `ValidationError` shape).
 - Reuse `validateDoc` for the load path; do NOT re-implement validation here.
 
 ## Implementation notes
@@ -34,7 +34,7 @@ Create in `packages/doc-model/src/`:
 
 1. **`serialize.ts`** — the envelope + functions:
    ```ts
-   import type { EnveloppeDoc } from "./types";
+   import type { RimeDoc } from "./types";
    import type { ValidationError } from "./validate";
    import { validateDoc } from "./validate";
 
@@ -43,14 +43,14 @@ Create in `packages/doc-model/src/`:
 
    export interface DocEnvelope {
      version: number;     // === SCHEMA_VERSION at write time
-     doc: EnveloppeDoc;
+     doc: RimeDoc;
    }
 
    /** Stable string. JSON.stringify with NO pretty-print by default (compact persistence). */
-   export function serialize(doc: EnveloppeDoc): string;
+   export function serialize(doc: RimeDoc): string;
 
    export type DeserializeResult =
-     | { ok: true; doc: EnveloppeDoc; version: number }
+     | { ok: true; doc: RimeDoc; version: number }
      | { ok: false; errors: ValidationError[] };
 
    /**

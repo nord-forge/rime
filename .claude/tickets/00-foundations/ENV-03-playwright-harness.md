@@ -26,7 +26,7 @@ srcdoc origin + module workers — must serve over http).
 
 ## Goal
 `bun run e2e` runs Playwright across **chromium + webkit**, with a fixture that
-mounts `<enveloppe-editor>` on a served page and exposes helpers for driving the
+mounts `<rime-editor>` on a served page and exposes helpers for driving the
 iframe canvas — green against a placeholder editor.
 
 ## Prerequisites
@@ -59,13 +59,13 @@ Create under `packages/core/` (the harness lives where the component lives):
    });
    ```
 2. **`e2e/fixtures.ts`** — extend Playwright `test` with an `editor` fixture that
-   navigates to a harness page, imports the built `@enveloppe/core` bundle, defines
+   navigates to a harness page, imports the built `@nord-forge/rime-core` bundle, defines
    the element, and returns handles. Keep helpers minimal but real:
    ```ts
    import { test as base, expect, type Page, type Locator } from "@playwright/test";
 
    export interface EditorHarness {
-     host: Locator;                       // the <enveloppe-editor> element
+     host: Locator;                       // the <rime-editor> element
      canvasFrame(): Promise<import("@playwright/test").FrameLocator>; // the iframe canvas
      loadDoc(doc: unknown): Promise<void>;
      getDoc(): Promise<unknown>;
@@ -74,19 +74,19 @@ Create under `packages/core/` (the harness lives where the component lives):
    export const test = base.extend<{ editor: EditorHarness }>({
      editor: async ({ page }, use) => {
        await page.goto("/e2e/harness.html");        // static page that imports dist + defines the element
-       await page.waitForSelector("enveloppe-editor");
-       const host = page.locator("enveloppe-editor");
+       await page.waitForSelector("rime-editor");
+       const host = page.locator("rime-editor");
        const harness: EditorHarness = {
          host,
          async canvasFrame() {
            // canvas iframe is `part="canvas"` inside the shadow root (see ENV-15)
-           return page.frameLocator("enveloppe-editor iframe");
+           return page.frameLocator("rime-editor iframe");
          },
          async loadDoc(doc) {
-           await page.evaluate((d) => (document.querySelector("enveloppe-editor") as any).loadDoc(d), doc);
+           await page.evaluate((d) => (document.querySelector("rime-editor") as any).loadDoc(d), doc);
          },
          async getDoc() {
-           return page.evaluate(() => (document.querySelector("enveloppe-editor") as any).getDoc());
+           return page.evaluate(() => (document.querySelector("rime-editor") as any).getDoc());
          },
        };
        await use(harness);
@@ -96,7 +96,7 @@ Create under `packages/core/` (the harness lives where the component lives):
    ```
 3. **`e2e/harness.html`** — a static page (served by `vite preview` from `dist/` or
    a tiny fixtures dir) that imports the built bundle and places one
-   `<enveloppe-editor>`. While ENV-14 is unbuilt, ship a placeholder element that
+   `<rime-editor>`. While ENV-14 is unbuilt, ship a placeholder element that
    renders an empty `part="canvas"` iframe so the fixture resolves; ENV-14 swaps in
    the real shell with no fixture change.
 4. **Iframe-canvas helpers** — provide `canvasFrame()` returning a `FrameLocator`
@@ -115,7 +115,7 @@ Create under `packages/core/` (the harness lives where the component lives):
 ## Acceptance criteria
 - [ ] `packages/core/playwright.config.ts` defines **chromium + webkit** projects
       and serves the build over http (no `file://`).
-- [ ] `editor` fixture mounts `<enveloppe-editor>` and exposes `host`,
+- [ ] `editor` fixture mounts `<rime-editor>` and exposes `host`,
       `canvasFrame()`, `loadDoc()`, `getDoc()`.
 - [ ] `canvasFrame()` returns a working `FrameLocator` for the canvas iframe.
 - [ ] `bun run e2e` passes the smoke spec in **both** chromium and webkit.

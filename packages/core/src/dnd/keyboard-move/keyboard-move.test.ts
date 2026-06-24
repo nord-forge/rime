@@ -7,7 +7,7 @@ import {
   type DocumentNode,
   moveNode,
   type OpResult,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import { KeyboardMoveController, locateLeaf, resolveMove } from "./keyboard-move";
 
 function ids() {

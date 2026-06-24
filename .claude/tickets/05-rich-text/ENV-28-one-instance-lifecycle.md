@@ -43,7 +43,7 @@ Create under `packages/core/src/richtext/`:
    export class RichTextLifecycle {
      private active: { nodeId: NodeId; mount: LexicalMount; el: HTMLElement } | null = null;
      constructor(private deps: {
-       getDoc(): EnveloppeDoc;
+       getDoc(): RimeDoc;
        contentDoc(): Document;                 // the iframe document
        elementForNode(id: NodeId): HTMLElement | null;
        onCommit(nodeId: NodeId, json: RichTextJSON): void; // ENV-30 blur write-back

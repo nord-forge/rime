@@ -1,7 +1,7 @@
 // Portable, engine-independent rich-text representation.
 //
 // The doc model NEVER imports Lexical (or any editor engine). Text content is
-// stored in this normalized JSON shape; @enveloppe/core's Lexical adapter
+// stored in this normalized JSON shape; @nord-forge/rime-core's Lexical adapter
 // converts to/from it. Mirrors the shape proven in the rich-text engine spike.
 
 /** Inline formatting marks supported in v1. */

@@ -3,14 +3,14 @@
 // patch, applied to the new doc, restores the original — this pair is what
 // undo/redo stores.
 
-import type { AnyNode, ColumnNode, EnveloppeDoc, LeafBlock, NodeId, SectionNode } from "./types";
+import type { AnyNode, ColumnNode, RimeDoc, LeafBlock, NodeId, SectionNode } from "./types";
 import type { RichTextJSON } from "./rich-text";
 import { applyPatch, invertPatch, type Patch, type Path } from "./patch";
 import { validateDoc } from "./validate";
 
 /** Result of any operation: the new doc plus the forward and inverse patches. */
 export interface OpResult {
-  doc: EnveloppeDoc;
+  doc: RimeDoc;
   patch: Patch;
   inverse: Patch;
 }
@@ -25,7 +25,7 @@ export class OperationError extends Error {
 
 /** Locate a node by id; returns its path and the node, or null. */
 function findNode(
-  doc: EnveloppeDoc,
+  doc: RimeDoc,
   id: NodeId,
 ): { path: Path; node: AnyNode; parentPath: Path; index: number } | null {
   if (doc.id === id) return { path: [], node: doc, parentPath: [], index: -1 };
@@ -48,14 +48,14 @@ function findNode(
   return null;
 }
 
-function requireNode(doc: EnveloppeDoc, id: NodeId) {
+function requireNode(doc: RimeDoc, id: NodeId) {
   const found = findNode(doc, id);
   if (!found) throw new OperationError(`node "${id}" not found`);
   return found;
 }
 
 /** Build the result from a forward patch, validating the outcome. */
-function commit(doc: EnveloppeDoc, patch: Patch): OpResult {
+function commit(doc: RimeDoc, patch: Patch): OpResult {
   const inverse = invertPatch(doc, patch);
   const next = applyPatch(doc, patch);
   const check = validateDoc(next);
@@ -68,11 +68,7 @@ function commit(doc: EnveloppeDoc, patch: Patch): OpResult {
 }
 
 /** Shallow-merge `partial` into the node's own fields (e.g. style, label, src). */
-export function updateNode(
-  doc: EnveloppeDoc,
-  id: NodeId,
-  partial: Record<string, unknown>,
-): OpResult {
+export function updateNode(doc: RimeDoc, id: NodeId, partial: Record<string, unknown>): OpResult {
   const { path, node } = requireNode(doc, id);
   const fields = node as unknown as Record<string, unknown>;
   const patch: Patch = Object.entries(partial).map(([key, value]) => ({
@@ -100,7 +96,7 @@ function mergeField(current: unknown, incoming: unknown): unknown {
 
 /** Insert `node` as a child of `parentId` at `index`. */
 export function insertNode(
-  doc: EnveloppeDoc,
+  doc: RimeDoc,
   parentId: NodeId,
   index: number,
   node: SectionNode | ColumnNode | LeafBlock,
@@ -111,7 +107,7 @@ export function insertNode(
 }
 
 /** Remove the node identified by `id`. */
-export function removeNode(doc: EnveloppeDoc, id: NodeId): OpResult {
+export function removeNode(doc: RimeDoc, id: NodeId): OpResult {
   const found = requireNode(doc, id);
   if (found.index < 0) throw new OperationError("cannot remove the document root");
   const patch: Patch = [{ op: "remove", path: found.parentPath, index: found.index }];
@@ -120,7 +116,7 @@ export function removeNode(doc: EnveloppeDoc, id: NodeId): OpResult {
 
 /** Move `id` to be the child at `newIndex` of `newParentId`. */
 export function moveNode(
-  doc: EnveloppeDoc,
+  doc: RimeDoc,
   id: NodeId,
   newParentId: NodeId,
   newIndex: number,
@@ -152,11 +148,7 @@ function pathsEqual(a: Path, b: Path): boolean {
 }
 
 /** Replace the rich-text content of a text block. */
-export function setRichText(
-  doc: EnveloppeDoc,
-  textBlockId: NodeId,
-  content: RichTextJSON,
-): OpResult {
+export function setRichText(doc: RimeDoc, textBlockId: NodeId, content: RichTextJSON): OpResult {
   const { path, node } = requireNode(doc, textBlockId);
   if (node.type !== "text") {
     throw new OperationError(`node "${textBlockId}" is not a text block`);

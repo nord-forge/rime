@@ -1,11 +1,11 @@
 // Reusable Playwright fixtures every browser-observable feature builds on.
-// Tests write tests, not boilerplate: they get a mounted <enveloppe-editor>,
+// Tests write tests, not boilerplate: they get a mounted <rime-editor>,
 // a FrameLocator for its iframe canvas, and the load/get-doc persistence helpers.
 
 import { type Locator, type Page, test as base, expect } from "@playwright/test";
 
 export interface EditorHarness {
-  /** The <enveloppe-editor> host element. */
+  /** The <rime-editor> host element. */
   host: Locator;
   /** FrameLocator for the same-origin srcdoc canvas iframe. */
   canvasFrame(): ReturnType<Page["frameLocator"]>;
@@ -24,18 +24,18 @@ export interface EditorHarness {
 export const test = base.extend<{ editor: EditorHarness }>({
   editor: async ({ page }, use) => {
     await page.goto("/e2e/harness.html");
-    await page.waitForSelector("enveloppe-editor");
-    const host = page.locator("enveloppe-editor");
+    await page.waitForSelector("rime-editor");
+    const host = page.locator("rime-editor");
 
     const harness: EditorHarness = {
       host,
       canvasFrame() {
         // The canvas iframe is exposed as part="canvas" in the shadow root.
-        return page.frameLocator("enveloppe-editor iframe");
+        return page.frameLocator("rime-editor iframe");
       },
       async loadDoc(doc) {
         await page.evaluate((d) => {
-          const el = document.querySelector("enveloppe-editor") as unknown as {
+          const el = document.querySelector("rime-editor") as unknown as {
             loadDoc(doc: unknown): void;
           };
           el.loadDoc(d);
@@ -43,7 +43,7 @@ export const test = base.extend<{ editor: EditorHarness }>({
       },
       async getDoc() {
         return page.evaluate(() => {
-          const el = document.querySelector("enveloppe-editor") as unknown as {
+          const el = document.querySelector("rime-editor") as unknown as {
             getDoc(): unknown;
           };
           return el.getDoc();

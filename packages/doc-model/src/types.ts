@@ -1,4 +1,4 @@
-// The Enveloppe document model — ONE immutable JSON tree, the single source of
+// The Rime document model — ONE immutable JSON tree, the single source of
 // truth rendered by the canvas, exported by the MJML renderer, and diffed by
 // undo/redo. Pure data: every field is serializable (no functions, no DOM).
 
@@ -105,7 +105,7 @@ export type LeafBlock = TextBlock | ImageBlock | ButtonBlock | DividerBlock | Sp
 export type AnyNode = DocumentNode | SectionNode | ColumnNode | LeafBlock;
 
 /** The top-level document type consumers load/save. */
-export type EnveloppeDoc = DocumentNode;
+export type RimeDoc = DocumentNode;
 
 /** All recognised node `type` discriminators. */
 export const NODE_TYPES = [

@@ -60,9 +60,9 @@ const DOC = {
 
 async function setup(page: Page): Promise<void> {
   await page.goto("/e2e/harness.html");
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
     };
@@ -73,7 +73,7 @@ async function setup(page: Page): Promise<void> {
 
 function columnIds(page: Page) {
   return page.evaluate(() => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       getDoc(): { children: { children: { id: string; children: { id: string }[] }[] }[] };
     };
     const out: Record<string, string[]> = {};
@@ -85,7 +85,7 @@ function columnIds(page: Page) {
 
 /** Click a block (selects it + gives the iframe focus), then press a chord. */
 async function selectBlock(page: Page, id: string): Promise<void> {
-  const frame = page.frameLocator("enveloppe-editor iframe");
+  const frame = page.frameLocator("rime-editor iframe");
   await frame.locator(`[data-node-id="${id}"]`).click();
 }
 
@@ -116,7 +116,7 @@ test.describe("keyboard reordering", () => {
     await page.keyboard.press("Alt+ArrowDown");
 
     const focusedId = await page.evaluate(() => {
-      const host = document.querySelector("enveloppe-editor")!;
+      const host = document.querySelector("rime-editor")!;
       const idoc = (host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement).contentDocument!;
       return (idoc.activeElement as HTMLElement | null)?.dataset["nodeId"] ?? null;
     });
@@ -130,7 +130,7 @@ test.describe("keyboard reordering", () => {
       const { destinationsFor } = mod as unknown as {
         destinationsFor: (doc: unknown, id: string) => { label: string; target: unknown }[];
       };
-      const el = document.querySelector("enveloppe-editor") as unknown as { getDoc(): unknown };
+      const el = document.querySelector("rime-editor") as unknown as { getDoc(): unknown };
       const dests = destinationsFor(el.getDoc(), "t_a");
 
       const menu = document.createElement("eb-move-to-menu") as unknown as {

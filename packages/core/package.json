@@ -1,7 +1,7 @@
 {
-  "name": "@enveloppe/core",
+  "name": "@nord-forge/rime-core",
   "version": "0.0.0",
-  "description": "The <enveloppe-editor> Lit web component: canvas, drag-and-drop, inline rich text, chrome.",
+  "description": "The <rime-editor> Lit web component: canvas, drag-and-drop, inline rich text, chrome.",
   "license": "MIT",
   "files": [
     "dist"
@@ -29,7 +29,7 @@
     "bench:dnd": "bun run bench/dnd-perf.bench.ts"
   },
   "dependencies": {
-    "@enveloppe/doc-model": "workspace:*",
+    "@nord-forge/rime-model": "workspace:*",
     "@lexical/clipboard": "^0.23.1",
     "@lexical/html": "^0.23.1",
     "@lexical/rich-text": "^0.23.1",

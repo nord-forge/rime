@@ -21,7 +21,7 @@ everything downstream is clean; get it wrong and every later ticket pays for it.
 Pure, headless, framework-free — no Lit, no DOM, no Lexical here.
 
 ## Goal
-`@enveloppe/doc-model` exports the `EnveloppeDoc` types + a `validateDoc()` that
+`@nord-forge/rime-model` exports the `RimeDoc` types + a `validateDoc()` that
 accepts a value and returns a typed, validated doc or a list of errors.
 
 ## Prerequisites
@@ -78,14 +78,14 @@ Create in `packages/doc-model/src/`:
      // extend per block; keep optional + serializable (no functions)
    }
 
-   export type EnveloppeDoc = DocumentNode;
+   export type RimeDoc = DocumentNode;
    ```
 2. **`rich-text.ts`** — the portable rich-text shape (engine-independent so the
    doc model never imports Lexical). Reuse the shape proven in
    `.claude/spikes/od1-richtext/src/adapter.ts` (`RichTextJSON`: doc → paragraphs →
    text runs with `marks: ('bold'|'italic'|'underline')[]`). Add `link?: string`
    to a text run for the link mark.
-3. **`validate.ts`** — `validateDoc(value: unknown): { ok: true; doc: EnveloppeDoc } | { ok: false; errors: ValidationError[] }`.
+3. **`validate.ts`** — `validateDoc(value: unknown): { ok: true; doc: RimeDoc } | { ok: false; errors: ValidationError[] }`.
    - Hand-written validator (NO heavy schema lib — budget; this package is also
      used headless/server-side). Check: every node has a unique `id` and a known
      `type`; children types are legal for their parent (document→section→column→
@@ -101,7 +101,7 @@ Create in `packages/doc-model/src/`:
 5. Export everything from `src/index.ts`.
 
 ## Acceptance criteria
-- [ ] `EnveloppeDoc` + all node types exported and documented with short doc comments.
+- [ ] `RimeDoc` + all node types exported and documented with short doc comments.
 - [ ] `validateDoc()` accepts a valid doc and returns `{ ok: true, doc }`.
 - [ ] `validateDoc()` rejects: duplicate ids, unknown node types, illegal parent→child
       nesting, columns not summing to 100, with precise `path` in each error.

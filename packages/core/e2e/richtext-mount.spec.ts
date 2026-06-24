@@ -63,8 +63,8 @@ async function mountOnTextBlock(host: import("@playwright/test").Locator) {
 test.describe("ENV-27 headless Lexical mount in canvas", () => {
   test("mounts on the TextBlock element and seeds it editable", async ({ page }) => {
     await page.goto("/e2e/richtext-harness.html");
-    await page.waitForSelector("enveloppe-editor");
-    const host = page.locator("enveloppe-editor");
+    await page.waitForSelector("rime-editor");
+    const host = page.locator("rime-editor");
     await mountOnTextBlock(host);
 
     const state = await host.evaluate(async (el) => {
@@ -88,8 +88,8 @@ test.describe("ENV-27 headless Lexical mount in canvas", () => {
 
   test("an edit at the live in-iframe selection updates toJSON", async ({ page }) => {
     await page.goto("/e2e/richtext-harness.html");
-    await page.waitForSelector("enveloppe-editor");
-    const host = page.locator("enveloppe-editor");
+    await page.waitForSelector("rime-editor");
+    const host = page.locator("rime-editor");
     await mountOnTextBlock(host);
 
     // Click into the editable so Lexical resolves a real RangeSelection from the
@@ -97,7 +97,7 @@ test.describe("ENV-27 headless Lexical mount in canvas", () => {
     // insert text through that selection — the same path keystrokes/IME take inside
     // Lexical. (Playwright's synthetic key + beforeinput events are untrusted and
     // Lexical ignores them in a srcdoc iframe, so we drive the real command path.)
-    const frame = page.frameLocator("enveloppe-editor iframe");
+    const frame = page.frameLocator("rime-editor iframe");
     const block = frame.locator('[data-node-id="txt_1"]');
     await block.click();
 
@@ -145,11 +145,11 @@ test.describe("ENV-27 headless Lexical mount in canvas", () => {
 
   test("format('bold') applies a mark reflected in toJSON", async ({ page }) => {
     await page.goto("/e2e/richtext-harness.html");
-    await page.waitForSelector("enveloppe-editor");
-    const host = page.locator("enveloppe-editor");
+    await page.waitForSelector("rime-editor");
+    const host = page.locator("rime-editor");
     await mountOnTextBlock(host);
 
-    const frame = page.frameLocator("enveloppe-editor iframe");
+    const frame = page.frameLocator("rime-editor iframe");
     const block = frame.locator('[data-node-id="txt_1"]');
     await block.click();
     // Select all the seeded text within the editable, then bold it.

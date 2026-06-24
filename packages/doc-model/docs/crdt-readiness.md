@@ -1,7 +1,7 @@
 # ADR: CRDT readiness of the document model
 
 **Status:** Accepted — design only. v1 ships **no** CRDT/collaboration runtime.
-This document records how the current `@enveloppe/doc-model` shape will accept a
+This document records how the current `@nord-forge/rime-model` shape will accept a
 future Yjs/CRDT layer "without a rewrite" (PRD §3, §6.1), and the constraints
 later work must honor.
 

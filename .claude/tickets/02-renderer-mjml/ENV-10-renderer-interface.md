@@ -22,11 +22,11 @@ interface is intentionally tiny and async, because the concrete renderer runs at
 time** (Node-side, off the in-browser hot path) and the MJML compile step is async.
 
 ## Goal
-`@enveloppe/renderer-mjml` exports a `Renderer` interface (`render(doc): Promise<string>`) plus
+`@nord-forge/rime-mjml` exports a `Renderer` interface (`render(doc): Promise<string>`) plus
 the shared types a renderer implementation needs, with no MJML coupling in the interface itself.
 
 ## Prerequisites
-- ENV-05 done (`EnveloppeDoc` type to render against; imported via `workspace:*`).
+- ENV-05 done (`RimeDoc` type to render against; imported via `workspace:*`).
 - No MJML dependency in *this* ticket — the interface must not reference MJML types.
 
 ## Implementation notes
@@ -34,7 +34,7 @@ Create in `packages/renderer-mjml/src/`:
 
 1. **`renderer.ts`** — the contract. Keep it minimal and engine-agnostic:
    ```ts
-   import type { EnveloppeDoc } from "@enveloppe/doc-model";
+   import type { RimeDoc } from "@nord-forge/rime-model";
 
    /** Options common to any renderer; concrete renderers may extend with their own. */
    export interface RenderOptions {
@@ -49,7 +49,7 @@ Create in `packages/renderer-mjml/src/`:
     * at export, NOT on the canvas hot path.
     */
    export interface Renderer {
-     render(doc: EnveloppeDoc, options?: RenderOptions): Promise<string>;
+     render(doc: RimeDoc, options?: RenderOptions): Promise<string>;
    }
 
    /** Thrown by renderers for a doc they cannot turn into HTML (vs. silently emitting junk). */
@@ -61,8 +61,8 @@ Create in `packages/renderer-mjml/src/`:
    fills in and ENV-12 escape-hatches should be expressed as a typed seam so both tickets share
    one shape. Declare it here but leave it un-implemented:
    ```ts
-   import type { EnveloppeDoc } from "@enveloppe/doc-model";
-   type AnyNode = EnveloppeDoc | EnveloppeDoc["children"][number]; // narrow per node in ENV-11
+   import type { RimeDoc } from "@nord-forge/rime-model";
+   type AnyNode = RimeDoc | RimeDoc["children"][number]; // narrow per node in ENV-11
 
    /** A renderer maps each block node to a fragment of its target markup. */
    export interface BlockRenderer<TNode = unknown> {
@@ -83,7 +83,7 @@ Create in `packages/renderer-mjml/src/`:
 3. **Do NOT** import or depend on the `mjml` library here. The interface package surface must
    stay renderer-neutral so a non-MJML renderer can implement `Renderer` without touching MJML.
 4. Export `Renderer`, `RenderOptions`, `RenderError`, `BlockRenderer`, `RenderContext` from
-   `src/index.ts`. Add `@enveloppe/doc-model` as a `workspace:*` dependency if not already present.
+   `src/index.ts`. Add `@nord-forge/rime-model` as a `workspace:*` dependency if not already present.
 
 ## Acceptance criteria
 - [ ] `Renderer` interface exported with `render(doc, options?): Promise<string>`; signature

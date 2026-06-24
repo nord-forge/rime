@@ -2,7 +2,7 @@
 // with bold/italic/underline marks + optional link) into escaped inline HTML safe
 // inside <mj-text>. Plain string building — no DOM, no rich-text engine import.
 
-import type { Mark, RichTextJSON, TextRun } from "@enveloppe/doc-model";
+import type { Mark, RichTextJSON, TextRun } from "@nord-forge/rime-model";
 
 /** Escape text for HTML element content. */
 export function escapeHtml(value: string): string {

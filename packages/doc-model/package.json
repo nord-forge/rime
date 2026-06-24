@@ -1,7 +1,7 @@
 {
-  "name": "@enveloppe/doc-model",
+  "name": "@nord-forge/rime-model",
   "version": "0.0.0",
-  "description": "Headless JSON document model for Enveloppe: schema, immutable updates, patch-based undo.",
+  "description": "Headless JSON document model for Rime: schema, immutable updates, patch-based undo.",
   "license": "MIT",
   "files": [
     "dist"

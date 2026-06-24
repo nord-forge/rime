@@ -1,10 +1,10 @@
 // The v1 default export renderer: doc → MJML → bulletproof, Outlook-safe HTML via
 // the `mjml` library (inherits MJML's mso conditionals, VML buttons, ghost
-// tables). Runs at export time, Node-side — outside the @enveloppe/core bundle
+// tables). Runs at export time, Node-side — outside the @nord-forge/rime-core bundle
 // budget (separate package). Implements the ENV-10 Renderer contract.
 
 import mjml2html from "mjml";
-import type { EnveloppeDoc } from "@enveloppe/doc-model";
+import type { RimeDoc } from "@nord-forge/rime-model";
 import type { BlockRenderer, Renderer, RenderOptions } from "./renderer";
 import { RenderError } from "./renderer";
 import { docToMjml } from "./to-mjml";
@@ -24,7 +24,7 @@ export class MjmlRenderer implements Renderer {
     this.#extra = options.blockRenderers ?? [];
   }
 
-  async render(doc: EnveloppeDoc, options: RenderOptions = {}): Promise<string> {
+  async render(doc: RimeDoc, options: RenderOptions = {}): Promise<string> {
     const mjmlSrc = docToMjml(doc, options, this.#extra);
 
     // Note: mjml-core's own `minify` option is deprecated (CLI-only), so we do

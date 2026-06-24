@@ -9,7 +9,7 @@ the checklist a reviewer fills in.
 ## Generate the HTML to send
 
 ```bash
-bun run --filter='@enveloppe/renderer-mjml' render:fixtures
+bun run --filter='@nord-forge/rime-mjml' render:fixtures
 ```
 
 Writes one file per fixture to `packages/renderer-mjml/test/golden/`:

@@ -49,9 +49,9 @@ const DOC = {
 
 async function setup(page: Page): Promise<void> {
   await page.goto("/e2e/harness.html");
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
     };
@@ -62,7 +62,7 @@ async function setup(page: Page): Promise<void> {
 
 function columnIds(page: Page) {
   return page.evaluate(() => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       getDoc(): { children: { children: { id: string; children: { id: string }[] }[] }[] };
     };
     return el.getDoc().children[0]!.children[0]!.children.map((c) => c.id);
@@ -71,7 +71,7 @@ function columnIds(page: Page) {
 
 async function nodeCenter(page: Page, id: string) {
   return page.evaluate((nodeId) => {
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const f = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
     const fr = f.getBoundingClientRect();
     const r = f
@@ -94,7 +94,7 @@ async function touchDrag(
 ): Promise<void> {
   await page.evaluate(
     ({ start, steps }) => {
-      const host = document.querySelector("enveloppe-editor")!;
+      const host = document.querySelector("rime-editor")!;
       const iframe = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
       const idoc = iframe.contentDocument!;
       const fr = iframe.getBoundingClientRect();

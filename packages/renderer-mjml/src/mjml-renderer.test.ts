@@ -6,7 +6,7 @@ import {
   createTextBlock,
   type DocumentNode,
   type RichTextJSON,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import {
   docToMjml,
   escapeHtml,

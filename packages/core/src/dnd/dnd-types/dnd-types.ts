@@ -1,6 +1,6 @@
 // Typed payloads carried on drags, and the resolved place a block can land.
 
-import type { LeafBlock, NodeId } from "@enveloppe/doc-model";
+import type { LeafBlock, NodeId } from "@nord-forge/rime-model";
 
 /** What a drag carries: a new block from the palette, or an existing canvas block. */
 export type DragData =

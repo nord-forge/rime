@@ -30,7 +30,7 @@ document with an injected base stylesheet and exposes a ready mount node — ver
 in Chromium + WebKit to receive **no** host CSS.
 
 ## Prerequisites
-- ENV-14 done (`<enveloppe-editor>` shell + `part="canvas"` region).
+- ENV-14 done (`<rime-editor>` shell + `part="canvas"` region).
 - Read `.claude/spikes/od1-richtext/src/canvas-host.ts` for the `srcdoc` + `load` +
   `#mount` pattern, and the spike `playwright.config.ts` note that file:// breaks
   srcdoc origin (tests run over http via the ENV-03 harness).
@@ -81,7 +81,7 @@ Create under `packages/core/src/`:
    inherit any host/chrome stylesheet. `--eb-*` chrome tokens stop at the iframe
    boundary by design (ENV-18 verifies). The only styles inside are `#eb-base` plus
    whatever ENV-16 writes into `#eb-root`.
-6. **Wire into the shell** — `EnveloppeEditor.firstUpdated` constructs a
+6. **Wire into the shell** — `RimeEditor.firstUpdated` constructs a
    `CanvasController`, `mount()`s it into the `part="canvas"` section, and holds the
    `whenReady()` promise for ENV-16 to await. Expose the iframe as `part="canvas-frame"`
    for the ENV-03 `canvasFrame()` helper.

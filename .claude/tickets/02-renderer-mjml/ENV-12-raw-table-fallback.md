@@ -21,7 +21,7 @@ that seam to the ENV-11 renderer and documents it so block authors know how to o
 one block without affecting the rest. Bounded and per-block — not a second renderer.
 
 ## Goal
-`@enveloppe/renderer-mjml` lets a block render via raw table HTML instead of MJML, with that HTML
+`@nord-forge/rime-mjml` lets a block render via raw table HTML instead of MJML, with that HTML
 landing correctly in the final compiled output, and the seam documented for block authors.
 
 ## Prerequisites

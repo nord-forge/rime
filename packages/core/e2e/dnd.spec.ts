@@ -63,9 +63,9 @@ const TWO_COL_DOC = {
 
 async function setup(page: Page): Promise<void> {
   await page.goto("/e2e/harness.html");
-  await page.waitForSelector("enveloppe-editor");
+  await page.waitForSelector("rime-editor");
   await page.evaluate(async (doc) => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       whenCanvasReady(): Promise<unknown>;
       loadDoc(d: unknown): void;
       registerPaletteItem(elm: HTMLElement, t: string): () => void;
@@ -83,7 +83,7 @@ async function setup(page: Page): Promise<void> {
 
 async function columnIds(page: Page): Promise<Record<string, string[]>> {
   return page.evaluate(() => {
-    const el = document.querySelector("enveloppe-editor") as unknown as {
+    const el = document.querySelector("rime-editor") as unknown as {
       getDoc(): { children: { children: { id: string; children: { id: string }[] }[] }[] };
     };
     const doc = el.getDoc();
@@ -96,7 +96,7 @@ async function columnIds(page: Page): Promise<Record<string, string[]>> {
 /** Center of a canvas node (host client coords). */
 async function nodeCenter(page: Page, nodeId: string): Promise<{ x: number; y: number }> {
   return page.evaluate((id) => {
-    const host = document.querySelector("enveloppe-editor")!;
+    const host = document.querySelector("rime-editor")!;
     const frame = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
     const fr = frame.getBoundingClientRect();
     const r = frame

@@ -10,12 +10,12 @@ import type {
   ColumnNode,
   DividerBlock,
   DocumentNode,
-  EnveloppeDoc,
+  RimeDoc,
   ImageBlock,
   SectionNode,
   SpacerBlock,
   TextBlock,
-} from "@enveloppe/doc-model";
+} from "@nord-forge/rime-model";
 import type { BlockRenderer, RenderContext, RenderOptions } from "./renderer";
 import { RenderError } from "./renderer";
 import { escapeAttr } from "./rich-text-to-html";
@@ -132,7 +132,7 @@ function renderHead(doc: DocumentNode): string {
  * raw-table BlockRenderers that override the built-in mapping per node type.
  */
 export function docToMjml(
-  doc: EnveloppeDoc,
+  doc: RimeDoc,
   options: RenderOptions = {},
   extra: BlockRenderer[] = [],
 ): string {

@@ -6,7 +6,7 @@
 // BlockRenderer (the ENV-10 seam) whose renderExport returns <mj-raw>…</mj-raw>,
 // registered through the same path as the built-in MJML handlers.
 
-import type { AnyNode } from "@enveloppe/doc-model";
+import type { AnyNode } from "@nord-forge/rime-model";
 import type { BlockRenderer, RenderContext } from "./renderer";
 import { RenderError } from "./renderer";
 
