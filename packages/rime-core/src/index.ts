@@ -48,6 +48,18 @@ export {
   RichTextLifecycle,
   type RichTextLifecycleDeps,
 } from "./richtext/richtext-lifecycle/richtext-lifecycle";
+export {
+  makeCommands,
+  normalizeHref,
+  type RichTextCommands,
+} from "./richtext/ui/rich-text-commands";
+export {
+  EMPTY_FORMAT,
+  type FormatState,
+  registerSelectionFormat,
+} from "./richtext/ui/selection-format";
+export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
+export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
 export { LiveAnnouncer } from "./a11y/live-region/live-region";
 export {
   blockLabel,
