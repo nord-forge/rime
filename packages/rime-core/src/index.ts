@@ -60,12 +60,16 @@ export {
   columnBlock,
   CORE_BLOCKS,
   dividerBlock,
+  headingBlock,
   imageBlock,
+  quoteBlock,
   registerCoreBlocks,
   sectionBlock,
   spacerBlock,
   textBlock,
 } from "./blocks/core/index";
+export type { HeadingBlock, HeadingLevel } from "./blocks/core/heading";
+export type { QuoteBlock } from "./blocks/core/quote";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
 export {
   $applyRichTextJSON,

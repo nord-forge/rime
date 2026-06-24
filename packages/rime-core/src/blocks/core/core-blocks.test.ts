@@ -23,7 +23,7 @@ beforeEach(() => {
 });
 
 describe("registerCoreBlocks", () => {
-  test("registers exactly the seven core types", () => {
+  test("registers the core block types", () => {
     const r = new BlockRegistry();
     registerCoreBlocks(r);
     expect(
@@ -31,14 +31,27 @@ describe("registerCoreBlocks", () => {
         .all()
         .map((d) => d.type)
         .sort(),
-    ).toEqual(["button", "column", "divider", "image", "section", "spacer", "text"].sort());
+    ).toEqual(
+      [
+        "button",
+        "column",
+        "divider",
+        "heading",
+        "image",
+        "quote",
+        "section",
+        "spacer",
+        "text",
+      ].sort(),
+    );
   });
 
   test("is idempotent (a second call does not throw)", () => {
     const r = new BlockRegistry();
     registerCoreBlocks(r);
+    const count = r.all().length;
     expect(() => registerCoreBlocks(r)).not.toThrow();
-    expect(r.all()).toHaveLength(7);
+    expect(r.all()).toHaveLength(count);
   });
 
   test("every core block has palette defaults and a schema", () => {

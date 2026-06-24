@@ -13,7 +13,7 @@ import { blockRegistry, registerBlock } from "./blocks/registry";
 import type { BlockDefinition } from "./blocks/types";
 
 export interface RimeInitConfig {
-  // Register the seven built-in blocks (default true).
+  // Register the built-in blocks (default true).
   coreBlocks?: boolean;
   // Custom block definitions to register alongside (or instead of) the built-ins.
   blocks?: BlockDefinition[];
