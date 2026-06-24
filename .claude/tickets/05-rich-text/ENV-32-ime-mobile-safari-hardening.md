@@ -1,7 +1,7 @@
 ---
 id: ENV-32
 title: IME / mobile / Safari rich-text hardening
-status: ready
+status: done
 priority: P1
 milestone: 5 — Inline rich text
 depends_on: [ENV-27]

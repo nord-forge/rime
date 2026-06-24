@@ -159,6 +159,29 @@ describe("RichTextLifecycle", () => {
     expect(probe.events).toEqual([]);
   });
 
+  test("blur is deferred while composing and flushes on composition end", () => {
+    const probe: Probe = { live: 0, peak: 0, events: [] };
+    const lc = makeLifecycle(probe);
+    const [a] = ids();
+    lc.focus(a!);
+    lc.setComposing(true);
+    lc.blur(); // requested mid-composition → deferred
+    expect(probe.live).toBe(1);
+    expect(lc.activeNodeId).toBe(a!);
+    lc.setComposing(false); // composition ends → pending blur flushes
+    expect(probe.live).toBe(0);
+    expect(lc.activeNodeId).toBeNull();
+  });
+
+  test("destroy() tears down even while composing", () => {
+    const probe: Probe = { live: 0, peak: 0, events: [] };
+    const lc = makeLifecycle(probe);
+    lc.focus(ids()[0]!);
+    lc.setComposing(true);
+    lc.destroy();
+    expect(probe.live).toBe(0);
+  });
+
   test("focusing a missing element does not mount (and clears prior active)", () => {
     const probe: Probe = { live: 0, peak: 0, events: [] };
     const lc = makeLifecycle(probe);
