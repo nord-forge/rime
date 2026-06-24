@@ -16,6 +16,20 @@ import { LinkNode } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils";
 import type { Mark, RichTextJSON } from "@nord-forge/rime-model";
 import { $applyRichTextJSON, $readRichTextJSON } from "../serialize/serialize";
+import { normalizeHref } from "../ui/rich-text-commands";
+
+// Pasted links can carry javascript:/data: hrefs that the curated node set keeps
+// (LinkNode.importDOM accepts any href). A node transform validates every link:
+// a disallowed href is unwrapped to its plain text, so nothing dangerous can
+// reach the doc.
+function registerLinkSanitizer(editor: LexicalEditor): () => void {
+  return editor.registerNodeTransform(LinkNode, (link) => {
+    if (normalizeHref(link.getURL()) === null) {
+      for (const child of link.getChildren()) link.insertBefore(child);
+      link.remove();
+    }
+  });
+}
 
 export interface LexicalMount {
   readonly editor: LexicalEditor;
@@ -38,7 +52,11 @@ export function mountLexical(blockEl: HTMLElement, initial: RichTextJSON): Lexic
   });
   editor.setRootElement(blockEl);
 
-  const cleanup = mergeRegister(registerRichText(editor), registerList(editor));
+  const cleanup = mergeRegister(
+    registerRichText(editor),
+    registerList(editor),
+    registerLinkSanitizer(editor),
+  );
 
   // Lexical defers updates by default; seed discretely so a sync read isn't empty.
   editor.update(() => $applyRichTextJSON(initial), { discrete: true });

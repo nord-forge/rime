@@ -1,7 +1,7 @@
 ---
 id: ENV-31
 title: Paste sanitization (Word/Outlook/Docs → schema-valid)
-status: ready
+status: done
 priority: P1
 milestone: 5 — Inline rich text
 depends_on: [ENV-27]
