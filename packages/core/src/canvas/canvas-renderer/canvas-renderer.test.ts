@@ -120,6 +120,38 @@ describe("incremental update", () => {
     expect(elAfter!.style.paddingTop).toBe("9px");
   });
 
+  test("repaintNode restores a leaf's static content after it was emptied", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    const section = createSection(newId, 1);
+    const tb = createTextBlock(newId, {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "hello" }] }],
+    });
+    section.children[0]!.children.push(tb);
+    d.children.push(section);
+
+    const r = new CanvasRenderer(mount, doc);
+    r.render(d);
+    const el = r.elementForNode(tb.id)!;
+    expect(el.textContent).toContain("hello");
+
+    // Simulate a live editor having emptied + annotated the element.
+    el.replaceChildren();
+    expect(el.textContent).toBe("");
+
+    r.repaintNode(tb.id);
+    expect(el.textContent).toContain("hello");
+    // Same element identity (repaint is in place, not a fresh node).
+    expect(r.elementForNode(tb.id)).toBe(el);
+  });
+
+  test("repaintNode is a no-op for an unknown id", () => {
+    const r = new CanvasRenderer(mount, doc);
+    r.render(buildDoc());
+    expect(() => r.repaintNode("nope")).not.toThrow();
+  });
+
   test("moving a block reuses its existing element (identity preserved)", () => {
     const newId = ids();
     const d = createEmptyDoc(newId);

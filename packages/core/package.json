@@ -29,12 +29,12 @@
     "bench:dnd": "bun run bench/dnd-perf.bench.ts"
   },
   "dependencies": {
-    "@nord-forge/rime-model": "workspace:*",
     "@lexical/clipboard": "^0.23.1",
     "@lexical/html": "^0.23.1",
     "@lexical/rich-text": "^0.23.1",
     "@lexical/selection": "^0.23.1",
     "@lexical/utils": "^0.23.1",
+    "@nord-forge/rime-model": "workspace:*",
     "lexical": "^0.23.1"
   },
   "peerDependencies": {

@@ -42,6 +42,11 @@ export {
 } from "./dnd/keyboard-move/keyboard-move";
 export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
+export {
+  type Mounter,
+  RichTextLifecycle,
+  type RichTextLifecycleDeps,
+} from "./richtext/richtext-lifecycle/richtext-lifecycle";
 export { LiveAnnouncer } from "./a11y/live-region/live-region";
 export {
   blockLabel,

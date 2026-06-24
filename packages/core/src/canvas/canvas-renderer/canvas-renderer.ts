@@ -27,6 +27,18 @@ import {
   renderUnknown,
 } from "../render-node/render-node";
 
+/** Depth-first lookup of a node by id within a doc subtree. */
+function findNode(root: AnyNode, id: NodeId): AnyNode | null {
+  if (root.id === id) return root;
+  if ("children" in root) {
+    for (const child of root.children) {
+      const found = findNode(child, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 /** Render a single node (no children) to a fresh element. */
 function createElementFor(node: AnyNode, doc: Document): HTMLElement {
   switch (node.type) {
@@ -96,6 +108,22 @@ export class CanvasRenderer {
 
   elementForNode(id: NodeId): HTMLElement | null {
     return this.#elements.get(id) ?? null;
+  }
+
+  /**
+   * Repaint a single leaf block's static content from the current doc, in place.
+   * Used to restore a TextBlock after a live editor detaches from it (the editor
+   * leaves the element empty / annotated; this rebuilds the WYSIWYG view). No-op
+   * if the node is missing or not a managed leaf.
+   */
+  repaintNode(id: NodeId): void {
+    const element = this.#elements.get(id);
+    if (!element || !this.#current) return;
+    const node = findNode(this.#current, id);
+    if (!node) return;
+    const fresh = createElementFor(node, this.#doc);
+    element.replaceChildren(...Array.from(fresh.childNodes));
+    element.setAttribute("style", fresh.getAttribute("style") ?? "");
   }
 
   /** Resolve a canvas-local point to the nearest node id. */

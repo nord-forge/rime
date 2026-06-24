@@ -1,7 +1,7 @@
 ---
 id: ENV-28
 title: One live Lexical instance lifecycle
-status: ready
+status: done
 priority: P0
 milestone: 5 — Inline rich text
 depends_on: [ENV-27]
