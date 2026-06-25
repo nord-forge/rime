@@ -345,6 +345,10 @@ export class RimeEditor extends LitElement {
   #richTextHost(): RichTextHost {
     return {
       getDoc: () => this.#doc,
+      tokens: () =>
+        (this.config.tokenSources ?? []).flatMap((src) =>
+          src.tokens.map((t) => ({ key: t.key, label: t.label, source: src.label })),
+        ),
       elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
       canvasDocument: () => this.#canvas?.document ?? null,
       overlayHost: () => this.renderRoot as ShadowRoot,

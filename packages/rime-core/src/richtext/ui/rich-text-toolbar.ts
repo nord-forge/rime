@@ -85,6 +85,11 @@ export class RichTextToolbar extends LitElement {
     );
   }
 
+  /** Request the token picker for the current caret (host wires this up). */
+  requestToken(): void {
+    this.dispatchEvent(new CustomEvent("eb-request-token", { bubbles: true, composed: true }));
+  }
+
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.#unsub?.();
@@ -179,6 +184,9 @@ export class RichTextToolbar extends LitElement {
           @click=${() => this.requestLink()}
         >
           🔗
+        </button>
+        <button type="button" aria-label="Insert merge tag" @click=${() => this.requestToken()}>
+          {&nbsp;}
         </button>
       </div>
     `;
