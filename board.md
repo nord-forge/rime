@@ -3,9 +3,9 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 50 / 67 tickets done.** Milestones 0–6 complete; Milestone 7 in
-progress (ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker landed;
-ENV-41 `registerToken`/config left). ENV-66 (bundle hardening: pure barrel no longer
+**Progress: 51 / 67 tickets done.** Milestones 0–7 complete (M7 personalization
+tokens: ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker, ENV-41
+`registerToken`/`TokenRegistry` + config merge). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
 multi-agent audit (barrel/eager-load · Lit frontend · performance · model/mjml; 17
 verified findings) filed ENV-67–71 — headline is a **P0 export-boundary href/token
@@ -28,7 +28,7 @@ the way (editor + Lit UI moved to `/register`). Core 81.88 kB gzip vs ~100 kB.
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
 | 6 — Blocks & properties | ✅ 15 / 15 |
-| 7 — Personalization tokens | 🔶 2 / 3 |
+| 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
 | 10 — Release readiness | 🔶 1 / 11 |
@@ -132,13 +132,13 @@ Conventions:
 | ENV-63 | ✅ | **Video block** — poster + play overlay linking out | P2 | ENV-34, ENV-33, ENV-65 | §12 |
 | ENV-64 | ✅ | **Table block** — simple data table (raw-table fallback) | P2 | ENV-34, ENV-33, ENV-65 | §12 |
 
-## Milestone 7 — Personalization tokens 🔶
+## Milestone 7 — Personalization tokens ✅
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-39 | ✅ | **`{{variable}}` merge tags** in rich text + render handling | P1 | ENV-27 | §6.9 |
 | ENV-40 | ✅ | **Token picker UI** | P1 | ENV-39 | §6.9 |
-| ENV-41 | ⬜ | **`registerToken` / token-source config** | P1 | ENV-39 | §6.8/9 |
+| ENV-41 | ✅ | **`registerToken` / token-source config** | P1 | ENV-39 | §6.8/9 |
 
 ## Milestone 8 — Persistence & images ⬜
 

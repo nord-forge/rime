@@ -43,13 +43,11 @@ import type { RichTextHost, RichTextProvider } from "../richtext/provider/richte
 import { createPlainTextProvider } from "../richtext/provider/plain-text-provider";
 import { type DocChangeDetail, EbPropertiesPanel } from "../properties/properties-panel";
 import { EbPalette, type PaletteAddDetail } from "../palette/palette";
+import { type TokenSource, registerTokenSource, tokenRegistry } from "../tokens/registry";
 
-/** A declarative merge-token source (consumed by the tokens milestone). */
-export interface TokenSource {
-  id: string;
-  label: string;
-  tokens: { key: string; label: string }[];
-}
+// TokenSource is owned by the token registry (single definition); re-exported on
+// the editor's public surface so RimeConfig keeps using it without duplication.
+export type { TokenSource };
 
 /** The public configuration surface for the editor. */
 export interface RimeConfig {
@@ -140,6 +138,8 @@ export class RimeEditor extends LitElement {
   #paletteCleanups: (() => void)[] = [];
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
+  // Source ids already merged into the token registry (idempotent re-render guard).
+  #mergedSources = new Set<string>();
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
   #onCanvasClick: ((e: MouseEvent) => void) | null = null;
   #onCanvasPointerdown: ((e: PointerEvent) => void) | null = null;
@@ -148,7 +148,22 @@ export class RimeEditor extends LitElement {
   #newId: IdFactory = createIdFactory();
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
-    if (changed.has("config")) this.#applyTheme();
+    if (changed.has("config")) {
+      this.#applyTheme();
+      this.#mergeTokenSources();
+    }
+  }
+
+  // Merge declarative config.tokenSources into the shared token registry (the
+  // declarative channel; registerTokenSource is the programmatic one — both land in
+  // one registry the picker reads). Dup source ids throw, so we skip already-merged
+  // ones to stay idempotent across re-renders.
+  #mergeTokenSources(): void {
+    for (const src of this.config.tokenSources ?? []) {
+      if (this.#mergedSources.has(src.id)) continue;
+      this.#mergedSources.add(src.id);
+      registerTokenSource(src);
+    }
   }
 
   override firstUpdated(): void {
@@ -345,10 +360,10 @@ export class RimeEditor extends LitElement {
   #richTextHost(): RichTextHost {
     return {
       getDoc: () => this.#doc,
-      tokens: () =>
-        (this.config.tokenSources ?? []).flatMap((src) =>
-          src.tokens.map((t) => ({ key: t.key, label: t.label, source: src.label })),
-        ),
+      // The picker's token list comes from the shared registry — both the
+      // declarative config.tokenSources (merged in willUpdate) and any programmatic
+      // registerToken(...) land there.
+      tokens: () => tokenRegistry.all(),
       elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
       canvasDocument: () => this.#canvas?.document ?? null,
       overlayHost: () => this.renderRoot as ShadowRoot,
