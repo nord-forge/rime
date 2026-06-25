@@ -195,4 +195,83 @@ test.describe("drag and drop (pointer)", () => {
     await page.mouse.up();
     expect(await columnIds(page)).toEqual(before);
   });
+
+  test("dropping in a section's bottom padding (below the last block) appends", async ({
+    page,
+  }) => {
+    // A flex column shrinks to its content, so the section's trailing padding sits
+    // below the column box. The drop hit-area must still reach it and append there.
+    await page.goto("/e2e/harness.html");
+    await page.waitForSelector("rime-editor");
+    await page.evaluate(async () => {
+      const el = document.querySelector("rime-editor") as unknown as {
+        whenCanvasReady(): Promise<unknown>;
+        loadDoc(d: unknown): void;
+        registerPaletteItem(elm: HTMLElement, t: string): () => void;
+      };
+      await el.whenCanvasReady();
+      el.loadDoc({
+        id: "d",
+        type: "document",
+        settings: { contentWidth: 600, backgroundColor: "#fff", fontFamily: "Arial" },
+        children: [
+          {
+            id: "s",
+            type: "section",
+            style: { paddingTop: 24, paddingBottom: 40 },
+            children: [
+              {
+                id: "c",
+                type: "column",
+                widthPercent: 100,
+                style: {},
+                children: [
+                  {
+                    id: "only",
+                    type: "text",
+                    style: {},
+                    content: {
+                      type: "doc",
+                      content: [{ type: "paragraph", content: [{ type: "text", text: "Only" }] }],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      const item = document.createElement("div");
+      item.id = "palette-button";
+      item.style.cssText = "position:fixed;top:0;right:0;width:80px;height:24px;z-index:9999";
+      document.body.append(item);
+      el.registerPaletteItem(item, "spacer");
+    });
+
+    // A point clearly below the only block (in the section's bottom padding).
+    const target = await page.evaluate(() => {
+      const host = document.querySelector("rime-editor")!;
+      const frame = host.shadowRoot!.querySelector("iframe") as HTMLIFrameElement;
+      const fr = frame.getBoundingClientRect();
+      const only = frame
+        .contentDocument!.querySelector('[data-node-id="only"]')!
+        .getBoundingClientRect();
+      return { x: fr.left + only.left + only.width / 2, y: fr.top + only.bottom + 14 };
+    });
+    const palette = (await page.locator("#palette-button").boundingBox())!;
+    await pointerDrag(page, { x: palette.x + 40, y: palette.y + 12 }, { x: target.x, y: target.y });
+
+    const ids = await page.evaluate(() =>
+      (
+        document.querySelector("rime-editor") as unknown as {
+          getDoc(): { children: { children: { children: { id: string }[] }[] }[] };
+        }
+      )
+        .getDoc()
+        .children[0]!.children[0]!.children.map((c) => c.id),
+    );
+    expect(ids[0]).toBe("only");
+    expect(ids).toHaveLength(2);
+    expect(ids[1]!.startsWith("spacer")).toBe(true);
+  });
 });
