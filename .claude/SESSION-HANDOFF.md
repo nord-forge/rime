@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #13 merged. Branch: `main` (clean).
+Last updated after PR #14 merged. Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,10 +11,11 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **38/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **6/15**
+- **39/61 tickets done.**
+- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **7/15**
   — ENV-33 (registerBlock interface), ENV-34 (seven core blocks), ENV-65 (schema
-  field types + open validator), ENV-57 (Heading), ENV-58 (Quote), ENV-38 (Social) done.
+  field types + open validator), ENV-57 (Heading), ENV-58 (Quote), ENV-38 (Social),
+  ENV-60 (Hero) done.
 - Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
   node interface declared in rime-core (NOT the rime-model union), validated via
   `validateDoc`'s `extraLeafTypes`, exported as native MJML. They go in the core
@@ -52,7 +53,7 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   `resolve.conditions` (in `scripts/vite-lib.ts`) handles the e2e dev server.
 - CI runs `bun test` BEFORE `build`, so packages must be resolvable from `src`.
 - The size gate (`bun run size`) sums all dist chunks; budget ~100 kB gzip, currently
-  ~71.9 kB.
+  ~75.7 kB.
 - A pre-existing **drag-preview e2e is quarantined** (`test.fixme`) — flakes on slow CI
   (leftover preview node). Tracked as ENV-26b. Not a regression.
 
@@ -70,10 +71,24 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   (`blocks/core/core-blocks.test.ts`) that renders through both and asserts equality.
   Core duplicates ~3 tiny MJML string helpers (in `blocks/core/mjml-attrs.ts`) rather
   than depending on rime-mjml at runtime; rime-mjml is a core devDependency for the test.
-- **Open validator:** `validateDoc(doc, { extraLeafTypes })` accepts registered custom
-  leaf types (validates id + BlockStyle generically; block schema validates the rest).
-  Doc-model stays headless — it never imports the registry. New blocks add their type
-  here, NOT by editing the doc-model node union.
+- **Open validator:** `validateDoc(doc, { extraLeafTypes, extraSectionTypes })` accepts
+  registered custom leaf + section-level types (validates id + BlockStyle generically;
+  block schema validates the rest). Doc-model stays headless — never imports the
+  registry. New blocks add their type via these options, NOT by editing the node union.
+- **Section-level "band" blocks (PR #14):** the doc model is no longer strictly
+  `document→section→column→leaf`. A document's children may be a `SectionNode` OR a
+  band block (`DocumentChild = SectionNode | BandBlock`). Blocks declare placement via
+  `BlockDefinition.placement: "leaf" | "section"` (default `"leaf"`); DnD/canvas/
+  validator key off it, NOT hardcoded type lists. `AnyNode` stays CLOSED/narrowable —
+  use `isSection(child)` to narrow doc children (band's open `type` defeats a plain
+  `=== "section"`). The **Hero** (ENV-60) is the first band: exports a body-level
+  `<mj-hero>` (can't nest in a column). See `.claude` memory `section-level-blocks`.
+  Band drag-reorder is NOT yet wired (a hero drag no-ops); leaf DnD untouched.
+- **CanvasRenderer is registry-aware (PR #14):** non-built-in registered types render
+  through their registry `renderCanvas` (fixed heading/quote/social, which previously
+  painted as hidden placeholders on the live canvas). The editor's `#createBlock`
+  builds palette blocks from registry `palette.defaults`. Editor ops now pass
+  `{ extraLeafTypes, extraSectionTypes }` (from the registry) into validate.
 - **Section is a styled container:** full-bleed background + padding wrapping its
   column(s) and blocks; a new Section defaults to one 100% column. (User requirement.)
 - **Rich text:** Lexical headless, ONE live instance (create-on-focus/destroy-on-blur
@@ -92,9 +107,12 @@ extend `validateDoc` use via `extraLeafTypes`. Suggested batching:
 **Batch A — simple P1 (MJML-native, no schema-gap deps):**
 - ✅ ENV-57 Heading (`<mj-text>` h1–3), ✅ ENV-58 Quote (`<mj-text>` blockquote) — PR #12.
 - ✅ ENV-38 Social (`<mj-social>`) — PR #13.
-- REMAINING: ENV-60 Hero (`<mj-hero>` bg+text+CTA), ENV-61 Column presets
-  (Section+Column subtrees — palette presets that drop a subtree; note the design
-  wrinkle: a PaletteEntry that yields a subtree, not a single leaf).
+- ✅ ENV-60 Hero (`<mj-hero>` bg+text+CTA) — PR #14 (drove the section-level-blocks
+  model change; see Architecture notes).
+- REMAINING: ENV-61 Column presets (Section+Column subtrees — palette presets that drop
+  a subtree, NOT a single leaf). NOTE: PR #14 added `placement` + subtree-friendly
+  machinery; a preset can now be a PaletteEntry that yields a Section subtree. Consider
+  the same `placement`/registry approach rather than a privileged path.
 
 **Batch B — list/multiline-dependent (use ENV-65's new field types):**
 - ENV-59 Menu (`<mj-navbar>`, items list), ENV-62 HTML (`<mj-raw>` passthrough, `code`
