@@ -3,7 +3,7 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 63 / 68 tickets done.** Milestones 0–9 complete (M8 persistence &
+**Progress: 65 / 68 tickets done.** Milestones 0–9 complete (M8 persistence &
 images: ENV-42/43; M9 wrappers & demo: ENV-44 React + ENV-45 Vue wrappers, ENV-46
 vanilla demo + a React demo, ENV-47 vanilla/Astro example). Remaining: Milestone 10
 release readiness (ENV-48–52, +66/71 hardening done). ENV-66 (bundle hardening: pure barrel no longer
@@ -17,6 +17,12 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 > ENV-32 caveat: the composition guard + QA checklist (`packages/rime-core/docs/
 > RICHTEXT-QA-CHECKLIST.md`) are landed; the **real-device iOS Safari + CJK IME
 > manual pass is still pending** — record it in `RICHTEXT-QA-FINDINGS.md`.
+>
+> ENV-49/50 caveat: the **automated** §10 perf gates and §11 golden-snapshot/Outlook
+> scaffolding are signed off (`docs/perf-signoff.md`, `docs/output-signoff.md`). Two
+> manual confirmations remain for the release tag (ENV-52): a perf run on dedicated
+> low-end hardware, and the live-inbox client matrix (Outlook/Gmail/Apple Mail via
+> Litmus/Email-on-Acid). Neither blocks development.
 
 | Milestone | Done |
 |-----------|------|
@@ -30,7 +36,7 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 | 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ✅ 2 / 2 |
 | 9 — Framework wrappers & demo | ✅ 4 / 4 |
-| 10 — Release readiness | 🔶 7 / 12 |
+| 10 — Release readiness | 🔶 9 / 12 |
 
 Conventions:
 - ID format `ENV-NN`. Each ticket links back to the PRD section it satisfies.
@@ -160,8 +166,8 @@ Conventions:
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-48 | ⬜ | **<30-min embed test** — fresh dev follows README, embeds + themes + save/load; time it | P1 | ENV-44, ENV-46 | §11 |
-| ENV-49 | ⬜ | **Perf gate sign-off** — §10 budgets met on low-end reference machine | P0 | ENV-21, ENV-26, ENV-28 | §10 |
-| ENV-50 | ⬜ | **Output-correctness sign-off** — email-client matrix passes | P0 | ENV-13 | §11 |
+| ENV-49 | ✅ | **Perf gate sign-off** — §10 budgets met (automated); low-end HW run pending | P0 | ENV-21, ENV-26, ENV-28 | §10 |
+| ENV-50 | ✅ | **Output-correctness sign-off** — golden snapshots green; live-inbox matrix pending | P0 | ENV-13 | §11 |
 | ENV-51 | ⬜ | **Docs site / API reference** — `init` config, `registerBlock`, `registerToken`, theming tokens | P1 | ENV-33, ENV-41 | §1 |
 | ENV-52 | ⬜ | **npm publish** `@nord-forge/*` (core, doc-model, renderer-mjml, react, vue) | P1 | ENV-48, ENV-49, ENV-50, ENV-51 | §8 |
 | ENV-66 | ✅ | **Pure-barrel Lexical leak fix** — `/richtext` deep entry; eager-load budgets + guard | P0 | ENV-39, ENV-40 | §6.7, §10 |

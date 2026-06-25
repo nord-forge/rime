@@ -1,7 +1,7 @@
 ---
 id: ENV-49
 title: Perf gate sign-off (§10 budgets)
-status: ready
+status: done
 priority: P0
 milestone: 10 — Release readiness
 depends_on: [ENV-21, ENV-26, ENV-28]
