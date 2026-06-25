@@ -190,4 +190,48 @@ describe("MJML export parity with renderer-mjml", () => {
       expect(coreExport(node)).toBe(rendererExportLeaf(node));
     });
   }
+
+  // Hostile inputs: the parity test alone can't catch a defect present in BOTH
+  // duplicated copies, so these assert the expected SANITIZED output (dropped
+  // href / no extra merge tag) in addition to core == mjml.
+  describe("sanitizes hostile inputs (not just incidental parity)", () => {
+    const linkDoc = (link: string): RichTextJSON => ({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "x", link }] }],
+    });
+
+    test("javascript: button href is dropped (no href attribute)", () => {
+      const node = createButtonBlock(createIdFactory(), "Go", "javascript:alert(1)");
+      const out = coreExport(node);
+      expect(out).not.toContain("javascript:");
+      expect(out).not.toContain("href=");
+      expect(out).toBe(rendererExportLeaf(node));
+    });
+
+    test("data: image href is dropped", () => {
+      const node = {
+        ...createImageBlock(createIdFactory(), "https://x.test/i.png", "alt"),
+        href: "data:text/html,<script>1</script>",
+      } as BaseNode;
+      const out = coreExport(node);
+      expect(out).not.toContain("data:text/html");
+      expect(out).toBe(rendererExportLeaf(node));
+    });
+
+    test("javascript: rich-text link is dropped (text kept, no anchor)", () => {
+      const node = createTextBlock(createIdFactory(), linkDoc("javascript:alert(1)"));
+      const out = coreExport(node);
+      expect(out).not.toContain("javascript:");
+      expect(out).not.toContain("<a ");
+      expect(out).toContain("x");
+      expect(out).toBe(rendererExportLeaf(node));
+    });
+
+    test("a valid link is normalized identically in both copies", () => {
+      const node = createTextBlock(createIdFactory(), linkDoc("example.test/path"));
+      const out = coreExport(node);
+      expect(out).toContain('href="https://example.test/path"');
+      expect(out).toBe(rendererExportLeaf(node));
+    });
+  });
 });

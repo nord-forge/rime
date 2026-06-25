@@ -1,7 +1,7 @@
 import type { ImageBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
 import { renderImage } from "../../canvas/render-node/render-node";
-import { attrsToString, styleToMjmlAttrs } from "./mjml-attrs";
+import { attrsToString, normalizeHref, styleToMjmlAttrs } from "./mjml-attrs";
 
 export const imageBlock: BlockDefinition<ImageBlock> = {
   type: "image",
@@ -25,7 +25,10 @@ export const imageBlock: BlockDefinition<ImageBlock> = {
     const attrs = styleToMjmlAttrs(node.style);
     attrs["src"] = node.src;
     attrs["alt"] = node.alt;
-    if (node.href !== undefined) attrs["href"] = node.href;
+    if (node.href !== undefined) {
+      const href = normalizeHref(node.href);
+      if (href !== null) attrs["href"] = href;
+    }
     return { mjml: `<mj-image${attrsToString(attrs)} />` };
   },
 };
