@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #15 merged. Branch: `main` (clean).
+Last updated after PR #19 merged. Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,11 +11,15 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **40/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **8/15**
-  — ENV-33 (registerBlock interface), ENV-34 (seven core blocks), ENV-65 (schema
-  field types + open validator), ENV-57 (Heading), ENV-58 (Quote), ENV-38 (Social),
-  ENV-60 (Hero), ENV-61 (Column presets) done.
+- **44/61 tickets done.**
+- **Milestones 0–5 complete.** Milestone 6 (blocks & properties): **12/15** — the full
+  block CATALOG now ships. Done: ENV-33 (registerBlock), ENV-34 (seven core blocks),
+  ENV-65 (schema field types + open validator), ENV-57 (Heading), ENV-58 (Quote),
+  ENV-38 (Social), ENV-60 (Hero), ENV-61 (Column presets), and Batch B —
+  ENV-59 (Menu/`mj-navbar`, PR #16), ENV-62 (HTML/`mj-raw` passthrough, PR #17),
+  ENV-63 (Video/raw-table poster+overlay, PR #18), ENV-64 (Table/raw-table, PR #19).
+- **Remaining in M6: the UI tickets — ENV-35 (properties panel), ENV-36 (palette UI),
+  ENV-37 (example custom block).** These consume the schema DSL + registry already built.
 - Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
   node interface declared in rime-core (NOT the rime-model union), validated via
   `validateDoc`'s `extraLeafTypes`, exported as native MJML. They go in the core
@@ -53,7 +57,7 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   `resolve.conditions` (in `scripts/vite-lib.ts`) handles the e2e dev server.
 - CI runs `bun test` BEFORE `build`, so packages must be resolvable from `src`.
 - The size gate (`bun run size`) sums all dist chunks; budget ~100 kB gzip, currently
-  ~76.5 kB.
+  ~78.2 kB.
 - A pre-existing **drag-preview e2e is quarantined** (`test.fixme`) — flakes on slow CI
   (leftover preview node). Tracked as ENV-26b. Not a regression.
 
@@ -111,32 +115,30 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
 - **Canvas DnD = custom pointer events** in the srcdoc iframe (OD-6), NOT a library;
   test with `page.mouse`.
 
-## NEXT UP — the remaining block catalog (Milestone 6)
-The block catalog was expanded (PR #8). Tickets in `.claude/tickets/06-blocks-properties/`.
-Build each as a `BlockDefinition`, register via `registerBlock`, add canvas + MJML export,
-extend `validateDoc` use via `extraLeafTypes`. Suggested batching:
+## NEXT UP — the M6 UI tickets (the block catalog is DONE)
+The full block catalog ships (ENV-34 core + ENV-57/58/38/60/61/59/62/63/64). What's left
+in Milestone 6 is the editor UI that CONSUMES the schema DSL + registry already built:
+- **ENV-35 — properties panel:** schema-driven forms. Renders a form per selected block
+  from its `BlockSchema.fields` (every `FieldType` now in use: text/number/color/select/
+  boolean/spacing/align/url/richtext/multiline/code/**list**). The `list` repeater needs a
+  real add/remove/reorder control (menu/social use it; table's 2-D grid was deferred HERE —
+  it declares a `rows` list field but needs a dedicated grid control). Edits dispatch
+  through `updateNode` (already takes `ValidateOptions`).
+- **ENV-36 — palette UI:** categorized, icons, drag source. Reads `blockRegistry.byCategory()`
+  AND `presetRegistry.all()` (presets are section-level). Wire each entry via
+  `editor.registerPaletteItem(el, typeOrPresetId)` — the DnD + section-level drop already work.
+- **ENV-37 — example custom block:** the SDK proof, documented end-to-end.
+These unblock the demo (ENV-46).
 
-**Batch A — DONE:**
-- ✅ ENV-57 Heading (`<mj-text>` h1–3), ✅ ENV-58 Quote (`<mj-text>` blockquote) — PR #12.
-- ✅ ENV-38 Social (`<mj-social>`) — PR #13.
-- ✅ ENV-60 Hero (`<mj-hero>` bg+text+CTA) — PR #14 (drove the section-level-blocks
-  model change; see Architecture notes).
-- ✅ ENV-61 Column presets (Section+Column subtrees + section-level pointer drop) — PR #15.
-
-**Batch B — list/multiline-dependent (use ENV-65's new field types):**
-- ENV-59 Menu (`<mj-navbar>`, items list), ENV-62 HTML (`<mj-raw>` passthrough, `code`
-  field, trusted/un-sanitized), ENV-63 Video (poster + play overlay → link),
-  ENV-64 Table (raw-table fallback, the one block where `<table>` is allowed on canvas).
-
-Reuse the href normalizer for any href field (reject `javascript:`). For BLOCK export
-code use the standalone `normalizeHref` in `blocks/core/mjml-attrs.ts` (the richtext one
-in `richtext/ui/rich-text-commands.ts` drags in Lexical — keep it out of block/SDK code).
-Each new block: register in `defineRimeEditor`'s core set or as its own definition; add a
-palette entry; add unit tests (canvas DOM + MJML parity where it maps to a native component).
-
-After batch(es): ENV-35 (properties panel — schema-driven forms, consumes the schema DSL
-incl. new field types), ENV-36 (palette UI, drag source), ENV-37 (example custom block —
-the SDK proof). These unblock the demo (ENV-46).
+**Block-authoring crib (for ENV-37 / any new block):** every block is a `BlockDefinition`
+`{ type, placement?, schema, palette, renderCanvas, renderExport }` in
+`blocks/core/<name>.ts`, added to `CORE_BLOCKS` in `blocks/core/index.ts` + the root barrel
++ the `core-blocks.test.ts` registered-types list. Leaf blocks export `{ mjml }` (native
+component) or `{ raw }` (`<mj-raw>` passthrough — html/video/table). For href fields use the
+standalone `normalizeHref` in `blocks/core/mjml-attrs.ts` (the richtext one in
+`richtext/ui/rich-text-commands.ts` drags in Lexical — keep it out of block/SDK code);
+escape labels/attrs with `escapeHtml`/`escapeAttr`. Tests: schema + canvas DOM + export
+string + `validateDoc({ extraLeafTypes })` round-trip + compile-through the MjmlRenderer.
 
 ## Useful commands
 ```bash
