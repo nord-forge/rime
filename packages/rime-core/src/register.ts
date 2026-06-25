@@ -7,7 +7,12 @@
 //   import { defineRimeEditor } from "@nord-forge/rime-core/register";
 //   defineRimeEditor({ blocks: [myBlock], tagName: "my-editor" });
 
-import { RimeEditor } from "./rime-editor/rime-editor";
+import {
+  RimeEditor,
+  type RimeChangeDetail,
+  type RimeConfig,
+  type TokenSource,
+} from "./rime-editor/rime-editor";
 import { registerCoreBlocks } from "./blocks/core/index";
 import { blockRegistry, registerBlock } from "./blocks/registry";
 import { registerCorePresets } from "./blocks/column-presets";
@@ -60,4 +65,13 @@ export function defineRimeEditor(config: RimeInitConfig = {}): string {
 // Bare `import "@nord-forge/rime-core/register"` = zero-config quick start.
 if (!defined) defineRimeEditor();
 
-export { RimeEditor };
+export { RimeEditor, type RimeChangeDetail, type RimeConfig, type TokenSource };
+
+// The editor's chrome UI components (Lit custom elements) live here, alongside the
+// editor itself — NOT on the pure "@nord-forge/rime-core" SDK barrel, so importing
+// registerBlock/types stays free of Lit (and bun-transformable in tests).
+export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
+export { EbPalette, type PaletteAddDetail } from "./palette/palette";
+export { MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
+export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
+export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
