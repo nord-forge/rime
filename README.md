@@ -42,6 +42,27 @@ There is no great open-source email template builder. The good ones are closed/c
   el.loadDoc(savedJson);
 </script>
 ```
+A complete, runnable version of this (theming, `onImageUpload`, save/load via
+`localStorage`) lives in [`examples/astro-vanilla`](./examples/astro-vanilla) — run it
+with `bun run --filter='@nord-forge/rime-example-astro-vanilla' dev`.
+
+**Astro.** `<rime-editor>` is a client-side web component (the editor is not
+server-rendered). Register it on the client only — e.g. a `<script>` in an `.astro`
+file, or a small island loaded with `client:only` / `client:load`:
+```astro
+---
+// MyEditor.astro
+---
+<rime-editor id="editor" style="block-size: 100vh"></rime-editor>
+<script>
+  import '@nord-forge/rime-core/register'; // runs in the browser; defines the element
+  const el = document.getElementById('editor');
+  el.config = { theme: { '--eb-color-accent': '#5b5bd6' } };
+  el.addEventListener('change', (e) => localStorage.setItem('doc', JSON.stringify(e.detail.doc)));
+</script>
+```
+Theming is entirely [`--eb-*` CSS custom properties](#importing-the-editor) on the
+element (or any ancestor) — no host stylesheet ever reaches the email canvas.
 
 ### React
 ```tsx
