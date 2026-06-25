@@ -73,6 +73,7 @@ export {
   socialBlock,
   spacerBlock,
   textBlock,
+  videoBlock,
 } from "./blocks/core/index";
 export type { HeadingBlock, HeadingLevel } from "./blocks/core/heading";
 export type { QuoteBlock } from "./blocks/core/quote";
@@ -80,6 +81,7 @@ export type { HeroBlock, HeroButton } from "./blocks/core/hero";
 export type { SocialBlock, SocialLink, SocialNetwork } from "./blocks/core/social";
 export type { MenuBlock, MenuItem } from "./blocks/core/menu";
 export type { HtmlBlock } from "./blocks/core/html";
+export type { VideoBlock } from "./blocks/core/video";
 export {
   type LayoutPreset,
   LAYOUT_PRESETS,
