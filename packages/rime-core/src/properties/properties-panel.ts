@@ -143,6 +143,17 @@ export class EbPropertiesPanel extends LitElement {
   #pending: Record<string, unknown> | null = null;
   #flushHandle: ReturnType<typeof setTimeout> | null = null;
 
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // Drop any pending debounced flush so it can't dispatch eb-doc-change from a
+    // detached element after teardown.
+    if (this.#flushHandle) {
+      clearTimeout(this.#flushHandle);
+      this.#flushHandle = null;
+    }
+    this.#pending = null;
+  }
+
   #node(): BaseNode | null {
     if (!this.doc || !this.selectedId) return null;
     return (findNodeById(this.doc, this.selectedId) as BaseNode | null) ?? null;

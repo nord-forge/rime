@@ -1,4 +1,4 @@
-import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { type CSSResultGroup, LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators.js";
 import { type TokenGroup, type TokenItem, filterAndGroup, flatten } from "./token-filter";
 
@@ -133,10 +133,19 @@ export class EbTokenPicker extends LitElement {
     }
   }
 
+  override willUpdate(changed: PropertyValues): void {
+    // Clamp the active index to the current filtered list BEFORE render (writing a
+    // reactive prop in render() is a Lit anti-pattern). Only when inputs changed.
+    if (changed.has("tokens") || changed.has("query") || changed.has("active")) {
+      const count = flatten(this.#groups()).length;
+      const clamped = count === 0 ? 0 : Math.min(this.active, count - 1);
+      if (clamped !== this.active) this.active = clamped;
+    }
+  }
+
   override render() {
     const groups = this.#groups();
     const flat = flatten(groups);
-    if (this.active >= flat.length) this.active = Math.max(0, flat.length - 1);
     let index = -1;
     return html`
       <div class="box" role="dialog" aria-label="Insert merge tag">

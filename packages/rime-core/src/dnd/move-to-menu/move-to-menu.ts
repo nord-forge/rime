@@ -71,10 +71,23 @@ export class MoveToMenu extends LitElement {
     `;
   }
 
+  #hasFocused = false;
+
   override updated(): void {
-    // Keep DOM focus on the active item for roving-tabindex keyboard operation.
+    // Focus the active item on first paint (the menu opening) for keyboard
+    // operation, and afterward only while focus already lives inside the menu
+    // (roving tabindex). This stops a reactive update from outside — e.g. a consumer
+    // reassigning `destinations` — from stealing focus on every render.
+    if (this.destinations.length === 0) return;
+    const root = this.renderRoot as unknown as DocumentOrShadowRoot;
+    const focusInside =
+      root.activeElement instanceof HTMLElement &&
+      root.activeElement.getAttribute("role") === "menuitem";
+    if (this.#hasFocused && !focusInside) return;
     const items = this.renderRoot.querySelectorAll<HTMLButtonElement>("button[role=menuitem]");
+    if (items.length === 0) return;
     items[this.activeIndex]?.focus();
+    this.#hasFocused = true;
   }
 
   #onKeydown(e: KeyboardEvent): void {

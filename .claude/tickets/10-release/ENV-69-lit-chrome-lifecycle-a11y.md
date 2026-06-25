@@ -1,7 +1,7 @@
 ---
 id: ENV-69
 title: Lit chrome lifecycle & a11y hardening
-status: ready
+status: done
 priority: P1
 milestone: 10 — Release readiness
 depends_on: [ENV-40]

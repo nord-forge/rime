@@ -132,4 +132,37 @@ test.describe("block palette", () => {
     await page.keyboard.press("Enter");
     await expect.poll(() => docChildCount(page)).toBe(2);
   });
+
+  test("a palette item enabled after init via config.enabledBlocks is a working drag source", async ({
+    page,
+  }) => {
+    await setup(page);
+    // Start with only text enabled, then add button at runtime.
+    const setEnabled = (blocks: string[]) =>
+      page.evaluate((b) => {
+        const el = document.querySelector("rime-editor") as unknown as {
+          config: Record<string, unknown>;
+        };
+        el.config = { ...el.config, enabledBlocks: b };
+      }, blocks);
+
+    await setEnabled(["text"]);
+    await expect(paletteItem(page, "button")).toHaveCount(0);
+
+    await setEnabled(["text", "button"]);
+    await expect(paletteItem(page, "button")).toBeVisible();
+
+    // The newly-rendered button item must have had its drag source re-registered:
+    // dragging it onto the canvas inserts a block (would no-op if registration only
+    // ran in firstUpdated).
+    expect(await colChildCount(page, "col_1")).toBe(1);
+    const item = await paletteItem(page, "button").boundingBox();
+    const target = await canvasCenter(page, "t_a");
+    await page.mouse.move(item!.x + item!.width / 2, item!.y + item!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(item!.x + 6, item!.y + 6);
+    await page.mouse.move(target.x, target.y + 10, { steps: 6 });
+    await page.mouse.up();
+    await expect.poll(() => colChildCount(page, "col_1")).toBe(2);
+  });
 });
