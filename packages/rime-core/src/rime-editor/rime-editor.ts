@@ -11,6 +11,7 @@ import {
   createImageBlock,
   createSpacerBlock,
   createTextBlock,
+  isSection,
   type RimeDoc,
   type IdFactory,
   insertNode,
@@ -44,6 +45,7 @@ import { RichTextToolbar } from "../richtext/ui/rich-text-toolbar";
 import { type LinkApplyDetail, LinkPopover } from "../richtext/ui/link-popover";
 import { makeCommands } from "../richtext/ui/rich-text-commands";
 import { type DocChangeDetail, EbPropertiesPanel } from "../properties/properties-panel";
+import { EbPalette, type PaletteAddDetail } from "../palette/palette";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -118,6 +120,7 @@ export class RimeEditor extends LitElement {
 
   @query('[part="canvas"]') private canvasRegion!: HTMLElement;
   @query("eb-properties-panel") private propertiesPanel!: EbPropertiesPanel;
+  @query("eb-palette") private palette!: EbPalette;
 
   #doc: RimeDoc | null = null;
 
@@ -131,6 +134,8 @@ export class RimeEditor extends LitElement {
   #toolbar: RichTextToolbar | null = null;
   #linkPopover: LinkPopover | null = null;
   #properties: EbPropertiesPanel | null = null;
+  #palette: EbPalette | null = null;
+  #paletteCleanups: (() => void)[] = [];
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -146,6 +151,7 @@ export class RimeEditor extends LitElement {
 
   override firstUpdated(): void {
     this.#properties = this.propertiesPanel;
+    this.#palette = this.palette;
     this.#syncProperties();
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
@@ -275,6 +281,10 @@ export class RimeEditor extends LitElement {
         this.#dnd.syncCanvasTargets();
         this.#makeLeavesFocusable();
       }
+
+      // The palette renders its items; register each as a canvas drag source now
+      // that DnD is ready. updateComplete waits for the Lit render to flush.
+      void this.#palette?.updateComplete.then(() => this.#registerPaletteSources());
     });
   }
 
@@ -305,6 +315,8 @@ export class RimeEditor extends LitElement {
     this.#onCompositionStart = null;
     this.#onCompositionEnd = null;
     this.#onKeydown = null;
+    for (const dispose of this.#paletteCleanups) dispose();
+    this.#paletteCleanups = [];
     this.#richtext?.destroy();
     this.#richtext = null;
     this.#toolbar?.remove();
@@ -349,6 +361,80 @@ export class RimeEditor extends LitElement {
   #onPropertyChange(e: Event): void {
     const detail = (e as CustomEvent<DocChangeDetail>).detail;
     this.#dispatch({ doc: detail.doc, patch: detail.patch, inverse: detail.inverse });
+  }
+
+  // Register each palette item as a canvas drag source (pointer DnD). Re-runnable:
+  // disposes prior registrations first.
+  #registerPaletteSources(): void {
+    for (const dispose of this.#paletteCleanups) dispose();
+    this.#paletteCleanups = [];
+    if (!this.#palette || !this.#dnd) return;
+    for (const item of this.#palette.items) {
+      const type = item.dataset["blockType"];
+      if (type) this.#paletteCleanups.push(this.registerPaletteItem(item, type));
+    }
+  }
+
+  // Keyboard "add" from the palette (a11y parity with drag): insert at a sensible
+  // default location.
+  #onPaletteAdd(e: Event): void {
+    this.addBlock((e as CustomEvent<PaletteAddDetail>).detail.id);
+  }
+
+  /**
+   * Insert a new block (or column-layout preset) at a sensible default location:
+   * a section-level block/preset appends to the document; a leaf appends to the end
+   * of the selected block's column, else the first column found. Selects + announces
+   * the new node. The non-drag (keyboard) path; drag insertion goes through DnD.
+   */
+  addBlock(blockType: string): void {
+    if (!this.#doc) return;
+    const node = this.#createBlock(blockType);
+    const target = this.#defaultInsertTarget(blockType);
+    if (!target) return;
+    let op: OpResult;
+    try {
+      op = insertNode(this.#doc, target.parentId, target.index, node, this.#validateOptions());
+    } catch {
+      return; // an invalid placement (e.g. no column to hold a leaf) is a no-op
+    }
+    this.#dispatch(op);
+    this.#setSelected(node.id);
+    this.#announcer?.announce(insertMessage(op.doc, node.id));
+  }
+
+  // Resolve the default parent + index for a keyboard-added block.
+  #defaultInsertTarget(blockType: string): { parentId: string; index: number } | null {
+    const doc = this.#doc;
+    if (!doc) return null;
+    if (this.#isSectionLevel(blockType)) {
+      return { parentId: doc.id, index: doc.children.length };
+    }
+    // Leaf: prefer the column holding the selection, else the first column found.
+    const columnId = this.#selectedColumnId() ?? this.#firstColumnId();
+    if (!columnId) return null;
+    const column = findNodeById(doc, columnId) as { children?: unknown[] } | null;
+    return { parentId: columnId, index: column?.children?.length ?? 0 };
+  }
+
+  #selectedColumnId(): string | null {
+    if (!this.#doc || !this.#selected) return null;
+    for (const section of this.#doc.children) {
+      if (!isSection(section)) continue;
+      for (const column of section.children) {
+        if (column.id === this.#selected) return column.id;
+        if (column.children.some((leaf) => leaf.id === this.#selected)) return column.id;
+      }
+    }
+    return null;
+  }
+
+  #firstColumnId(): string | null {
+    if (!this.#doc) return null;
+    for (const section of this.#doc.children) {
+      if (isSection(section) && section.children[0]) return section.children[0].id;
+    }
+    return null;
   }
 
   #setupRichTextUi(canvasDoc: Document): void {
@@ -574,7 +660,13 @@ export class RimeEditor extends LitElement {
 
   override render() {
     return html`
-      <section part="palette"><slot name="palette"></slot></section>
+      <section part="palette">
+        <eb-palette
+          .enabledBlocks=${this.config.enabledBlocks}
+          @eb-palette-add=${(e: Event) => this.#onPaletteAdd(e)}
+        ></eb-palette>
+        <slot name="palette"></slot>
+      </section>
       <section part="canvas"><slot name="canvas"></slot></section>
       <section part="properties">
         <eb-properties-panel
