@@ -11,6 +11,7 @@ import {
   RimeEditor,
   type RimeChangeDetail,
   type RimeConfig,
+  RimeValidationError,
   type TokenSource,
 } from "./rime-editor/rime-editor";
 import { registerCoreBlocks } from "./blocks/core/index";
@@ -65,7 +66,13 @@ export function defineRimeEditor(config: RimeInitConfig = {}): string {
 // Bare `import "@nord-forge/rime-core/register"` = zero-config quick start.
 if (!defined) defineRimeEditor();
 
-export { RimeEditor, type RimeChangeDetail, type RimeConfig, type TokenSource };
+export {
+  RimeEditor,
+  type RimeChangeDetail,
+  type RimeConfig,
+  RimeValidationError,
+  type TokenSource,
+};
 
 // The editor's chrome UI components (Lit custom elements) live here, alongside the
 // editor itself — NOT on the pure "@nord-forge/rime-core" SDK barrel, so importing

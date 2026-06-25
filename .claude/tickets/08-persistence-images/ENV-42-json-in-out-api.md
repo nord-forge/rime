@@ -1,7 +1,7 @@
 ---
 id: ENV-42
 title: Public JSON in/out API (load / getDoc / change)
-status: ready
+status: done
 priority: P0
 milestone: 8 — Persistence & images
 depends_on: [ENV-09, ENV-14]
