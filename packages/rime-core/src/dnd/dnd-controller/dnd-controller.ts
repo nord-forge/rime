@@ -214,6 +214,11 @@ export class DndController {
     return this.#dragCleanups.size;
   }
 
+  /** True while a drag is in progress (geometry only needs refreshing then). */
+  get isDragging(): boolean {
+    return this.#active !== null;
+  }
+
   /** Re-snapshot geometry (call when the canvas scrolls/resizes mid-drag). */
   refreshGeometry(): void {
     if (!this.#active) return;
