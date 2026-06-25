@@ -72,6 +72,7 @@ export {
   sectionBlock,
   socialBlock,
   spacerBlock,
+  tableBlock,
   textBlock,
   videoBlock,
 } from "./blocks/core/index";
@@ -82,6 +83,7 @@ export type { SocialBlock, SocialLink, SocialNetwork } from "./blocks/core/socia
 export type { MenuBlock, MenuItem } from "./blocks/core/menu";
 export type { HtmlBlock } from "./blocks/core/html";
 export type { VideoBlock } from "./blocks/core/video";
+export type { TableBlock, TableBorder } from "./blocks/core/table";
 export {
   type LayoutPreset,
   LAYOUT_PRESETS,
