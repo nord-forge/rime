@@ -265,3 +265,79 @@ describe("registered blocks via the registry", () => {
     expect((r.elementForNode("hero_1") as HTMLElement).dataset["nodeUnknown"]).toBe("1");
   });
 });
+
+describe("empty-block ghost placeholders", () => {
+  test("an empty text block is stamped data-empty with a label", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    const section = createSection(newId, 1);
+    section.children[0]!.children.push(createTextBlock(newId));
+    d.children.push(section);
+
+    const r = new CanvasRenderer(mount, doc);
+    r.render(d);
+
+    const text = mount.querySelector('[data-node-type="text"]') as HTMLElement;
+    expect(text.dataset["empty"]).toBe("1");
+    expect(text.dataset["placeholder"]).toBeTruthy();
+  });
+
+  test("a filled text block carries no ghost", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    const section = createSection(newId, 1);
+    section.children[0]!.children.push(
+      createTextBlock(newId, {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: "hi" }] }],
+      }),
+    );
+    d.children.push(section);
+
+    const r = new CanvasRenderer(mount, doc);
+    r.render(d);
+
+    const text = mount.querySelector('[data-node-type="text"]') as HTMLElement;
+    expect(text.dataset["empty"]).toBeUndefined();
+  });
+
+  test("filling a text block clears the ghost on update (element identity kept)", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    const section = createSection(newId, 1);
+    const text = createTextBlock(newId);
+    section.children[0]!.children.push(text);
+    d.children.push(section);
+
+    const r = new CanvasRenderer(mount, doc);
+    r.render(d);
+    const before = r.elementForNode(text.id) as HTMLElement;
+    expect(before.dataset["empty"]).toBe("1");
+
+    const next = updateNode(d, text.id, {
+      content: {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: "now full" }] }],
+      },
+    } as never).doc;
+    r.update(next);
+
+    const after = r.elementForNode(text.id) as HTMLElement;
+    expect(after).toBe(before); // identity preserved
+    expect(after.dataset["empty"]).toBeUndefined();
+  });
+
+  test("custom labels flow through the renderer", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    const section = createSection(newId, 1);
+    section.children[0]!.children.push(createTextBlock(newId));
+    d.children.push(section);
+
+    const r = new CanvasRenderer(mount, doc, undefined, { text: "Custom copy" });
+    r.render(d);
+
+    const text = mount.querySelector('[data-node-type="text"]') as HTMLElement;
+    expect(text.dataset["placeholder"]).toBe("Custom copy");
+  });
+});

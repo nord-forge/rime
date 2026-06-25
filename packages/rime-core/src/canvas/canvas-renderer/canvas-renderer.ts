@@ -28,6 +28,11 @@ import {
   renderUnknown,
 } from "../render-node/render-node";
 import { type BlockRegistry, renderNodeViaRegistry } from "../../blocks/registry";
+import {
+  applyPlaceholder,
+  DEFAULT_PLACEHOLDER_LABELS,
+  placeholderFor,
+} from "../editor-chrome/editor-chrome";
 
 // Any node the canvas may render: the built-in tree nodes plus section-level
 // band blocks (e.g. a hero). Kept local since AnyNode is intentionally closed
@@ -63,7 +68,20 @@ const BUILT_IN_TYPES = new Set<string>([
   "spacer",
 ]);
 
-function createElementFor(node: CanvasNode, doc: Document, registry?: BlockRegistry): HTMLElement {
+function createElementFor(
+  node: CanvasNode,
+  doc: Document,
+  registry?: BlockRegistry,
+  labels: Record<string, string> = DEFAULT_PLACEHOLDER_LABELS,
+): HTMLElement {
+  const element = renderElementFor(node, doc, registry);
+  // Empty-block ghost: builder-only affordance so invisible blocks (empty text,
+  // image with no src, spacer) are visible/clickable. Styled by #rime-chrome.
+  applyPlaceholder(element, placeholderFor(node, labels));
+  return element;
+}
+
+function renderElementFor(node: CanvasNode, doc: Document, registry?: BlockRegistry): HTMLElement {
   // A registered block whose type isn't a built-in (custom leaf or section-level
   // band, e.g. a hero) renders through the registry; fall back to an inert
   // placeholder for anything unknown.
@@ -116,13 +134,24 @@ export class CanvasRenderer {
   readonly #mount: HTMLElement;
   readonly #doc: Document;
   readonly #registry?: BlockRegistry;
+  readonly #labels: Record<string, string>;
   #current: RimeDoc | null = null;
   #elements = new Map<NodeId, HTMLElement>();
 
-  constructor(mount: HTMLElement, doc: Document, registry?: BlockRegistry) {
+  constructor(
+    mount: HTMLElement,
+    doc: Document,
+    registry?: BlockRegistry,
+    labels: Record<string, string> = DEFAULT_PLACEHOLDER_LABELS,
+  ) {
     this.#mount = mount;
     this.#doc = doc;
     this.#registry = registry;
+    this.#labels = labels;
+  }
+
+  #create(node: CanvasNode): HTMLElement {
+    return createElementFor(node, this.#doc, this.#registry, this.#labels);
   }
 
   /** First paint. */
@@ -161,9 +190,7 @@ export class CanvasRenderer {
     if (!element || !this.#current) return;
     const node = findNode(this.#current, id);
     if (!node) return;
-    const fresh = createElementFor(node, this.#doc, this.#registry);
-    element.replaceChildren(...Array.from(fresh.childNodes));
-    element.setAttribute("style", fresh.getAttribute("style") ?? "");
+    this.#rebuildLeafInPlace(node, element);
   }
 
   /** Resolve a canvas-local point to the nearest node id. */
@@ -177,7 +204,7 @@ export class CanvasRenderer {
 
   /** Build an element (and its subtree) for a node, recording identity. */
   #renderTree(node: CanvasNode): HTMLElement {
-    const element = createElementFor(node, this.#doc, this.#registry);
+    const element = this.#create(node);
     this.#elements.set(node.id, element);
     if (hasManagedChildren(node)) {
       const container = childContainer(element);
@@ -254,9 +281,12 @@ export class CanvasRenderer {
 
   /** Swap an element's children + style for a freshly rendered node's. Cheap for leaves. */
   #rebuildLeafInPlace(node: CanvasNode, element: HTMLElement): void {
-    const fresh = createElementFor(node, this.#doc, this.#registry);
+    const fresh = this.#create(node);
     element.replaceChildren(...Array.from(fresh.childNodes));
     element.setAttribute("style", fresh.getAttribute("style") ?? "");
+    // Carry the empty-block ghost state (set on `fresh` by #create) onto the
+    // reused element, which keeps its identity (and any live editor) intact.
+    applyPlaceholder(element, fresh.dataset["placeholder"] ?? null);
   }
 
   /** Reconcile a container's children by id, reusing/moving existing elements. */

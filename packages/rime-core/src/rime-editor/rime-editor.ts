@@ -25,6 +25,11 @@ import {
   validateDoc,
 } from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
+import {
+  DEFAULT_PLACEHOLDER_LABELS,
+  editorChromeCss,
+  type PlaceholderTheme,
+} from "../canvas/editor-chrome/editor-chrome";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
 import { blockRegistry, placementOf } from "../blocks/registry";
 import { presetRegistry } from "../blocks/column-presets";
@@ -69,6 +74,16 @@ export interface RimeConfig {
    * dynamic-imported only when enabled, so opting out keeps it out of the bundle.
    */
   lexicalEditor?: boolean;
+  /**
+   * Customize the builder-only "ghost" placeholders shown for empty blocks
+   * (empty text, image with no source, spacer). `labels` overrides the copy per
+   * block type; `theme` overrides the placeholder/hover/selection palette. These
+   * affect the editing canvas only — never the exported email.
+   */
+  placeholders?: {
+    labels?: Record<string, string>;
+    theme?: PlaceholderTheme;
+  };
 }
 
 /** Detail payload of the `change` event. */
@@ -214,7 +229,9 @@ export class RimeEditor extends LitElement {
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
     void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
-      this.#renderer = new CanvasRenderer(mount, doc, blockRegistry);
+      const labels = { ...DEFAULT_PLACEHOLDER_LABELS, ...this.config.placeholders?.labels };
+      this.#canvas?.setChromeStyles(editorChromeCss(this.config.placeholders?.theme));
+      this.#renderer = new CanvasRenderer(mount, doc, blockRegistry, labels);
       this.#coords = new DragCoordinateController(iframe);
       this.#announcer = new LiveAnnouncer(this.renderRoot as ShadowRoot);
       this.#dnd = new DndController({
