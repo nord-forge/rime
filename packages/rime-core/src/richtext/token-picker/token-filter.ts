@@ -1,13 +1,11 @@
 // DOM-free filter/group logic for the token picker, so it's unit-testable without
 // a custom element. A token's identity is its key; `source` is an optional grouping
-// label (e.g. "Contact", "Order"). ENV-41's registry produces TokenItem[]; until
-// then the picker accepts them as a property.
+// label (e.g. "Contact", "Order"). The TokenItem shape is owned by the token
+// registry (tokens/registry.ts) — re-exported here so the picker has one source of
+// truth for what a token is.
 
-export interface TokenItem {
-  key: string;
-  label: string;
-  source?: string;
-}
+export type { TokenItem } from "../../tokens/registry";
+import type { TokenItem } from "../../tokens/registry";
 
 export interface TokenGroup {
   /** The source label, or "" for ungrouped tokens. */

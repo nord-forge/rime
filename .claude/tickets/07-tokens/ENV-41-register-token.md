@@ -1,7 +1,7 @@
 ---
 id: ENV-41
 title: registerToken / token-source config
-status: ready
+status: done
 priority: P1
 milestone: 7 — Personalization tokens
 depends_on: [ENV-39]

@@ -56,6 +56,14 @@ export {
   toMjmlBlockRenderer,
 } from "./blocks/registry";
 export {
+  type TokenItem,
+  type TokenSource,
+  TokenRegistry,
+  tokenRegistry,
+  registerToken,
+  registerTokenSource,
+} from "./tokens/registry";
+export {
   buttonBlock,
   columnBlock,
   CORE_BLOCKS,
