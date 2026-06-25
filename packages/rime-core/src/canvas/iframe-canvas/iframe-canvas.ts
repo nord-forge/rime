@@ -14,9 +14,12 @@ export interface CanvasReadyEvent {
 }
 
 // Minimal, self-contained canvas document — no external requests. `#rime-base` is
-// the swappable email stylesheet; `#rime-root` is where the renderer draws.
+// the swappable email stylesheet; `#rime-chrome` is the editor-only overlay
+// (hover/selection outlines, empty-block ghosts) that never touches the email
+// preview or export; `#rime-root` is where the renderer draws.
 const SRCDOC = `<!doctype html><html><head><meta charset="utf-8">
 <style id="rime-base">*,*::before,*::after{box-sizing:border-box}html,body{margin:0}body{font:15px system-ui;background:#fff}</style>
+<style id="rime-chrome"></style>
 </head><body><div id="rime-root"></div></body></html>`;
 
 export class CanvasController {
@@ -74,6 +77,12 @@ export class CanvasController {
   /** Replace the injected email base stylesheet (`#rime-base`). */
   setBaseStyles(css: string): void {
     const style = this.iframe.contentDocument?.getElementById("rime-base");
+    if (style) style.textContent = css;
+  }
+
+  /** Replace the editor-only chrome stylesheet (`#rime-chrome`). Builder-only. */
+  setChromeStyles(css: string): void {
+    const style = this.iframe.contentDocument?.getElementById("rime-chrome");
     if (style) style.textContent = css;
   }
 

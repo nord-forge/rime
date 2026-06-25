@@ -8,6 +8,15 @@ export { RIME_TOKENS, type RimeTheme, type RimeToken } from "./theme/tokens/toke
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer/canvas-renderer";
 export {
+  DEFAULT_PLACEHOLDER_LABELS,
+  editorChromeCss,
+  isRichTextEmpty,
+  placeholderFor,
+  PLACEHOLDER_TOKENS,
+  type PlaceholderTheme,
+  type PlaceholderToken,
+} from "./canvas/editor-chrome/editor-chrome";
+export {
   type CanvasFrameLike,
   DragCoordinateController,
   type Point,
