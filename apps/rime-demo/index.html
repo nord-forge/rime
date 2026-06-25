@@ -3,102 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rime — Demo</title>
-    <style>
-      /* Reset only; do NOT set `display` on rime-editor — its :host grid layout
-         (palette | canvas | properties) must stand. The element is sized in main.ts. */
-      html,
-      body {
-        margin: 0;
-        block-size: 100%;
-        font: 14px system-ui, sans-serif;
-      }
-      #app {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        block-size: 100vh;
-      }
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        padding: 8px 12px;
-        border-block-end: 1px solid #e4e4e7;
-        background: #fff;
-      }
-      .toolbar .spacer {
-        flex: 1;
-      }
-      .toolbar button,
-      .toolbar select {
-        block-size: 30px;
-        padding: 0 10px;
-        border: 1px solid #d4d4d8;
-        border-radius: 6px;
-        background: #fff;
-        font: inherit;
-        cursor: pointer;
-      }
-      .toolbar button:hover {
-        background: #f4f4f5;
-      }
-      .toolbar strong {
-        margin-inline-end: 4px;
-      }
-      #status {
-        color: #16a34a;
-        font-size: 12px;
-      }
-      dialog#export {
-        inline-size: min(820px, 90vw);
-        block-size: 80vh;
-        border: 1px solid #d4d4d8;
-        border-radius: 10px;
-        padding: 0;
-      }
-      dialog#export .head {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-block-end: 1px solid #e4e4e7;
-      }
-      dialog#export pre {
-        margin: 0;
-        padding: 14px;
-        overflow: auto;
-        block-size: calc(80vh - 52px);
-        white-space: pre-wrap;
-        word-break: break-word;
-        background: #18181b;
-        color: #e4e4e7;
-        font: 12px/1.5 ui-monospace, monospace;
-      }
-    </style>
+    <title>rime — email builder</title>
   </head>
   <body>
     <main id="app">
-      <div class="toolbar">
-        <strong>Rime demo</strong>
-        <button id="save" type="button">Save</button>
-        <button id="load" type="button">Load</button>
-        <button id="reset" type="button">Reset</button>
-        <span id="status" aria-live="polite"></span>
-        <span class="spacer"></span>
-        <label>Theme <select id="theme"></select></label>
-        <button id="export-btn" type="button">View MJML</button>
-      </div>
-      <!-- the <rime-editor> is appended here by main.ts -->
+      <header class="bar">
+        <div class="brand"><span>rime</span><span class="tag">/email</span></div>
+        <span class="grow"></span>
+        <span id="status" class="savestate" data-state="idle" aria-live="polite">
+          <span class="dot"></span><span id="status-label">Up to date</span>
+        </span>
+        <div id="theme" class="seg" role="group" aria-label="Editor theme"></div>
+        <button id="reset" class="btn ghost" type="button">Reset</button>
+        <button id="export-btn" class="btn primary" type="button">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m8 8-4 4 4 4" /><path d="m16 8 4 4-4 4" />
+          </svg>
+          Export
+        </button>
+      </header>
+      <div class="stage"><!-- <rime-editor> appended here by main.ts --></div>
     </main>
 
     <dialog id="export">
-      <div class="head">
-        <strong>Exported MJML (→ HTML server-side)</strong>
-        <span class="spacer"></span>
-        <button id="export-copy" type="button">Copy</button>
-        <button id="export-close" type="button">Close</button>
+      <div class="modalgrid">
+        <div class="head">
+          <strong>Exported MJML</strong>
+          <span class="sub">rendered server-side to HTML</span>
+          <span class="grow"></span>
+          <button id="export-copy" class="btn ghost" type="button">Copy</button>
+          <button id="export-close" class="btn" type="button">Close</button>
+        </div>
+        <pre id="export-html"></pre>
       </div>
-      <pre id="export-html"></pre>
     </dialog>
 
     <script type="module" src="/src/main.ts"></script>

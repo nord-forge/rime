@@ -1,5 +1,6 @@
 import type { SectionNode } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_SECTION } from "../../palette/icons";
 import { renderSection } from "../../canvas/render-node/render-node";
 import { attrsToString, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -13,7 +14,7 @@ export const sectionBlock: BlockDefinition<SectionNode> = {
   type: "section",
   palette: {
     label: "Section",
-    icon: "▭",
+    icon: ICON_SECTION,
     category: "Layout",
     defaults: {
       style: {},

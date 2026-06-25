@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_VIDEO } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { escapeAttr, normalizeHref } from "./mjml-attrs";
 
@@ -38,7 +39,7 @@ export const videoBlock: BlockDefinition<VideoBlock> = {
   type: "video",
   palette: {
     label: "Video",
-    icon: "▶",
+    icon: ICON_VIDEO,
     category: "Content",
     defaults: { videoUrl: "#", alt: "Video", style: {} },
   },

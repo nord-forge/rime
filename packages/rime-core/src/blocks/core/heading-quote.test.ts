@@ -79,6 +79,13 @@ describe("heading block", () => {
     const out = headingBlock.renderExport(makeHeading({ color: "#123456" }), exportCtx);
     expect("mjml" in out && out.mjml).toContain('<h2 style="color:#123456">');
   });
+
+  test("renderExport/renderCanvas tolerate a missing text (no crash, empty heading)", () => {
+    const node = { id: "h", type: "heading", level: 2, style: {} } as unknown as HeadingBlock;
+    expect(() => headingBlock.renderCanvas(node, canvasCtx())).not.toThrow();
+    const out = headingBlock.renderExport(node, exportCtx);
+    expect("mjml" in out && out.mjml).toBe("<mj-text><h2></h2></mj-text>");
+  });
 });
 
 describe("quote block", () => {

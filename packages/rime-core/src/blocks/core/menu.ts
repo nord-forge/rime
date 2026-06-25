@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_MENU } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import {
   attrsToString,
@@ -27,7 +28,7 @@ export const menuBlock: BlockDefinition<MenuBlock> = {
   type: "menu",
   palette: {
     label: "Menu",
-    icon: "☰",
+    icon: ICON_MENU,
     category: "Content",
     defaults: {
       items: [

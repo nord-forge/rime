@@ -1,6 +1,7 @@
 import type { TextBlock } from "@nord-forge/rime-model";
 import { emptyRichText } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_TEXT } from "../../palette/icons";
 import { renderText } from "../../canvas/render-node/render-node";
 import { attrsToString, richTextToInlineHtml, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -8,7 +9,7 @@ export const textBlock: BlockDefinition<TextBlock> = {
   type: "text",
   palette: {
     label: "Text",
-    icon: "🅣",
+    icon: ICON_TEXT,
     category: "Content",
     defaults: { content: emptyRichText(), style: {} },
   },

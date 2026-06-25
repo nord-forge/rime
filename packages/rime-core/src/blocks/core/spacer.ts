@@ -1,12 +1,13 @@
 import type { SpacerBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_SPACER } from "../../palette/icons";
 import { renderSpacer } from "../../canvas/render-node/render-node";
 
 export const spacerBlock: BlockDefinition<SpacerBlock> = {
   type: "spacer",
   palette: {
     label: "Spacer",
-    icon: "↕️",
+    icon: ICON_SPACER,
     category: "Layout",
     defaults: { height: 24 },
   },

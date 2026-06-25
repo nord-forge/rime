@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_QUOTE } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { attrsToString, escapeAttr, escapeHtml, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -21,7 +22,7 @@ export const quoteBlock: BlockDefinition<QuoteBlock> = {
   type: "quote",
   palette: {
     label: "Quote",
-    icon: "❝",
+    icon: ICON_QUOTE,
     category: "Content",
     defaults: { text: "A memorable quote.", accentColor: DEFAULT_ACCENT, style: {} },
   },

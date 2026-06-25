@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_HERO } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { attrsToString, escapeAttr, escapeHtml, normalizeHref } from "./mjml-attrs";
 
@@ -37,7 +38,7 @@ export const heroBlock: BlockDefinition<HeroBlock> = {
   placement: "section",
   palette: {
     label: "Hero",
-    icon: "🏞",
+    icon: ICON_HERO,
     category: "Content",
     defaults: {
       backgroundColor: DEFAULT_BG,

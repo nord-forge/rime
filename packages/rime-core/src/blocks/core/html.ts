@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_HTML } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 
 export interface HtmlBlock extends BaseNode {
@@ -18,7 +19,7 @@ export const htmlBlock: BlockDefinition<HtmlBlock> = {
   type: "html",
   palette: {
     label: "HTML",
-    icon: "</>",
+    icon: ICON_HTML,
     category: "Advanced",
     defaults: { html: "<!-- your HTML -->", style: {} },
   },

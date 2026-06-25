@@ -1,5 +1,6 @@
 import type { ColumnNode } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_COLUMN } from "../../palette/icons";
 import { renderColumn } from "../../canvas/render-node/render-node";
 import { attrsToString, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -7,7 +8,7 @@ export const columnBlock: BlockDefinition<ColumnNode> = {
   type: "column",
   palette: {
     label: "Column",
-    icon: "▯",
+    icon: ICON_COLUMN,
     category: "Layout",
     defaults: { widthPercent: 100, style: {}, children: [] },
   },
