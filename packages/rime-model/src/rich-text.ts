@@ -10,9 +10,20 @@ export interface TextRun {
   link?: string;
 }
 
+// An inline merge tag, e.g. {{first_name}}. The bare key is stored (no braces);
+// braces are a render concern. `label` is an optional display name for the chip.
+export interface TokenInline {
+  type: "token";
+  token: string;
+  label?: string;
+}
+
+// What can appear inline within a paragraph/heading/list item.
+export type Inline = TextRun | TokenInline;
+
 export interface Paragraph {
   type: "paragraph";
-  content?: TextRun[];
+  content?: Inline[];
 }
 
 export type HeadingLevel = 1 | 2 | 3;
@@ -20,12 +31,12 @@ export type HeadingLevel = 1 | 2 | 3;
 export interface Heading {
   type: "heading";
   level: HeadingLevel;
-  content?: TextRun[];
+  content?: Inline[];
 }
 
 export interface ListItem {
   type: "listitem";
-  content?: TextRun[];
+  content?: Inline[];
 }
 
 export interface List {

@@ -41,6 +41,9 @@ export interface RichTextProvider {
   /** IME composition guard: defer blur while composing (Lexical impl uses it;
    *  the plain textarea is naturally composition-safe but implements it as a no-op). */
   setComposing(composing: boolean): void;
+  /** Insert a merge tag at the current selection in the active editor. No-op when
+   *  nothing is focused. The token picker (chrome UI) drives this. */
+  insertToken(token: string, label?: string): void;
   /** Re-position any inline chrome (called on selectionchange / scroll / resize). */
   reposition(): void;
   /** Commit + tear down; refuse further focus. Removes any chrome it created. */

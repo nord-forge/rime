@@ -17,6 +17,7 @@ import { $createListItemNode, $createListNode, $isListItemNode, $isListNode } fr
 import { $createLinkNode, $isLinkNode } from "@lexical/link";
 import type {
   HeadingLevel,
+  Inline,
   ListItem,
   Mark,
   Paragraph,
@@ -24,6 +25,7 @@ import type {
   RichTextJSON,
   TextRun,
 } from "@nord-forge/rime-model";
+import { $createTokenNode, $isTokenNode } from "../token-node/token-node";
 
 const MARK_ORDER: readonly Mark[] = ["bold", "italic", "underline"] as const;
 
@@ -35,16 +37,23 @@ function sameRunStyle(a: TextRun, b: TextRun): boolean {
   return am.every((m) => bm.includes(m));
 }
 
-function canonicalRuns(runs: TextRun[] | undefined): TextRun[] {
-  const out: TextRun[] = [];
+function canonicalRuns(runs: Inline[] | undefined): Inline[] {
+  const out: Inline[] = [];
   for (const run of runs ?? []) {
+    if (run.type === "token") {
+      // Tokens are atomic: never merged, never coalesced with text.
+      const norm: Inline = { type: "token", token: run.token };
+      if (run.label !== undefined) norm.label = run.label;
+      out.push(norm);
+      continue;
+    }
     if (run.text === "") continue;
     const marks = MARK_ORDER.filter((m) => run.marks?.includes(m));
     const norm: TextRun = { type: "text", text: run.text };
     if (marks.length > 0) norm.marks = marks;
     if (run.link !== undefined) norm.link = run.link;
     const prev = out[out.length - 1];
-    if (prev && sameRunStyle(prev, norm)) {
+    if (prev && prev.type === "text" && sameRunStyle(prev, norm)) {
       prev.text += norm.text;
     } else {
       out.push(norm);
@@ -85,16 +94,21 @@ function headingTag(level: HeadingLevel): HeadingTagType {
   return `h${level}` as HeadingTagType;
 }
 
-function appendRuns(parent: ElementNode, runs: TextRun[] | undefined): void {
+function appendRuns(parent: ElementNode, runs: Inline[] | undefined): void {
   let i = 0;
   const list = runs ?? [];
   while (i < list.length) {
     const run = list[i]!;
-    if (run.link !== undefined) {
+    if (run.type === "token") {
+      parent.append($createTokenNode(run.token, run.label));
+      i += 1;
+    } else if (run.link !== undefined) {
       // Adjacent runs sharing a link become one LinkNode wrapping their text.
       const link = $createLinkNode(run.link);
-      while (i < list.length && list[i]!.link === run.link) {
-        link.append(makeTextNode(list[i]!));
+      while (i < list.length) {
+        const next = list[i]!;
+        if (next.type !== "text" || next.link !== run.link) break;
+        link.append(makeTextNode(next));
         i += 1;
       }
       parent.append(link);
@@ -135,15 +149,22 @@ export function $applyRichTextJSON(json: RichTextJSON): void {
   }
 }
 
-function readRuns(parent: ElementNode): TextRun[] {
-  const runs: TextRun[] = [];
+function readRuns(parent: ElementNode): Inline[] {
+  const runs: Inline[] = [];
   for (const child of parent.getChildren()) {
     collectRuns(child, undefined, runs);
   }
   return canonicalRuns(runs);
 }
 
-function collectRuns(node: LexicalNode, link: string | undefined, out: TextRun[]): void {
+function collectRuns(node: LexicalNode, link: string | undefined, out: Inline[]): void {
+  if ($isTokenNode(node)) {
+    const run: Inline = { type: "token", token: node.getToken() };
+    const label = node.getLabel();
+    if (label !== undefined) run.label = label;
+    out.push(run);
+    return;
+  }
   if ($isLinkNode(node)) {
     const href = node.getURL();
     for (const child of node.getChildren()) collectRuns(child, href, out);

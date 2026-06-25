@@ -1,7 +1,7 @@
 ---
 id: ENV-39
 title: "{{variable}} merge tags in rich text"
-status: ready
+status: done
 priority: P1
 milestone: 7 — Personalization tokens
 depends_on: [ENV-27]

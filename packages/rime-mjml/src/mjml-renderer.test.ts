@@ -60,6 +60,31 @@ describe("richTextToInlineHtml", () => {
     expect(html).not.toContain("<b>");
   });
 
+  test("renders a token as a literal {{key}} merge tag", () => {
+    const rt: RichTextJSON = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Hi " },
+            { type: "token", token: "first_name", label: "First name" },
+            { type: "text", text: "!" },
+          ],
+        },
+      ],
+    };
+    expect(richTextToInlineHtml(rt)).toBe("<p>Hi {{first_name}}!</p>");
+  });
+
+  test("escapes the token key but keeps the braces literal", () => {
+    const rt: RichTextJSON = {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "token", token: 'a<b>&"c' }] }],
+    };
+    expect(richTextToInlineHtml(rt)).toBe('<p>{{a&lt;b&gt;&amp;"c}}</p>');
+  });
+
   test("escapeHtml basics", () => {
     expect(escapeHtml('<a> & "x"')).toBe('&lt;a&gt; &amp; "x"');
   });

@@ -80,6 +80,10 @@ export class LexicalRichTextProvider implements RichTextProvider {
     this.#lifecycle.setComposing(composing);
   }
 
+  insertToken(token: string, label?: string): void {
+    this.#lifecycle.activeMount?.insertToken(token, label);
+  }
+
   reposition(): void {
     const canvasDoc = this.#host.canvasDocument();
     if (!canvasDoc) return;

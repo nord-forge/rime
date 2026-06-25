@@ -5,6 +5,7 @@
 import {
   $getRoot,
   $getSelection,
+  $insertNodes,
   $isRangeSelection,
   createEditor,
   type LexicalEditor,
@@ -16,6 +17,7 @@ import { LinkNode } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils";
 import type { Mark, RichTextJSON } from "@nord-forge/rime-model";
 import { $applyRichTextJSON, $readRichTextJSON } from "../serialize/serialize";
+import { $createTokenNode, TokenNode } from "../token-node/token-node";
 import { normalizeHref } from "../ui/rich-text-commands";
 
 // Pasted links can carry javascript:/data: hrefs that the curated node set keeps
@@ -34,6 +36,7 @@ function registerLinkSanitizer(editor: LexicalEditor): () => void {
 export interface LexicalMount {
   readonly editor: LexicalEditor;
   format(mark: Mark): void;
+  insertToken(token: string, label?: string): void;
   toJSON(): RichTextJSON;
   destroy(): void;
 }
@@ -45,7 +48,7 @@ export function mountLexical(blockEl: HTMLElement, initial: RichTextJSON): Lexic
 
   const editor = createEditor({
     namespace: "rime",
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, TokenNode],
     onError: (error) => {
       throw error;
     },
@@ -76,6 +79,18 @@ export function mountLexical(blockEl: HTMLElement, initial: RichTextJSON): Lexic
           } else {
             for (const node of $getRoot().getAllTextNodes()) node.toggleFormat(mark);
           }
+        },
+        { discrete: true },
+      );
+    },
+
+    insertToken(token: string, label?: string): void {
+      if (!live) return;
+      const key = token.trim();
+      if (key === "") return;
+      editor.update(
+        () => {
+          $insertNodes([$createTokenNode(key, label)]);
         },
         { discrete: true },
       );

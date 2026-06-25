@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { Window } from "happy-dom";
+import { $getRoot } from "lexical";
 import type { RichTextJSON } from "@nord-forge/rime-model";
 import { mountLexical } from "./lexical-editor";
 
@@ -91,6 +92,32 @@ describe("mountLexical", () => {
     // Toggling again clears it.
     mount.format("bold");
     expect(mount.toJSON().content[0]!.content![0]!.marks).toBeUndefined();
+    mount.destroy();
+  });
+
+  test("insertToken() inserts an atomic token that survives toJSON", () => {
+    const mount = mountLexical(
+      blockEl,
+      doc({ type: "paragraph", content: [{ type: "text", text: "Hi " }] }),
+    );
+    mount.editor.update(() => $getRoot().selectEnd(), { discrete: true });
+    mount.insertToken("first_name", "First name");
+    const inlines = mount.toJSON().content[0]!.content!;
+    const token = inlines.find((r) => r.type === "token");
+    expect(token).toBeDefined();
+    expect(token).toEqual({ type: "token", token: "first_name", label: "First name" });
+    mount.destroy();
+  });
+
+  test("insertToken() ignores an empty key", () => {
+    const mount = mountLexical(
+      blockEl,
+      doc({ type: "paragraph", content: [{ type: "text", text: "x" }] }),
+    );
+    mount.editor.update(() => $getRoot().selectEnd(), { discrete: true });
+    mount.insertToken("   ");
+    const inlines = mount.toJSON().content[0]!.content ?? [];
+    expect(inlines.some((r) => r.type === "token")).toBe(false);
     mount.destroy();
   });
 
