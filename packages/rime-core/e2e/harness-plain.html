@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rime E2E harness — plain text (no Lexical)</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        block-size: 100%;
+      }
+      rime-editor {
+        block-size: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Create the element in script with `lexicalEditor: false` set BEFORE it
+         first renders, so the editor selects the plain-text provider (and never
+         loads the Lexical chunk). -->
+    <script type="module">
+      import { defineRimeEditor } from "../src/register.ts";
+      defineRimeEditor();
+      const el = document.createElement("rime-editor");
+      el.config = { lexicalEditor: false };
+      document.body.append(el);
+    </script>
+  </body>
+</html>
