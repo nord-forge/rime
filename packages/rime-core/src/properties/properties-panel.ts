@@ -21,6 +21,10 @@ import { findNodeById } from "../a11y/announce-messages/announce-messages";
 import { getByPath, nestedPartial } from "./field-path";
 import { columnsForCount } from "./columns-op";
 import { resolveUpload } from "./image-upload";
+import { type ColorChangeDetail, EbColorPicker } from "../color/color-picker";
+
+// Referenced so the <eb-color-picker> element is registered when the panel loads.
+void EbColorPicker;
 
 export interface DocChangeDetail {
   doc: RimeDoc;
@@ -138,6 +142,43 @@ export class EbPropertiesPanel extends LitElement {
       font-size: 12px;
       color: var(--eb-color-danger, #dc2626);
     }
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      inline-size: 100%;
+      block-size: 30px;
+      padding: 0 8px;
+      border: 1px solid var(--eb-color-border, #e4e4e7);
+      border-radius: var(--eb-radius, 6px);
+      background: var(--eb-color-bg, #fff);
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+    .swatch .chip {
+      inline-size: 18px;
+      block-size: 18px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      flex: 0 0 auto;
+    }
+    .swatch .val {
+      font:
+        12px ui-monospace,
+        monospace;
+      color: var(--eb-color-fg, #18181b);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .picker {
+      margin-block-start: 8px;
+      padding: 10px;
+      border: 1px solid var(--eb-color-border, #e4e4e7);
+      border-radius: var(--eb-radius, 8px);
+      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
+    }
     .list-row {
       display: flex;
       gap: 4px;
@@ -169,6 +210,8 @@ export class EbPropertiesPanel extends LitElement {
   // Per-field-key upload UI state (pending spinner / inline error message).
   @state() private uploading: Record<string, boolean> = {};
   @state() private uploadError: Record<string, string> = {};
+  // The field key whose color picker popover is open (one at a time), or null.
+  @state() private openColor: string | null = null;
 
   // Injectable id factory (deterministic in tests).
   newId: IdFactory = createIdFactory();
@@ -301,16 +344,31 @@ export class EbPropertiesPanel extends LitElement {
               this.#edit(field.key, (e.target as HTMLInputElement).checked, true)}
           /><label for=${id}>${field.label}</label>
         </div>`;
-      case "color":
+      case "color": {
+        const current = typeof value === "string" && value !== "" ? value : "#000000";
+        const open = this.openColor === field.key;
         return html`<div class="field">
           <label for=${id}>${field.label}</label>
-          <input
+          <button
             id=${id}
-            type="color"
-            .value=${typeof value === "string" ? value : "#000000"}
-            @input=${(e: Event) => this.#edit(field.key, (e.target as HTMLInputElement).value)}
-          />
+            type="button"
+            class="swatch"
+            aria-expanded=${open}
+            @click=${() => (this.openColor = open ? null : field.key)}
+          >
+            <span class="chip" style="background:${current}"></span>
+            <span class="val">${current}</span>
+          </button>
+          ${open
+            ? html`<eb-color-picker
+                class="picker"
+                .value=${current}
+                @eb-color-change=${(e: Event) =>
+                  this.#edit(field.key, (e as CustomEvent<ColorChangeDetail>).detail.value)}
+              ></eb-color-picker>`
+            : nothing}
         </div>`;
+      }
       case "number":
         return html`<div class="field">
           <label for=${id}>${field.label}</label>

@@ -81,6 +81,7 @@ export type { RimeDoc } from "@nord-forge/rime-model";
 // editor itself — NOT on the pure "@nord-forge/rime-core" SDK barrel, so importing
 // registerBlock/types stays free of Lit (and bun-transformable in tests).
 export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
+export { type ColorChangeDetail, EbColorPicker } from "./color/color-picker";
 export { EbPalette, type PaletteAddDetail } from "./palette/palette";
 export { MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
 // The Lexical-coupled rich-text chrome (toolbar, link popover, token picker) is
