@@ -13,7 +13,7 @@ export const imageBlock: BlockDefinition<ImageBlock> = {
   },
   schema: {
     fields: [
-      { key: "src", label: "Source", type: "url", group: "Content" },
+      { key: "src", label: "Source", type: "image", group: "Content" },
       { key: "alt", label: "Alt text", type: "text", group: "Content" },
       { key: "href", label: "Link", type: "url", group: "Content" },
       { key: "style.align", label: "Align", type: "align", group: "Layout" },

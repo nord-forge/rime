@@ -3,9 +3,9 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 58 / 68 tickets done.** Milestones 0–7 complete (M7 personalization
-tokens: ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker, ENV-41
-`registerToken`/`TokenRegistry` + config merge). ENV-66 (bundle hardening: pure barrel no longer
+**Progress: 59 / 68 tickets done.** Milestones 0–8 complete (M7 personalization
+tokens: ENV-39/40/41; M8 persistence & images: ENV-42 JSON in/out API +
+ENV-43 `onImageUpload` host uploader). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
 multi-agent audit (barrel/eager-load · Lit frontend · performance · model/mjml; 17
 verified findings) filed ENV-67–71 — **all now landed**: export-boundary href/token
@@ -27,7 +27,7 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 | 5 — Inline rich text | ✅ 6 / 6 |
 | 6 — Blocks & properties | ✅ 15 / 15 |
 | 7 — Personalization tokens | ✅ 3 / 3 |
-| 8 — Persistence & images | 🔶 1 / 2 |
+| 8 — Persistence & images | ✅ 2 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
 | 10 — Release readiness | 🔶 7 / 12 |
 
@@ -138,12 +138,12 @@ Conventions:
 | ENV-40 | ✅ | **Token picker UI** | P1 | ENV-39 | §6.9 |
 | ENV-41 | ✅ | **`registerToken` / token-source config** | P1 | ENV-39 | §6.8/9 |
 
-## Milestone 8 — Persistence & images 🔶
+## Milestone 8 — Persistence & images ✅
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-42 | ✅ | **JSON in/out API** — load(doc) / getDoc() / change events | P0 | ENV-09, ENV-14 | §6.10 |
-| ENV-43 | ⬜ | **`onImageUpload` callback** — image block uses host-provided uploader | P1 | ENV-34 | §6.10 |
+| ENV-43 | ✅ | **`onImageUpload` callback** — image block uses host-provided uploader | P1 | ENV-34 | §6.10 |
 
 ## Milestone 9 — Framework wrappers & demo ⬜
 

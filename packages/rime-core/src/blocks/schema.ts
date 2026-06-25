@@ -10,6 +10,7 @@ export type FieldType =
   | "spacing"
   | "align"
   | "url"
+  | "image"
   | "richtext"
   | "multiline"
   | "code"
