@@ -3,9 +3,10 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 62 / 68 tickets done.** Milestones 0–8 complete (M7 personalization
-tokens: ENV-39/40/41; M8 persistence & images: ENV-42 JSON in/out API +
-ENV-43 `onImageUpload` host uploader). ENV-66 (bundle hardening: pure barrel no longer
+**Progress: 63 / 68 tickets done.** Milestones 0–9 complete (M8 persistence &
+images: ENV-42/43; M9 wrappers & demo: ENV-44 React + ENV-45 Vue wrappers, ENV-46
+vanilla demo + a React demo, ENV-47 vanilla/Astro example). Remaining: Milestone 10
+release readiness (ENV-48–52, +66/71 hardening done). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
 multi-agent audit (barrel/eager-load · Lit frontend · performance · model/mjml; 17
 verified findings) filed ENV-67–71 — **all now landed**: export-boundary href/token
@@ -28,7 +29,7 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 | 6 — Blocks & properties | ✅ 15 / 15 |
 | 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ✅ 2 / 2 |
-| 9 — Framework wrappers & demo | 🔶 3 / 4 |
+| 9 — Framework wrappers & demo | ✅ 4 / 4 |
 | 10 — Release readiness | 🔶 7 / 12 |
 
 Conventions:
@@ -145,14 +146,14 @@ Conventions:
 | ENV-42 | ✅ | **JSON in/out API** — load(doc) / getDoc() / change events | P0 | ENV-09, ENV-14 | §6.10 |
 | ENV-43 | ✅ | **`onImageUpload` callback** — image block uses host-provided uploader | P1 | ENV-34 | §6.10 |
 
-## Milestone 9 — Framework wrappers & demo 🔶
+## Milestone 9 — Framework wrappers & demo ✅
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-44 | ✅ | **React wrapper** — props/events/ref over the web component | P1 | ENV-14 | §7 |
 | ENV-45 | ✅ | **Vue wrapper** — props/events/v-model over the web component | P1 | ENV-14 | §7 |
 | ENV-46 | ✅ | **Demo app** — local store, `onImageUpload` stub, theme showcase, proves end-user UX | P1 | ENV-34, ENV-42 | §4, §12 |
-| ENV-47 | ⬜ | **Astro/vanilla usage example** in README | P2 | ENV-14 | §7 |
+| ENV-47 | ✅ | **Astro/vanilla usage example** in README | P2 | ENV-14 | §7 |
 
 ## Milestone 10 — Release readiness ⬜
 

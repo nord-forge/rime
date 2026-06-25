@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rime — vanilla embed</title>
+  </head>
+  <body style="margin: 0">
+    <!-- The editor is a custom element. Size it; do NOT set `display` (its :host grid
+         layout — palette | canvas | properties — must stand). -->
+    <rime-editor id="editor" style="block-size: 100vh"></rime-editor>
+
+    <script type="module">
+      // One side-effecting import defines <rime-editor> + the built-in blocks.
+      import "@nord-forge/rime-core/register";
+
+      const el = document.getElementById("editor");
+
+      // Config is an object PROPERTY (not an attribute). Theme via --eb-* tokens;
+      // images via your own uploader (here: a demo object URL, no backend).
+      el.config = {
+        theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
+        onImageUpload: async (file) => URL.createObjectURL(file),
+      };
+
+      // Persist every edit; restore on load. The doc is plain JSON.
+      el.addEventListener("change", (e) => {
+        localStorage.setItem("rime-doc", JSON.stringify(e.detail.doc));
+      });
+
+      // A starter doc with one section + column, so there's somewhere to drop blocks.
+      const starter = {
+        id: "doc",
+        type: "document",
+        settings: { contentWidth: 600, backgroundColor: "#ffffff", fontFamily: "Arial" },
+        children: [
+          {
+            id: "s1",
+            type: "section",
+            style: { paddingTop: 24, paddingBottom: 24 },
+            children: [{ id: "c1", type: "column", widthPercent: 100, style: {}, children: [] }],
+          },
+        ],
+      };
+
+      const saved = localStorage.getItem("rime-doc");
+      // loadDoc validates and throws on an invalid doc — guard untrusted storage.
+      try {
+        el.loadDoc(saved ? JSON.parse(saved) : starter);
+      } catch (err) {
+        console.warn("Saved doc was invalid; starting fresh.", err);
+        el.loadDoc(starter);
+      }
+    </script>
+  </body>
+</html>

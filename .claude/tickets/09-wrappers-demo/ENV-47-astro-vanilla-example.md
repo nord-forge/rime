@@ -1,7 +1,7 @@
 ---
 id: ENV-47
 title: Astro / vanilla usage example
-status: ready
+status: done
 priority: P2
 milestone: 9 — Framework wrappers & demo
 depends_on: [ENV-14]

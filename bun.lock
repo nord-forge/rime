@@ -42,6 +42,13 @@
         "@vitejs/plugin-react": "^4.3.4",
       },
     },
+    "examples/astro-vanilla": {
+      "name": "@nord-forge/rime-example-astro-vanilla",
+      "version": "0.0.0",
+      "dependencies": {
+        "@nord-forge/rime-core": "workspace:*",
+      },
+    },
     "packages/rime-core": {
       "name": "@nord-forge/rime-core",
       "version": "0.0.0",
@@ -198,6 +205,8 @@
     "@nord-forge/rime-core": ["@nord-forge/rime-core@workspace:packages/rime-core"],
 
     "@nord-forge/rime-demo": ["@nord-forge/rime-demo@workspace:apps/rime-demo"],
+
+    "@nord-forge/rime-example-astro-vanilla": ["@nord-forge/rime-example-astro-vanilla@workspace:examples/astro-vanilla"],
 
     "@nord-forge/rime-mjml": ["@nord-forge/rime-mjml@workspace:packages/rime-mjml"],
 
