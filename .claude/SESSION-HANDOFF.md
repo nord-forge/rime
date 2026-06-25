@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #22 merged (M6 complete). Branch: `main` (clean).
+Last updated on the `optional-lexical` branch (PR open). Branch: see below.
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -16,11 +16,13 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   fields), the full block catalog (ENV-57 Heading, ENV-58 Quote, ENV-38 Social, ENV-60
   Hero, ENV-61 Column presets, ENV-59 Menu, ENV-62 HTML, ENV-63 Video, ENV-64 Table),
   ENV-35 (properties panel), ENV-36 (palette), ENV-37 (example coupon block / SDK proof).
-- **IN PROGRESS (post-M6, user request): make Lexical optional.** `defineRimeEditor(
-  { lexicalEditor: false })` (default true) → the editor DYNAMIC-imports Lexical only when
-  on, so the opt-out user never fetches/parses the Lexical chunk (~72 kB gzip — the bundle's
-  bulk). With it off, text blocks fall back to a plain `<textarea>` that serializes to the
-  richtext JSON model as plain paragraphs (no bold/links/lists). See "NEXT UP" for the plan.
+- **DONE (post-M6, user request — PR open on `optional-lexical`): Lexical is optional.**
+  `defineRimeEditor({ lexicalEditor: false })` / `config.lexicalEditor` (default true) →
+  editor DYNAMIC-imports Lexical only when on (code-split into a lazy chunk never fetched
+  when off). Off = plain `<textarea>` fallback committing plain RichTextJSON paragraphs.
+  Implemented via a `RichTextProvider` seam (`richtext/provider/`): `lexical-provider.ts`
+  (the ONLY static Lexical entry, reached solely via `await import()`) + `plain-text-
+  provider.ts`. A guard test (`no-static-lexical.test.ts`) locks the no-static-import rule.
 - **After that:** Milestone 7 (personalization tokens, ENV-39/40/41) or jump to the demo
   (ENV-46, M9) — M6 unblocked it. Confirm priority with the user.
 - Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
@@ -115,40 +117,29 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   `{ extraLeafTypes, extraSectionTypes }` (from the registry) into validate.
 - **Section is a styled container:** full-bleed background + padding wrapping its
   column(s) and blocks; a new Section defaults to one 100% column. (User requirement.)
-- **Rich text:** Lexical headless, ONE live instance (create-on-focus/destroy-on-blur
-  via `RichTextLifecycle`); lossless `RichTextJSON`↔Lexical round-trip in
-  `richtext/serialize/serialize.ts`; custom `<eb-rich-text-toolbar>` + `<eb-link-popover>`
-  (NO library UI); paste sanitization = curated node set + link-href guard; IME
-  composition guard defers blur mid-composition.
+- **Rich text (OPTIONAL + behind a provider seam):** the editor depends on a
+  `RichTextProvider` interface (`richtext/provider/richtext-provider.ts`), never on Lexical
+  directly. `config.lexicalEditor` (default true) selects: the **Lexical provider**
+  (`lexical-provider.ts` — headless Lexical, ONE live instance create-on-focus/destroy-on-blur
+  via `RichTextLifecycle`, the `<eb-rich-text-toolbar>` + `<eb-link-popover>` inline UI, IME
+  composition guard) loaded via `await import()`; or the **plain-text provider**
+  (`plain-text-provider.ts` — a `<textarea>`, no toolbar, lossy `RichTextJSON`↔string in
+  `plain-text.ts`). Lossless `RichTextJSON`↔Lexical round-trip stays in
+  `richtext/serialize/serialize.ts`; paste sanitization = curated node set + link-href guard.
+  RULE: `rime-editor.ts` must NOT statically import Lexical (guard: `no-static-lexical.test.ts`).
 - **Canvas DnD = custom pointer events** in the srcdoc iframe (OD-6), NOT a library;
   test with `page.mouse`.
 
-## NEXT UP — make Lexical optional (post-M6 user request, IN PROGRESS)
-**Goal:** `defineRimeEditor({ lexicalEditor?: boolean })` (default true). When false, the
-editor must NOT fetch/parse Lexical (it's ~72 kB gzip — the whole bundle's bulk), and text
-blocks fall back to a plain `<textarea>` that serializes to the richtext JSON model as plain
-paragraphs. User confirmed: dynamic-import + flag (the chunk still ships as a lazy file but
-is never loaded when off); plain-textarea fallback (NOT contenteditable).
-Plan:
-1. **Make the Lexical wiring dynamic.** Today `rime-editor.ts` STATIC-imports
-   `RichTextLifecycle`/`mountLexical`/`RichTextToolbar`/`makeCommands` (so Lexical is in the
-   main chunk for everyone). Move those behind a single `await import(...)` gated by the flag
-   — a dynamic `import()` is the code-split point that puts Lexical in its own chunk. Keep
-   one richtext "provider" seam so the editor's richtext calls (`#richtext?.focus(...)`, blur,
-   composition guard, toolbar bind) go through an interface that is either the Lexical impl or
-   the plain-text fallback.
-2. **Plain-text fallback editor.** A no-Lexical provider: clicking a text block opens a plain
-   `<textarea>` (or edits via the properties panel's existing text control); on commit, wrap
-   the string into `{ type:doc, content:[{paragraph:[textRun]}] }` via the existing
-   serialize helpers. Pre-existing rich formatting still RENDERS (canvas + export unchanged)
-   but isn't editable in this tier. Reuse `richtext/serialize/serialize.ts` round-trip.
-3. **Verify the bundle.** `bun run size` should show Lexical split into its own chunk; a build
-   that opts out should not load it. Add a test/assertion that `{ lexicalEditor: false }`
-   yields a working text-edit path with no Lexical on the critical import path.
-4. Default path (flag true / omitted) must behave EXACTLY as today — all existing richtext
-   e2e (mount/lifecycle/roundtrip/paste/toolbar) stay green.
-**After this:** Milestone 7 (tokens, ENV-39/40/41) OR the demo (ENV-46, M9 — unblocked by
-M6). Confirm priority with the user.
+## NEXT UP — pick the next milestone (M6 done; Lexical-optional PR open)
+Milestone 6 is complete and the post-M6 "Lexical optional" request is done (PR open on
+`optional-lexical`). Open options, confirm priority with the user:
+- **Milestone 7 — personalization tokens (ENV-39/40/41):** `{{variable}}` merge tags in
+  rich text + render handling, a token picker UI, `registerToken`/token-source config. The
+  editor already has a `tokenSources` config field + `TokenSource` type as placeholders.
+- **Milestone 9 — the demo (ENV-46):** M6 unblocked it; the demo is currently a minimal
+  shell (just the coupon SDK proof from ENV-37). Build out the full end-user UX (local
+  store, onImageUpload stub, theme showcase).
+- **Milestone 8 — persistence/images (ENV-42/43)** or **M9 framework wrappers (ENV-44/45)**.
 
 **Chrome-UI pattern (ENV-35 panel PR #20 + ENV-36 palette PR #21):** both live in their own
 dir (`properties/`, `palette/`), render in the shell region (`part="properties"` /
