@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #12 merged. Branch: `main` (clean).
+Last updated after PR #13 merged. Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,14 +11,19 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **37/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **5/15**
+- **38/61 tickets done.**
+- **Milestones 0–5 complete.** Milestone 6 (blocks & properties) in progress: **6/15**
   — ENV-33 (registerBlock interface), ENV-34 (seven core blocks), ENV-65 (schema
-  field types + open validator), ENV-57 (Heading), ENV-58 (Quote) done.
-- Heading + Quote (PR #12) are the first of Batch A. They're custom leaf blocks:
+  field types + open validator), ENV-57 (Heading), ENV-58 (Quote), ENV-38 (Social) done.
+- Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
   node interface declared in rime-core (NOT the rime-model union), validated via
-  `validateDoc`'s `extraLeafTypes`, exported as native `<mj-text>`. They go in the
-  core set (`registerCoreBlocks`). Pattern to copy for the rest of the catalog.
+  `validateDoc`'s `extraLeafTypes`, exported as native MJML. They go in the core
+  set (`registerCoreBlocks`). Pattern to copy for the rest of the catalog.
+- Social (PR #13) is the first **list-driven** block — uses ENV-65's `list` field
+  type (network+href item fields). Inline SVG icons (no library/network); unknown
+  networks fall back to MJML's generic `web` icon. Hrefs guarded by a standalone
+  `normalizeHref` copy in `blocks/core/mjml-attrs.ts` (NOT the Lexical-bound
+  richtext one) so the export path stays dependency-light. Core 74.49 kB gzip.
 - ENV-32 caveat: composition guard + QA checklist landed, but the **real-device iOS
   Safari + CJK IME manual pass is still pending** (needs hardware) — see
   `packages/rime-core/docs/RICHTEXT-QA-FINDINGS.md`.
@@ -85,10 +90,11 @@ Build each as a `BlockDefinition`, register via `registerBlock`, add canvas + MJ
 extend `validateDoc` use via `extraLeafTypes`. Suggested batching:
 
 **Batch A — simple P1 (MJML-native, no schema-gap deps):**
-- ✅ ENV-57 Heading (`<mj-text>` h1–3), ✅ ENV-58 Quote (`<mj-text>` blockquote) — done (PR #12).
-- REMAINING: ENV-38 Social (`<mj-social>`), ENV-60 Hero (`<mj-hero>` bg+text+CTA),
-  ENV-61 Column presets (Section+Column subtrees — palette presets that drop a subtree;
-  note the design wrinkle: a PaletteEntry that yields a subtree, not a single leaf).
+- ✅ ENV-57 Heading (`<mj-text>` h1–3), ✅ ENV-58 Quote (`<mj-text>` blockquote) — PR #12.
+- ✅ ENV-38 Social (`<mj-social>`) — PR #13.
+- REMAINING: ENV-60 Hero (`<mj-hero>` bg+text+CTA), ENV-61 Column presets
+  (Section+Column subtrees — palette presets that drop a subtree; note the design
+  wrinkle: a PaletteEntry that yields a subtree, not a single leaf).
 
 **Batch B — list/multiline-dependent (use ENV-65's new field types):**
 - ENV-59 Menu (`<mj-navbar>`, items list), ENV-62 HTML (`<mj-raw>` passthrough, `code`
