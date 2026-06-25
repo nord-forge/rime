@@ -62,7 +62,15 @@ function setAtPath(root: Json, path: Path, value: Json): Json {
 
   const obj = root as Record<string | number, Json>;
   const next: Record<string | number, Json> = { ...obj };
-  next[key] = rest.length === 0 ? value : setAtPath(obj[key], rest, value);
+  if (rest.length === 0 && value === undefined) {
+    // Setting a key to `undefined` deletes it, rather than leaving {key: undefined}.
+    // This keeps the inverse of an ADDITIVE set (invertOp returns value=undefined for
+    // a previously-absent key) a true undo: deserialize(serialize(doc)) round-trips,
+    // since JSON drops undefined-valued keys anyway.
+    delete next[key];
+  } else {
+    next[key] = rest.length === 0 ? value : setAtPath(obj[key], rest, value);
+  }
   return next;
 }
 

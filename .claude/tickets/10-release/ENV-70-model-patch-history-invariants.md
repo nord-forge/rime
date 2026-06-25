@@ -1,7 +1,7 @@
 ---
 id: ENV-70
 title: Model correctness — patch round-trip + history coalesce invariant
-status: ready
+status: done
 priority: P2
 milestone: 10 — Release readiness
 depends_on: [ENV-07, ENV-09]

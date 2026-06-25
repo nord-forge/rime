@@ -95,6 +95,17 @@ export class History {
     this.#redoStack = [];
 
     if (canCoalesce && previous) {
+      // Coalescing keeps the FIRST entry's inverse and replaces its forward patch
+      // with the LATEST — correct ONLY when each forward patch is a single absolute
+      // `set` (the burst's net effect equals the last set; the only coalescing op
+      // today is setRichText). A relative/structural op would desync redo, so we
+      // enforce the invariant rather than silently corrupt undo/redo.
+      const isSingleSet = patch.length === 1 && patch[0]!.op === "set";
+      if (!isSingleSet) {
+        throw new Error(
+          "history coalescing requires each coalesced patch to be a single absolute 'set' op",
+        );
+      }
       // Keep the FIRST entry's inverse (so one undo reverts the whole burst);
       // advance its forward patch and timestamp to the latest edit.
       previous.patch = patch;

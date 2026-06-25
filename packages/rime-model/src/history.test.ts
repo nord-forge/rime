@@ -4,9 +4,11 @@ import {
   createEmptyDoc,
   createSection,
   createTextBlock,
+  deserialize,
   type DocumentNode,
   History,
   insertNode,
+  serialize,
   setRichText,
   updateNode,
 } from "./index";
@@ -88,6 +90,26 @@ describe("basic undo/redo", () => {
   });
 });
 
+describe("additive-set undo restores serialize round-trip identity", () => {
+  test("undoing a set that ADDED an optional field deletes the key (not undefined)", () => {
+    const doc = buildDoc();
+    const h = new History(doc);
+    const textId = doc.children[0]!.children[0]!.children[0]!.id;
+
+    // The text block's style starts without a backgroundColor; add one, then undo.
+    h.record(updateNode(doc, textId, { style: { backgroundColor: "#fff" } }));
+    const undone = h.undo();
+
+    // The key must be ABSENT, not present-with-undefined — so the undone doc is
+    // byte-identical to the original through a serialize round-trip.
+    const block = undone.children[0]!.children[0]!.children[0]!;
+    expect("backgroundColor" in (block.style as object)).toBe(false);
+    const roundTripped = deserialize(serialize(undone));
+    expect(roundTripped.ok).toBe(true);
+    if (roundTripped.ok) expect(roundTripped.doc).toEqual(undone);
+  });
+});
+
 describe("redo invalidation", () => {
   test("a push after undo clears the redo stack", () => {
     const doc = buildDoc();
@@ -147,6 +169,30 @@ describe("coalescing", () => {
 
     expect(h.depth).toBe(1); // three edits, one entry
     expect(h.undo()).toEqual(doc); // single undo reverts the whole burst
+  });
+
+  test("redo after a coalesced burst restores the latest state", () => {
+    const doc = buildDoc();
+    const clock = fakeClock();
+    const h = new History(doc, { coalesceWindowMs: 500, now: clock.now });
+    const textId = doc.children[0]!.children[0]!.children[0]!.id;
+    const key = `text:${textId}`;
+
+    let current = doc;
+    let last = doc;
+    for (const word of ["a", "ab", "abc"]) {
+      const r = setRichText(current, textId, {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: word }] }],
+      });
+      h.record(r, key);
+      current = r.doc;
+      last = r.doc;
+      clock.advance(100);
+    }
+
+    h.undo(); // back to the pre-burst doc
+    expect(h.redo()).toEqual(last); // redo restores the final coalesced state
   });
 
   test("edits outside the window are separate entries", () => {
