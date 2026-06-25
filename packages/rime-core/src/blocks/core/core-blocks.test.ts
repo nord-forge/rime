@@ -38,6 +38,7 @@ describe("registerCoreBlocks", () => {
         "divider",
         "heading",
         "hero",
+        "html",
         "image",
         "menu",
         "quote",
