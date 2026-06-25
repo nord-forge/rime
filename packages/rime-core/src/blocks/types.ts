@@ -37,9 +37,17 @@ export type RenderExport<N extends BaseNode = BaseNode> = (
   ctx: ExportRenderContext,
 ) => ExportOutput;
 
+// Where a block lives in the document tree. "leaf" (default) blocks sit inside a
+// column; "section" blocks are full-bleed bands that sit at the document level,
+// beside sections (e.g. a hero — MJML's <mj-hero> is a body-level sibling of
+// sections, never nested in a column).
+export type BlockPlacement = "leaf" | "section";
+
 export interface BlockDefinition<N extends BaseNode = BaseNode> {
   // The node `type` this handles, e.g. "text".
   type: string;
+  // Defaults to "leaf" when omitted.
+  placement?: BlockPlacement;
   schema: BlockSchema;
   palette: PaletteEntry;
   renderCanvas: RenderCanvas<N>;

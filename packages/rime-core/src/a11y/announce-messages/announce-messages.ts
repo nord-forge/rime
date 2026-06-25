@@ -2,7 +2,13 @@
 // DOM/live-region so the wording — block label, "Column N", "position X of Y" —
 // is unit-testable.
 
-import type { AnyNode, BaseNode, RimeDoc, NodeId } from "@nord-forge/rime-model";
+import {
+  type AnyNode,
+  type BaseNode,
+  type RimeDoc,
+  type NodeId,
+  isSection,
+} from "@nord-forge/rime-model";
 
 const TYPE_LABELS: Record<string, string> = {
   text: "Text",
@@ -22,11 +28,14 @@ export function blockLabel(node: BaseNode): string {
 
 /** Human, 1-based label for a parent column/section by its position in the tree. */
 export function parentLabel(doc: RimeDoc, parentId: NodeId): string {
-  for (let s = 0; s < doc.children.length; s += 1) {
-    const section = doc.children[s]!;
-    if (section.id === parentId) return `Section ${s + 1}`;
-    for (let c = 0; c < section.children.length; c += 1) {
-      if (section.children[c]!.id === parentId) return `Column ${c + 1}`;
+  if (doc.id === parentId) return "Document";
+  let sectionNumber = 0;
+  for (const child of doc.children) {
+    if (!isSection(child)) continue; // section-level band: not a container
+    sectionNumber += 1;
+    if (child.id === parentId) return `Section ${sectionNumber}`;
+    for (let c = 0; c < child.children.length; c += 1) {
+      if (child.children[c]!.id === parentId) return `Column ${c + 1}`;
     }
   }
   return "container";

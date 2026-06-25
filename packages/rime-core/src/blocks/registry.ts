@@ -1,10 +1,15 @@
 import type { BaseNode } from "@nord-forge/rime-model";
 import type {
   BlockDefinition,
+  BlockPlacement,
   CanvasRenderContext,
   ExportRenderContext,
   ExportOutput,
 } from "./types";
+
+export function placementOf(def: BlockDefinition): BlockPlacement {
+  return def.placement ?? "leaf";
+}
 
 export class BlockRegistry {
   #byType = new Map<string, BlockDefinition>();
@@ -32,6 +37,20 @@ export class BlockRegistry {
       out.set(def.palette.category, list);
     }
     return out;
+  }
+
+  /** Registered types that live inside a column (placement "leaf"). */
+  leafTypes(): string[] {
+    return this.all()
+      .filter((def) => placementOf(def) === "leaf")
+      .map((def) => def.type);
+  }
+
+  /** Registered types that live at the document level (placement "section"). */
+  sectionTypes(): string[] {
+    return this.all()
+      .filter((def) => placementOf(def) === "section")
+      .map((def) => def.type);
   }
 }
 

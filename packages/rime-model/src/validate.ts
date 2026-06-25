@@ -21,6 +21,10 @@ export interface ValidateOptions {
   // if present, BlockStyle — since the doc model is headless and does not know a
   // registered block's prop schema. The block's own schema validates the rest.
   extraLeafTypes?: Iterable<string>;
+  // Section-level "band" block types accepted as direct children of the document,
+  // beside sections (e.g. a hero). Validated for the common shape only (id + style),
+  // same as a custom leaf — the block's own schema validates the rest.
+  extraSectionTypes?: Iterable<string>;
 }
 
 const VALID_MARKS = new Set<Mark>(["bold", "italic", "underline"]);
@@ -32,8 +36,9 @@ export function validateDoc(value: unknown, options: ValidateOptions = {}): Vali
   const errors: ValidationError[] = [];
   const seenIds = new Set<string>();
   const allowedLeaves = new Set<string>([...LEAF_TYPES, ...(options.extraLeafTypes ?? [])]);
+  const allowedBands = new Set<string>(options.extraSectionTypes ?? []);
 
-  validateDocument(value, "$", errors, seenIds, allowedLeaves);
+  validateDocument(value, "$", errors, seenIds, allowedLeaves, allowedBands);
 
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true, doc: value as RimeDoc };
@@ -93,6 +98,7 @@ function validateDocument(
   errors: ValidationError[],
   seenIds: Set<string>,
   allowedLeaves: Set<string>,
+  allowedBands: Set<string>,
 ): void {
   if (!isObject(value)) {
     errors.push({ path, message: "document must be an object" });
@@ -126,11 +132,25 @@ function validateDocument(
   }
   children.forEach((child, i) => {
     const childPath = `${path}.children[${i}]`;
-    if (!isObject(child) || child["type"] !== "section") {
-      errors.push({ path: childPath, message: "document children must be sections" });
+    if (!isObject(child) || typeof child["type"] !== "string") {
+      errors.push({ path: childPath, message: "document child must be an object with a type" });
       return;
     }
-    validateSection(child, childPath, errors, seenIds, allowedLeaves);
+    if (child["type"] === "section") {
+      validateSection(child, childPath, errors, seenIds, allowedLeaves);
+      return;
+    }
+    // A registered section-level band block (allowed via extraSectionTypes). The
+    // doc model validates the common shape only; the block's schema validates props.
+    if (allowedBands.has(child["type"])) {
+      checkId(child, childPath, errors, seenIds);
+      if (child["style"] !== undefined) checkStyle(child["style"], `${childPath}.style`, errors);
+      return;
+    }
+    errors.push({
+      path: childPath,
+      message: "document children must be sections or registered section-level blocks",
+    });
   });
 }
 

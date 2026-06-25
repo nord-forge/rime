@@ -135,6 +135,36 @@ describe("validateDoc rejections (with precise paths)", () => {
   });
 });
 
+describe("section-level band blocks (extraSectionTypes)", () => {
+  test("accepts a registered band block beside sections", () => {
+    const doc = buildValidDoc();
+    doc.children.unshift({ id: "band1", type: "hero", style: { align: "center" } } as never);
+    expect(validateDoc(doc, { extraSectionTypes: ["hero"] }).ok).toBe(true);
+  });
+
+  test("rejects a band block whose type is not allowed", () => {
+    const doc = buildValidDoc();
+    doc.children.unshift({ id: "band1", type: "hero" } as never);
+    const r = validateDoc(doc);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.errors[0]!.path).toBe("$.children[0]");
+  });
+
+  test("validates a band's BlockStyle generically", () => {
+    const doc = buildValidDoc();
+    doc.children.unshift({ id: "band1", type: "hero", style: { align: "sideways" } } as never);
+    const r = validateDoc(doc, { extraSectionTypes: ["hero"] });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.errors[0]!.path).toBe("$.children[0].style.align");
+  });
+
+  test("a band block still needs a valid id", () => {
+    const doc = buildValidDoc();
+    doc.children.unshift({ type: "hero" } as never);
+    expect(validateDoc(doc, { extraSectionTypes: ["hero"] }).ok).toBe(false);
+  });
+});
+
 describe("rich text helpers", () => {
   test("emptyRichText is a valid single empty paragraph", () => {
     const rt = emptyRichText();

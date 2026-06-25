@@ -4,6 +4,7 @@
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, query } from "lit/decorators.js";
 import {
+  type BaseNode,
   createButtonBlock,
   createDividerBlock,
   createIdFactory,
@@ -18,9 +19,11 @@ import {
   type OpResult,
   removeNode,
   setRichText,
+  type ValidateOptions,
 } from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
+import { blockRegistry } from "../blocks/registry";
 import {
   DragCoordinateController,
   type Point,
@@ -142,7 +145,7 @@ export class RimeEditor extends LitElement {
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
     void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
-      this.#renderer = new CanvasRenderer(mount, doc);
+      this.#renderer = new CanvasRenderer(mount, doc, blockRegistry);
       this.#coords = new DragCoordinateController(iframe);
       this.#announcer = new LiveAnnouncer(this.renderRoot as ShadowRoot);
       this.#dnd = new DndController({
@@ -162,7 +165,12 @@ export class RimeEditor extends LitElement {
             kind === "insert" ? insertMessage(resultDoc, nodeId) : moveMessage(resultDoc, nodeId);
           this.#announcer?.announce(msg);
         },
-        ops: { insertNode, moveNode },
+        ops: {
+          insertNode: (d, parentId, index, node) =>
+            insertNode(d, parentId, index, node, this.#validateOptions()),
+          moveNode: (d, id, parentId, index) =>
+            moveNode(d, id, parentId, index, this.#validateOptions()),
+        },
       });
       // Keyboard reordering — the parallel a11y input model (same moveNode op).
       this.#keyboard = new KeyboardMoveController({
@@ -180,7 +188,8 @@ export class RimeEditor extends LitElement {
             this.#announcer?.announce(moveMessage(this.#doc, this.#selected));
           }
         },
-        moveNode,
+        moveNode: (d, id, parentId, index) =>
+          moveNode(d, id, parentId, index, this.#validateOptions()),
       });
 
       this.#setupRichTextUi(doc);
@@ -193,7 +202,7 @@ export class RimeEditor extends LitElement {
           const node = findNodeById(this.#doc, nodeId);
           // Skip the commit when nothing changed, so focus/blur alone adds no undo entry.
           if (node?.type === "text" && richTextEqual(canonicalize(node.content), json)) return;
-          this.#dispatch(setRichText(this.#doc, nodeId, json));
+          this.#dispatch(setRichText(this.#doc, nodeId, json, this.#validateOptions()));
         },
         repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
         onActiveChange: (mount) => {
@@ -430,7 +439,7 @@ export class RimeEditor extends LitElement {
     const node = located ? findNodeById(before, id) : null;
     let op: OpResult;
     try {
-      op = removeNode(before, id);
+      op = removeNode(before, id, this.#validateOptions());
     } catch {
       return; // e.g. removing would break a column invariant → no-op
     }
@@ -446,8 +455,11 @@ export class RimeEditor extends LitElement {
     return this.#selected;
   }
 
-  // Build a fresh leaf block of the given type for palette drops.
-  #createBlock(blockType: LeafBlock["type"]): LeafBlock {
+  // Build a fresh node of the given type for palette drops. The core leaves use
+  // their canonical factories; any other registered block (custom leaf or
+  // section-level band like a hero) is built from its palette `defaults`, with a
+  // fresh id stamped on.
+  #createBlock(blockType: string): BaseNode {
     switch (blockType) {
       case "text":
         return createTextBlock(this.#newId);
@@ -459,9 +471,21 @@ export class RimeEditor extends LitElement {
         return createDividerBlock(this.#newId);
       case "spacer":
         return createSpacerBlock(this.#newId);
-      default:
-        throw new Error(`unknown block type "${blockType}"`);
+      default: {
+        const def = blockRegistry.get(blockType);
+        if (!def) throw new Error(`unknown block type "${blockType}"`);
+        return { ...def.palette.defaults, id: this.#newId(blockType), type: blockType };
+      }
     }
+  }
+
+  // Validate options the operations need to accept registered blocks: every
+  // registered leaf type + every section-level band type.
+  #validateOptions(): ValidateOptions {
+    return {
+      extraLeafTypes: blockRegistry.leafTypes(),
+      extraSectionTypes: blockRegistry.sectionTypes(),
+    };
   }
 
   /** Node id under a host pointer (clientX/Y), or null. */

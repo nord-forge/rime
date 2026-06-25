@@ -7,7 +7,13 @@
 //   - canvas leaf blocks (delegated pointerdown in the iframe → move existing)
 // Every drop goes through an immutable doc op; we never mutate canvas DOM directly.
 
-import type { RimeDoc, LeafBlock, NodeId, OpResult } from "@nord-forge/rime-model";
+import {
+  type BaseNode,
+  type RimeDoc,
+  type NodeId,
+  type OpResult,
+  isSection,
+} from "@nord-forge/rime-model";
 import type { CanvasRenderer } from "../../canvas/canvas-renderer/canvas-renderer";
 import type {
   DragCoordinateController,
@@ -34,13 +40,13 @@ export interface DndDeps {
    *  root, so --eb-* tokens cascade to it. */
   overlayHost: ParentNode & { ownerDocument: Document };
   getDoc: () => RimeDoc;
-  createBlock: (blockType: LeafBlock["type"]) => LeafBlock;
+  createBlock: (blockType: string) => BaseNode;
   /** Apply an op result: the editor merges patch into doc + undo history + re-renders. */
   dispatch: (op: OpResult) => void;
   /** Announce a completed drop (insert for palette, move for canvas) against the result doc. */
   announceDrop?: (kind: "insert" | "move", resultDoc: RimeDoc, nodeId: NodeId) => void;
   ops: {
-    insertNode: (doc: RimeDoc, parentId: NodeId, index: number, node: LeafBlock) => OpResult;
+    insertNode: (doc: RimeDoc, parentId: NodeId, index: number, node: BaseNode) => OpResult;
     moveNode: (doc: RimeDoc, id: NodeId, newParentId: NodeId, newIndex: number) => OpResult;
   };
   /** Injectable rAF (for tests). Defaults to requestAnimationFrame. */
@@ -92,7 +98,7 @@ export class DndController {
   }
 
   /** Register a host palette element as a drag source creating `blockType`. */
-  registerPaletteItem(element: HTMLElement, blockType: LeafBlock["type"]): () => void {
+  registerPaletteItem(element: HTMLElement, blockType: string): () => void {
     const onDown = (e: PointerEvent) => {
       this.#begin({ source: "palette", blockType }, e.clientX, e.clientY);
     };
@@ -275,11 +281,11 @@ export class DndController {
 
   /** Read current column + child rects from the rendered DOM (iframe-client space). */
   #columnGeometry(): ColumnGeometry[] {
-    const doc = this.#deps.getDoc() as {
-      children: { children: { id: NodeId; children: { id: NodeId }[] }[] }[];
-    };
+    const doc = this.#deps.getDoc();
     const columns: ColumnGeometry[] = [];
     for (const section of doc.children) {
+      // Skip section-level band blocks (e.g. a hero) — they hold no columns.
+      if (!isSection(section)) continue;
       for (const column of section.children) {
         const colEl = this.#deps.renderer.elementForNode(column.id);
         if (!colEl) continue;

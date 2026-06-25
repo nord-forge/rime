@@ -29,11 +29,34 @@ export interface BaseNode {
   type: string;
 }
 
-/** Root node: global email settings + ordered sections. */
+/** Root node: global email settings + ordered sections (and section-level bands). */
 export interface DocumentNode extends BaseNode {
   type: "document";
   settings: DocumentSettings;
-  children: SectionNode[];
+  children: DocumentChild[];
+}
+
+/**
+ * A document-level node that is NOT a section: a full-bleed "band" that lives
+ * beside sections (e.g. a hero). The model is headless and does not know the
+ * concrete band types — registered blocks declare `placement: "section"` and the
+ * validator accepts them via `extraSectionTypes`. Only the common shape (id +
+ * optional BlockStyle) is modelled here; the block's own schema validates the rest.
+ */
+export interface BandBlock extends BaseNode {
+  style?: BlockStyle;
+}
+
+/** A direct child of the document: a section or a section-level band block. */
+export type DocumentChild = SectionNode | BandBlock;
+
+/**
+ * Narrow a document child to a SectionNode. A plain `child.type === "section"`
+ * check does NOT narrow, because BandBlock's `type` is the open `string` and so
+ * overlaps "section" structurally — use this guard instead.
+ */
+export function isSection(child: DocumentChild): child is SectionNode {
+  return child.type === "section";
 }
 
 /** Global, document-wide settings. Kept small for v1. */
@@ -101,7 +124,13 @@ export interface SpacerBlock extends BaseNode {
 /** Any leaf (content) block that can live inside a column. */
 export type LeafBlock = TextBlock | ImageBlock | ButtonBlock | DividerBlock | SpacerBlock;
 
-/** Any node in the tree. */
+/**
+ * Any built-in node in the tree, as a CLOSED discriminated union so `node.type`
+ * narrows cleanly. Section-level band blocks (BandBlock) are intentionally NOT
+ * members — their open `type: string` would defeat narrowing across this union.
+ * Generic tree-walkers read `.children` structurally and so handle bands anyway;
+ * `DocumentChild` is the precise type for a document's direct children.
+ */
 export type AnyNode = DocumentNode | SectionNode | ColumnNode | LeafBlock;
 
 /** The top-level document type consumers load/save. */

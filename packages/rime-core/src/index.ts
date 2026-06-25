@@ -39,6 +39,7 @@ export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to
 export type { BlockSchema, FieldDef, FieldType } from "./blocks/schema";
 export type {
   BlockDefinition,
+  BlockPlacement,
   CanvasRenderContext,
   ExportOutput,
   ExportRenderContext,
@@ -50,6 +51,7 @@ export {
   BlockRegistry,
   blockRegistry,
   type MjmlBlockRenderer,
+  placementOf,
   registerBlock,
   registryToMjmlRenderers,
   renderNodeViaRegistry,

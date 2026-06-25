@@ -8,6 +8,7 @@
 
 import type {
   AnyNode,
+  BandBlock,
   ColumnNode,
   DocumentNode,
   RimeDoc,
@@ -26,9 +27,15 @@ import {
   renderText,
   renderUnknown,
 } from "../render-node/render-node";
+import { type BlockRegistry, renderNodeViaRegistry } from "../../blocks/registry";
+
+// Any node the canvas may render: the built-in tree nodes plus section-level
+// band blocks (e.g. a hero). Kept local since AnyNode is intentionally closed
+// (a discriminated union) while bands carry an open `type`.
+type CanvasNode = AnyNode | BandBlock;
 
 /** Depth-first lookup of a node by id within a doc subtree. */
-function findNode(root: AnyNode, id: NodeId): AnyNode | null {
+function findNode(root: CanvasNode, id: NodeId): CanvasNode | null {
   if (root.id === id) return root;
   if ("children" in root) {
     for (const child of root.children) {
@@ -39,27 +46,58 @@ function findNode(root: AnyNode, id: NodeId): AnyNode | null {
   return null;
 }
 
-/** Render a single node (no children) to a fresh element. */
-function createElementFor(node: AnyNode, doc: Document): HTMLElement {
-  switch (node.type) {
+/**
+ * Render a single node (no children) to a fresh element. Built-in container/leaf
+ * types take the fast hardcoded path; any other type (a registered block — custom
+ * leaf or section-level band like a hero) is rendered through the block registry,
+ * falling back to an inert placeholder when no registry / no match.
+ */
+const BUILT_IN_TYPES = new Set<string>([
+  "document",
+  "section",
+  "column",
+  "text",
+  "image",
+  "button",
+  "divider",
+  "spacer",
+]);
+
+function createElementFor(node: CanvasNode, doc: Document, registry?: BlockRegistry): HTMLElement {
+  // A registered block whose type isn't a built-in (custom leaf or section-level
+  // band, e.g. a hero) renders through the registry; fall back to an inert
+  // placeholder for anything unknown.
+  if (!BUILT_IN_TYPES.has(node.type)) {
+    if (registry?.get(node.type)) {
+      return renderNodeViaRegistry(
+        node,
+        { doc, renderChild: () => doc.createElement("div") },
+        registry,
+      );
+    }
+    return renderUnknown(node, doc);
+  }
+  // A built-in node: AnyNode's discriminated union narrows each case cleanly.
+  const builtIn = node as AnyNode;
+  switch (builtIn.type) {
     case "document":
-      return renderDocument(node, doc);
+      return renderDocument(builtIn, doc);
     case "section":
-      return renderSection(node, doc);
+      return renderSection(builtIn, doc);
     case "column":
-      return renderColumn(node, doc);
+      return renderColumn(builtIn, doc);
     case "text":
-      return renderText(node, doc);
+      return renderText(builtIn, doc);
     case "image":
-      return renderImage(node, doc);
+      return renderImage(builtIn, doc);
     case "button":
-      return renderButton(node, doc);
+      return renderButton(builtIn, doc);
     case "divider":
-      return renderDivider(node, doc);
+      return renderDivider(builtIn, doc);
     case "spacer":
-      return renderSpacer(node, doc);
+      return renderSpacer(builtIn, doc);
     default:
-      return renderUnknown(node, doc);
+      return renderUnknown(builtIn, doc);
   }
 }
 
@@ -70,19 +108,21 @@ function childContainer(element: HTMLElement): HTMLElement {
 }
 
 /** Does this node type carry rendered children we manage? */
-function hasManagedChildren(node: AnyNode): node is DocumentNode | SectionNode | ColumnNode {
+function hasManagedChildren(node: CanvasNode): node is DocumentNode | SectionNode | ColumnNode {
   return node.type === "document" || node.type === "section" || node.type === "column";
 }
 
 export class CanvasRenderer {
   readonly #mount: HTMLElement;
   readonly #doc: Document;
+  readonly #registry?: BlockRegistry;
   #current: RimeDoc | null = null;
   #elements = new Map<NodeId, HTMLElement>();
 
-  constructor(mount: HTMLElement, doc: Document) {
+  constructor(mount: HTMLElement, doc: Document, registry?: BlockRegistry) {
     this.#mount = mount;
     this.#doc = doc;
+    this.#registry = registry;
   }
 
   /** First paint. */
@@ -121,7 +161,7 @@ export class CanvasRenderer {
     if (!element || !this.#current) return;
     const node = findNode(this.#current, id);
     if (!node) return;
-    const fresh = createElementFor(node, this.#doc);
+    const fresh = createElementFor(node, this.#doc, this.#registry);
     element.replaceChildren(...Array.from(fresh.childNodes));
     element.setAttribute("style", fresh.getAttribute("style") ?? "");
   }
@@ -136,8 +176,8 @@ export class CanvasRenderer {
   // ---- internal ----
 
   /** Build an element (and its subtree) for a node, recording identity. */
-  #renderTree(node: AnyNode): HTMLElement {
-    const element = createElementFor(node, this.#doc);
+  #renderTree(node: CanvasNode): HTMLElement {
+    const element = createElementFor(node, this.#doc, this.#registry);
     this.#elements.set(node.id, element);
     if (hasManagedChildren(node)) {
       const container = childContainer(element);
@@ -153,7 +193,7 @@ export class CanvasRenderer {
    * the (possibly reused) element for the next node. `parentForReplace` is where a
    * full replacement would be inserted if identity can't be reused.
    */
-  #reconcile(prev: AnyNode, next: AnyNode, _parent: HTMLElement): HTMLElement {
+  #reconcile(prev: CanvasNode, next: CanvasNode, _parent: HTMLElement): HTMLElement {
     if (prev === next) {
       // Referentially identical subtree — nothing changed, keep DOM as-is.
       return this.#elements.get(next.id)!;
@@ -178,36 +218,45 @@ export class CanvasRenderer {
   }
 
   /** Re-apply a node's own props (style/content) to its existing element. */
-  #updateProps(node: AnyNode, element: HTMLElement): void {
-    switch (node.type) {
+  #updateProps(node: CanvasNode, element: HTMLElement): void {
+    if (!BUILT_IN_TYPES.has(node.type)) {
+      // A registered block (custom leaf or section-level band, e.g. a hero):
+      // rebuild it in place from its registry renderer, same as a built-in leaf.
+      if (this.#registry?.get(node.type)) this.#rebuildLeafInPlace(node, element);
+      return;
+    }
+    const builtIn = node as AnyNode;
+    switch (builtIn.type) {
       case "document":
-        element.style.maxWidth = `${node.settings.contentWidth}px`;
-        element.style.backgroundColor = node.settings.backgroundColor;
-        element.style.fontFamily = node.settings.fontFamily;
+        element.style.maxWidth = `${builtIn.settings.contentWidth}px`;
+        element.style.backgroundColor = builtIn.settings.backgroundColor;
+        element.style.fontFamily = builtIn.settings.fontFamily;
         break;
       case "column":
-        element.style.flexBasis = `${node.widthPercent}%`;
-        element.style.maxWidth = `${node.widthPercent}%`;
-        applyStyle(element, node.style);
+        element.style.flexBasis = `${builtIn.widthPercent}%`;
+        element.style.maxWidth = `${builtIn.widthPercent}%`;
+        applyStyle(element, builtIn.style);
         break;
       case "spacer":
-        element.style.height = `${node.height}px`;
+        element.style.height = `${builtIn.height}px`;
         break;
       case "text":
       case "image":
       case "button":
-      case "divider": {
-        // Content/style may have changed; rebuild this leaf's element in place by
-        // swapping a freshly rendered one's children + style. Cheap for leaves.
-        const fresh = createElementFor(node, this.#doc);
-        element.replaceChildren(...Array.from(fresh.childNodes));
-        element.setAttribute("style", fresh.getAttribute("style") ?? "");
+      case "divider":
+        this.#rebuildLeafInPlace(builtIn, element);
         break;
-      }
       case "section":
-        applyStyle(element, node.style);
+        applyStyle(element, builtIn.style);
         break;
     }
+  }
+
+  /** Swap an element's children + style for a freshly rendered node's. Cheap for leaves. */
+  #rebuildLeafInPlace(node: CanvasNode, element: HTMLElement): void {
+    const fresh = createElementFor(node, this.#doc, this.#registry);
+    element.replaceChildren(...Array.from(fresh.childNodes));
+    element.setAttribute("style", fresh.getAttribute("style") ?? "");
   }
 
   /** Reconcile a container's children by id, reusing/moving existing elements. */
@@ -216,15 +265,15 @@ export class CanvasRenderer {
     next: DocumentNode | SectionNode | ColumnNode,
     container: HTMLElement,
   ): void {
-    const prevById = new Map(prev.children.map((c) => [c.id, c as AnyNode]));
-    const nextChildren = next.children as AnyNode[];
+    const prevById = new Map(prev.children.map((c) => [c.id, c as CanvasNode]));
+    const nextChildren = next.children as CanvasNode[];
 
     // Remove elements whose ids are gone.
     const nextIds = new Set(nextChildren.map((c) => c.id));
     for (const child of prev.children) {
       if (!nextIds.has(child.id)) {
         this.#elements.get(child.id)?.remove();
-        this.#forget(child as AnyNode);
+        this.#forget(child as CanvasNode);
       }
     }
 
@@ -250,7 +299,7 @@ export class CanvasRenderer {
   }
 
   /** Drop an id (and descendants) from the identity map. */
-  #forget(node: AnyNode): void {
+  #forget(node: CanvasNode): void {
     this.#elements.delete(node.id);
     if (hasManagedChildren(node)) {
       for (const child of node.children) this.#forget(child);
