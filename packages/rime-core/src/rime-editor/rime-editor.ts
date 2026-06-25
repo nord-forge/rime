@@ -7,6 +7,7 @@ import {
   type BaseNode,
   createButtonBlock,
   createDividerBlock,
+  createEmptyDoc,
   createIdFactory,
   createImageBlock,
   createSpacerBlock,
@@ -20,6 +21,8 @@ import {
   removeNode,
   setRichText,
   type ValidateOptions,
+  type ValidationError,
+  validateDoc,
 } from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
@@ -71,6 +74,24 @@ export interface RimeConfig {
 /** Detail payload of the `change` event. */
 export interface RimeChangeDetail {
   doc: RimeDoc;
+}
+
+/** Thrown by `loadDoc` when the input fails validation. Carries the per-field
+ *  errors so the host knows exactly what was wrong with its saved JSON. */
+export class RimeValidationError extends Error {
+  readonly errors: ValidationError[];
+  constructor(errors: ValidationError[]) {
+    const summary = errors
+      .slice(0, 3)
+      .map((e) => `${e.path}: ${e.message}`)
+      .join("; ");
+    super(
+      `loadDoc: invalid document (${errors.length} error${errors.length === 1 ? "" : "s"})` +
+        (summary ? ` — ${summary}${errors.length > 3 ? "; …" : ""}` : ""),
+    );
+    this.name = "RimeValidationError";
+    this.errors = errors;
+  }
 }
 
 export class RimeEditor extends LitElement {
@@ -140,6 +161,8 @@ export class RimeEditor extends LitElement {
   #onViewportChange: (() => void) | null = null;
   // Pending rAF handle that coalesces scroll/resize viewport refreshes (0 = none).
   #viewportFrame = 0;
+  // Pending rAF handle that coalesces `change` emission (0 = none).
+  #changeFrame = 0;
   // Source ids already merged into the token registry (idempotent re-render guard).
   #mergedSources = new Set<string>();
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -299,11 +322,12 @@ export class RimeEditor extends LitElement {
       doc.addEventListener("keydown", this.#onKeydown);
       this.addEventListener("keydown", this.#onKeydown as EventListener);
 
-      if (this.#doc) {
-        this.#renderer.render(this.#doc);
-        this.#dnd.syncCanvasTargets();
-        this.#makeLeavesFocusable();
-      }
+      // Always start from a valid doc: a host's loadDoc() wins, otherwise an empty
+      // document so the editor is never in an invalid/blank state.
+      if (!this.#doc) this.#doc = createEmptyDoc(this.#newId);
+      this.#renderer.render(this.#doc);
+      this.#dnd.syncCanvasTargets();
+      this.#makeLeavesFocusable();
 
       // The palette renders its items; register each as a canvas drag source now
       // that DnD is ready. updateComplete waits for the Lit render to flush.
@@ -322,6 +346,7 @@ export class RimeEditor extends LitElement {
       cancelAnimationFrame(this.#viewportFrame);
       this.#viewportFrame = 0;
     }
+    this.#cancelChange();
     const canvasDoc = this.#canvas?.document;
     if (this.#onCanvasClick) canvasDoc?.removeEventListener("click", this.#onCanvasClick);
     if (this.#onCanvasPointerdown) {
@@ -370,7 +395,29 @@ export class RimeEditor extends LitElement {
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
     this.#syncProperties();
-    this.dispatchEvent(new CustomEvent<RimeChangeDetail>("change", { detail: { doc: op.doc } }));
+    this.#emitChange();
+  }
+
+  // Coalesce `change` to one event per animation frame carrying the LATEST doc, so a
+  // burst of edits (drag, property-slider drag, rich-text typing) doesn't flood the
+  // host — but the final state is never dropped (the doc is the source of truth and
+  // is read at flush time).
+  #emitChange(): void {
+    if (this.#changeFrame !== 0) return;
+    this.#changeFrame = requestAnimationFrame(() => this.#flushChange());
+  }
+
+  #flushChange(): void {
+    this.#changeFrame = 0;
+    if (!this.#doc) return;
+    this.dispatchEvent(new CustomEvent<RimeChangeDetail>("change", { detail: { doc: this.#doc } }));
+  }
+
+  #cancelChange(): void {
+    if (this.#changeFrame !== 0) {
+      cancelAnimationFrame(this.#changeFrame);
+      this.#changeFrame = 0;
+    }
   }
 
   // Feed the current doc + selection into the properties panel.
@@ -634,12 +681,25 @@ export class RimeEditor extends LitElement {
     }
   }
 
+  /**
+   * Load a document (host-driven). Validated via the doc-model codec (registered
+   * custom block types included); throws RimeValidationError on invalid input so a
+   * bad save surfaces instead of silently no-op-ing. Resets selection and repaints.
+   * Does NOT emit `change` — loading is not a user edit, which avoids save loops.
+   * Takes a doc OBJECT; a host with a JSON string deserializes it first.
+   */
   loadDoc(doc: RimeDoc): void {
-    const isUpdate = this.#doc !== null && this.#renderer !== null;
-    this.#doc = doc;
+    const result = validateDoc(doc, this.#validateOptions());
+    if (!result.ok) throw new RimeValidationError(result.errors);
+
+    this.#doc = result.doc;
+    this.#setSelected(null);
+    // A pending coalesced `change` from prior edits must not leak the loaded doc.
+    this.#cancelChange();
     if (!this.#renderer) return; // canvas not ready yet; firstUpdated paints it
-    if (isUpdate) this.#renderer.update(doc);
-    else this.#renderer.render(doc);
+    // A loaded doc is a wholesale replacement with no structural continuity to the
+    // previous one — always do a full render, not an incremental reconcile.
+    this.#renderer.render(result.doc);
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
     this.#syncProperties();
