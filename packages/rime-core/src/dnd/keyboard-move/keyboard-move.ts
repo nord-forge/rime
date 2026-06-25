@@ -6,7 +6,7 @@
 // The pure move-resolution logic (resolveMove) is separated from key handling so
 // the boundary cases are unit-testable.
 
-import type { RimeDoc, NodeId, OpResult } from "@nord-forge/rime-model";
+import { type RimeDoc, type NodeId, type OpResult, isSection } from "@nord-forge/rime-model";
 import type { DropTarget } from "../dnd-types/dnd-types";
 
 export type MoveDirection = "up" | "down" | "into-prev-column" | "into-next-column";
@@ -24,6 +24,7 @@ interface LeafLocation {
 export function locateLeaf(doc: RimeDoc, id: NodeId): LeafLocation | null {
   for (let s = 0; s < doc.children.length; s += 1) {
     const section = doc.children[s]!;
+    if (!isSection(section)) continue; // section-level band: no columns
     for (let c = 0; c < section.children.length; c += 1) {
       const column = section.children[c]!;
       const leafIndex = column.children.findIndex((leaf) => leaf.id === id);
@@ -52,6 +53,8 @@ export function resolveMove(doc: RimeDoc, id: NodeId, dir: MoveDirection): DropT
   const loc = locateLeaf(doc, id);
   if (!loc) return null;
   const section = doc.children[loc.sectionIndex]!;
+  // locateLeaf only returns indices of section nodes, but narrow for the type system.
+  if (!isSection(section)) return null;
 
   const adjacentColumn = (delta: number): { id: NodeId; count: number } | null => {
     const idx = loc.columnIndex + delta;

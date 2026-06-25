@@ -11,6 +11,8 @@ import {
   updateNode,
 } from "@nord-forge/rime-model";
 import { CanvasRenderer } from "./canvas-renderer";
+import { BlockRegistry } from "../../blocks/registry";
+import { registerCoreBlocks } from "../../blocks/core/index";
 
 // Inject happy-dom's document — the renderer takes a Document by design, so no
 // global registrator is needed.
@@ -222,5 +224,44 @@ describe("unknown node type guard", () => {
     expect(() => r.render(d)).not.toThrow();
     const placeholder = mount.querySelector('[data-node-id="weird_1"]') as HTMLElement;
     expect(placeholder.dataset["nodeUnknown"]).toBe("1");
+  });
+});
+
+describe("registered blocks via the registry", () => {
+  test("renders a registered section-level band at the document level through the registry", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    // A hero band beside a section, as a direct document child.
+    d.children.push({
+      id: "hero_1",
+      type: "hero",
+      backgroundColor: "#333333",
+      heading: "Welcome",
+      height: 300,
+      style: { align: "center" },
+    } as never);
+    d.children.push(createSection(newId, 1));
+
+    const registry = new BlockRegistry();
+    registerCoreBlocks(registry);
+    const r = new CanvasRenderer(mount, doc, registry);
+    r.render(d);
+
+    const heroEl = r.elementForNode("hero_1") as HTMLElement;
+    expect(heroEl).not.toBeNull();
+    // Rendered via the hero's renderCanvas — NOT the inert unknown placeholder.
+    expect(heroEl.dataset["nodeUnknown"]).toBeUndefined();
+    expect(heroEl.textContent).toContain("Welcome");
+  });
+
+  test("without a registry, an unregistered registered-type falls back to the placeholder", () => {
+    const newId = ids();
+    const d = createEmptyDoc(newId);
+    d.children.push({ id: "hero_1", type: "hero", style: {} } as never);
+    d.children.push(createSection(newId, 1));
+
+    const r = new CanvasRenderer(mount, doc); // no registry
+    r.render(d);
+    expect((r.elementForNode("hero_1") as HTMLElement).dataset["nodeUnknown"]).toBe("1");
   });
 });

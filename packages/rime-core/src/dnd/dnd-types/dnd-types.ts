@@ -1,11 +1,11 @@
 // Typed payloads carried on drags, and the resolved place a block can land.
 
-import type { LeafBlock, NodeId } from "@nord-forge/rime-model";
+import type { NodeId } from "@nord-forge/rime-model";
 
 /** What a drag carries: a new block from the palette, or an existing canvas block. */
 export type DragData =
-  | { source: "palette"; blockType: LeafBlock["type"] }
-  | { source: "canvas"; nodeId: NodeId };
+  // blockType is any registered block type (leaf or section-level band).
+  { source: "palette"; blockType: string } | { source: "canvas"; nodeId: NodeId };
 
 /** A resolved insertion point: which parent, and the index among its children. */
 export interface DropTarget {

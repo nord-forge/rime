@@ -4,7 +4,10 @@
 // import the `mjml` library or any MJML type, so a non-MJML renderer can
 // implement `Renderer` without touching MJML.
 
-import type { AnyNode, RimeDoc } from "@nord-forge/rime-model";
+import type { AnyNode, BandBlock, BaseNode, RimeDoc } from "@nord-forge/rime-model";
+
+/** Any node the renderer walks: the built-in tree nodes plus section-level bands. */
+export type RenderableNode = AnyNode | BandBlock;
 
 /** Options common to any renderer; concrete renderers may extend with their own. */
 export interface RenderOptions {
@@ -38,7 +41,7 @@ export class RenderError extends Error {
  */
 export interface RenderContext {
   /** Render a child node by delegating back to the renderer's block registry. */
-  renderChild(node: AnyNode): string;
+  renderChild(node: RenderableNode): string;
   options: RenderOptions;
 }
 
@@ -48,7 +51,7 @@ export interface RenderContext {
  * registry of these is wired up elsewhere, including a raw-table fallback. This
  * module only declares the seam — no concrete block logic lives here.
  */
-export interface BlockRenderer<TNode extends AnyNode = AnyNode> {
+export interface BlockRenderer<TNode extends BaseNode = RenderableNode> {
   /** The `node.type` this handles, e.g. "button". */
   readonly type: string;
   /** Produce the renderer-native fragment for this node. */

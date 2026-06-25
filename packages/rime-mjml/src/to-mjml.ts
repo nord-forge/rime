@@ -4,7 +4,6 @@
 // single dispatch point. Deterministic: same doc → same MJML string.
 
 import type {
-  AnyNode,
   BlockStyle,
   ButtonBlock,
   ColumnNode,
@@ -16,7 +15,7 @@ import type {
   SpacerBlock,
   TextBlock,
 } from "@nord-forge/rime-model";
-import type { BlockRenderer, RenderContext, RenderOptions } from "./renderer";
+import type { BlockRenderer, RenderableNode, RenderContext, RenderOptions } from "./renderer";
 import { RenderError } from "./renderer";
 import { escapeAttr } from "./rich-text-to-html";
 import { richTextToInlineHtml } from "./rich-text-to-html";
@@ -140,7 +139,7 @@ export function docToMjml(
 
   const ctx: RenderContext = {
     options,
-    renderChild(node: AnyNode): string {
+    renderChild(node: RenderableNode): string {
       const renderer = registry.get(node.type);
       if (!renderer) {
         throw new RenderError(`no renderer for node type "${node.type}" (id "${node.id}")`);

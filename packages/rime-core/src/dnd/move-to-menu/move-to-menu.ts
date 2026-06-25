@@ -5,6 +5,7 @@
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, state } from "lit/decorators.js";
+import { isSection } from "@nord-forge/rime-model";
 import type { DropTarget } from "../dnd-types/dnd-types";
 
 /** A selectable destination shown in the menu. */
@@ -126,14 +127,18 @@ export function destinationsFor(
   id: string,
 ): MoveDestination[] {
   const out: MoveDestination[] = [];
-  doc.children.forEach((section, s) => {
+  let sectionNumber = 0;
+  doc.children.forEach((section) => {
+    // Section-level band blocks (e.g. a hero) hold no columns — skip them.
+    if (!isSection(section)) return;
+    sectionNumber += 1;
     section.children.forEach((column, c) => {
       const hasNode = column.children.some((leaf) => leaf.id === id);
       const isOnlyHere = hasNode && column.children.length === 1;
       // Offer "end of column X" for every column except where it already solely is.
       if (!isOnlyHere) {
         out.push({
-          label: `Section ${s + 1}, Column ${c + 1} (end)`,
+          label: `Section ${sectionNumber}, Column ${c + 1} (end)`,
           target: { parentId: column.id, index: column.children.length },
         });
       }

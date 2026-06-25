@@ -3,10 +3,18 @@
 // patch, applied to the new doc, restores the original — this pair is what
 // undo/redo stores.
 
-import type { AnyNode, ColumnNode, RimeDoc, LeafBlock, NodeId, SectionNode } from "./types";
+import type {
+  AnyNode,
+  BandBlock,
+  ColumnNode,
+  RimeDoc,
+  LeafBlock,
+  NodeId,
+  SectionNode,
+} from "./types";
 import type { RichTextJSON } from "./rich-text";
 import { applyPatch, invertPatch, type Patch, type Path } from "./patch";
-import { validateDoc } from "./validate";
+import { validateDoc, type ValidateOptions } from "./validate";
 
 /** Result of any operation: the new doc plus the forward and inverse patches. */
 export interface OpResult {
@@ -55,10 +63,10 @@ function requireNode(doc: RimeDoc, id: NodeId) {
 }
 
 /** Build the result from a forward patch, validating the outcome. */
-function commit(doc: RimeDoc, patch: Patch): OpResult {
+function commit(doc: RimeDoc, patch: Patch, validate: ValidateOptions = {}): OpResult {
   const inverse = invertPatch(doc, patch);
   const next = applyPatch(doc, patch);
-  const check = validateDoc(next);
+  const check = validateDoc(next, validate);
   if (!check.ok) {
     throw new OperationError(
       `operation would produce an invalid document: ${check.errors[0]?.message ?? "unknown"}`,
@@ -68,7 +76,12 @@ function commit(doc: RimeDoc, patch: Patch): OpResult {
 }
 
 /** Shallow-merge `partial` into the node's own fields (e.g. style, label, src). */
-export function updateNode(doc: RimeDoc, id: NodeId, partial: Record<string, unknown>): OpResult {
+export function updateNode(
+  doc: RimeDoc,
+  id: NodeId,
+  partial: Record<string, unknown>,
+  validate: ValidateOptions = {},
+): OpResult {
   const { path, node } = requireNode(doc, id);
   const fields = node as unknown as Record<string, unknown>;
   const patch: Patch = Object.entries(partial).map(([key, value]) => ({
@@ -76,7 +89,7 @@ export function updateNode(doc: RimeDoc, id: NodeId, partial: Record<string, unk
     path: [...path, key],
     value: mergeField(fields[key], value),
   }));
-  return commit(doc, patch);
+  return commit(doc, patch, validate);
 }
 
 // Style merges shallowly; everything else is replaced.
@@ -99,19 +112,20 @@ export function insertNode(
   doc: RimeDoc,
   parentId: NodeId,
   index: number,
-  node: SectionNode | ColumnNode | LeafBlock,
+  node: SectionNode | ColumnNode | LeafBlock | BandBlock,
+  validate: ValidateOptions = {},
 ): OpResult {
   const { path } = requireNode(doc, parentId);
   const patch: Patch = [{ op: "insert", path: [...path, "children"], index, value: node }];
-  return commit(doc, patch);
+  return commit(doc, patch, validate);
 }
 
 /** Remove the node identified by `id`. */
-export function removeNode(doc: RimeDoc, id: NodeId): OpResult {
+export function removeNode(doc: RimeDoc, id: NodeId, validate: ValidateOptions = {}): OpResult {
   const found = requireNode(doc, id);
   if (found.index < 0) throw new OperationError("cannot remove the document root");
   const patch: Patch = [{ op: "remove", path: found.parentPath, index: found.index }];
-  return commit(doc, patch);
+  return commit(doc, patch, validate);
 }
 
 /** Move `id` to be the child at `newIndex` of `newParentId`. */
@@ -120,6 +134,7 @@ export function moveNode(
   id: NodeId,
   newParentId: NodeId,
   newIndex: number,
+  validate: ValidateOptions = {},
 ): OpResult {
   const node = requireNode(doc, id);
   if (node.index < 0) throw new OperationError("cannot move the document root");
@@ -140,7 +155,7 @@ export function moveNode(
       toIndex: adjustedIndex,
     },
   ];
-  return commit(doc, patch);
+  return commit(doc, patch, validate);
 }
 
 function pathsEqual(a: Path, b: Path): boolean {
@@ -148,11 +163,16 @@ function pathsEqual(a: Path, b: Path): boolean {
 }
 
 /** Replace the rich-text content of a text block. */
-export function setRichText(doc: RimeDoc, textBlockId: NodeId, content: RichTextJSON): OpResult {
+export function setRichText(
+  doc: RimeDoc,
+  textBlockId: NodeId,
+  content: RichTextJSON,
+  validate: ValidateOptions = {},
+): OpResult {
   const { path, node } = requireNode(doc, textBlockId);
   if (node.type !== "text") {
     throw new OperationError(`node "${textBlockId}" is not a text block`);
   }
   const patch: Patch = [{ op: "set", path: [...path, "content"], value: content }];
-  return commit(doc, patch);
+  return commit(doc, patch, validate);
 }
