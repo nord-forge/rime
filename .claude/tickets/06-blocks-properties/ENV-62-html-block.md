@@ -1,7 +1,7 @@
 ---
 id: ENV-62
 title: HTML / Code block (raw passthrough)
-status: ready
+status: done
 priority: P2
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]
