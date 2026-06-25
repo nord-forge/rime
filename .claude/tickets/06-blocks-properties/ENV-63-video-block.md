@@ -1,7 +1,7 @@
 ---
 id: ENV-63
 title: Video block (poster + play overlay link)
-status: ready
+status: done
 priority: P2
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]
