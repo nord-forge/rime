@@ -38,6 +38,11 @@ export interface RichTextHost {
 export interface RichTextProvider {
   /** The node currently being edited, or null. */
   readonly activeNodeId: NodeId | null;
+  /** Optional one-time warm-up after init: pay the editor's cold-start cost (engine
+   *  class init + first mount) on a throwaway instance during idle init time, so the
+   *  user's FIRST real focus is warm — no first-edit stutter. No-op when there's
+   *  nothing to warm (the plain-text fallback). Must leave zero live editors. */
+  prewarm?(): void;
   /** Begin editing a TextBlock (mounts the editor / opens the fallback field). */
   focus(nodeId: NodeId): void;
   /** Commit + end editing. No-op when nothing is active. */

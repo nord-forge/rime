@@ -91,14 +91,16 @@ demand, never up front.
 | Import | What it gives you | Pulls in Lexical? |
 |---|---|---|
 | `@nord-forge/rime-core` | The pure, tree-shakeable SDK: types, `registerBlock`, the block registry, `registerToken`, render helpers. **No custom elements, no side effects.** | No |
-| `@nord-forge/rime-core/register` | Defines the `<rime-editor>` element + the built-in blocks (side-effecting). This is what you import to actually render an editor. | Lazily, only when rich text is enabled (see below) |
+| `@nord-forge/rime-core/register` | Defines the `<rime-editor>` element + the built-in blocks (side-effecting). This is what you import to actually render an editor. | Lazily, at editor init when rich text is enabled (see below) |
 | `@nord-forge/rime-core/richtext` | The Lexical-coupled surface for advanced/direct use (`mountLexical`, the rich-text toolbar/popover/token-picker classes). Most apps never need this. | Yes (statically) |
 
 ### Editor **with** the Lexical rich-text editor (default)
 
 This is the normal path: bold/italic/links/lists, the inline toolbar, and the merge-tag
-chip UI. Lexical is **dynamic-imported the first time a text block is focused**, so it
-stays out of your initial bundle and only loads when the user actually edits text.
+chip UI. Lexical lives in a **separate chunk** that the editor **dynamic-imports as it
+initializes** (not in your app's initial bundle), then **warms up on idle** — so the
+user's first click into a text block is instant, with no first-edit stutter. With
+`lexicalEditor: false` (below) the chunk is never requested at all.
 
 ```html
 <rime-editor id="editor"></rime-editor>
@@ -134,9 +136,10 @@ the smallest possible editor and don't need rich text.
 ```
 
 > **Bundle impact.** Importing only `@nord-forge/rime-core` (the SDK barrel) pulls
-> **no** Lexical. Importing `/register` keeps Lexical in a separate lazy chunk that
-> loads on first text-block focus — and with `lexicalEditor: false` it's never fetched
-> at all. The size gate enforces these per-entry budgets so the split can't regress.
+> **no** Lexical. Importing `/register` keeps Lexical in a separate chunk that the
+> editor loads (and warms) at init rather than shipping in your initial bundle — and
+> with `lexicalEditor: false` it's never fetched at all. The size gate enforces these
+> per-entry budgets so the split can't regress.
 
 ### Export to email HTML
 ```ts
