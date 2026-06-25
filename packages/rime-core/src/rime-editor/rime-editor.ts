@@ -39,11 +39,8 @@ import {
   moveMessage,
   removeMessage,
 } from "../a11y/announce-messages/announce-messages";
-import { RichTextLifecycle } from "../richtext/richtext-lifecycle/richtext-lifecycle";
-import { canonicalize, richTextEqual } from "../richtext/serialize/serialize";
-import { RichTextToolbar } from "../richtext/ui/rich-text-toolbar";
-import { type LinkApplyDetail, LinkPopover } from "../richtext/ui/link-popover";
-import { makeCommands } from "../richtext/ui/rich-text-commands";
+import type { RichTextHost, RichTextProvider } from "../richtext/provider/richtext-provider";
+import { createPlainTextProvider } from "../richtext/provider/plain-text-provider";
 import { type DocChangeDetail, EbPropertiesPanel } from "../properties/properties-panel";
 import { EbPalette, type PaletteAddDetail } from "../palette/palette";
 
@@ -64,6 +61,13 @@ export interface RimeConfig {
   onImageUpload?: (file: File) => Promise<string>;
   /** Declarative merge-token sources. */
   tokenSources?: TokenSource[];
+  /**
+   * Use the Lexical rich-text editor (bold/italic/links/lists, inline toolbar).
+   * Default `true`. When `false`, text blocks are edited with a plain textarea
+   * (plain paragraphs, no formatting) and the Lexical chunk is never loaded — it's
+   * dynamic-imported only when enabled, so opting out keeps it out of the bundle.
+   */
+  lexicalEditor?: boolean;
 }
 
 /** Detail payload of the `change` event. */
@@ -130,9 +134,7 @@ export class RimeEditor extends LitElement {
   #dnd: DndController | null = null;
   #keyboard: KeyboardMoveController | null = null;
   #announcer: LiveAnnouncer | null = null;
-  #richtext: RichTextLifecycle | null = null;
-  #toolbar: RichTextToolbar | null = null;
-  #linkPopover: LinkPopover | null = null;
+  #richtext: RichTextProvider | null = null;
   #properties: EbPropertiesPanel | null = null;
   #palette: EbPalette | null = null;
   #paletteCleanups: (() => void)[] = [];
@@ -204,25 +206,10 @@ export class RimeEditor extends LitElement {
           moveNode(d, id, parentId, index, this.#validateOptions()),
       });
 
-      this.#setupRichTextUi(doc);
-
-      this.#richtext = new RichTextLifecycle({
-        getDoc: () => this.#doc,
-        elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
-        onCommit: (nodeId, json) => {
-          if (!this.#doc) return;
-          const node = findNodeById(this.#doc, nodeId);
-          // Skip the commit when nothing changed, so focus/blur alone adds no undo entry.
-          if (node?.type === "text" && richTextEqual(canonicalize(node.content), json)) return;
-          this.#dispatch(setRichText(this.#doc, nodeId, json, this.#validateOptions()));
-        },
-        repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
-        onActiveChange: (mount) => {
-          this.#toolbar?.bind(mount?.editor ?? null);
-          if (!mount) this.#linkPopover?.hide();
-          this.#repositionToolbar();
-        },
-      });
+      // Select the richtext provider. Lexical is loaded via dynamic import() ONLY
+      // when enabled (default) — a code-split point that keeps it out of the bundle
+      // when `lexicalEditor: false`. The plain-text fallback is static (no Lexical).
+      void this.#initRichText();
 
       // Entering edit mode is driven by `click` below; blurring here mid-gesture
       // would tear the element down before the browser places the caret.
@@ -243,6 +230,7 @@ export class RimeEditor extends LitElement {
       this.#onViewportChange = () => {
         this.#coords?.invalidate();
         this.#dnd?.refreshGeometry();
+        this.#richtext?.reposition();
       };
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
@@ -319,10 +307,6 @@ export class RimeEditor extends LitElement {
     this.#paletteCleanups = [];
     this.#richtext?.destroy();
     this.#richtext = null;
-    this.#toolbar?.remove();
-    this.#toolbar = null;
-    this.#linkPopover?.remove();
-    this.#linkPopover = null;
     this.#dnd?.destroy();
     this.#dnd = null;
     this.#keyboard = null;
@@ -355,6 +339,35 @@ export class RimeEditor extends LitElement {
     if (!this.#properties) return;
     this.#properties.doc = this.#doc;
     this.#properties.selectedId = this.#selected;
+  }
+
+  // Build the host services a richtext provider needs (no Lexical knowledge here).
+  #richTextHost(): RichTextHost {
+    return {
+      getDoc: () => this.#doc,
+      elementForNode: (id) => this.#renderer?.elementForNode(id) ?? null,
+      canvasDocument: () => this.#canvas?.document ?? null,
+      overlayHost: () => this.renderRoot as ShadowRoot,
+      canvasClientToHost: (p) => this.#coords?.canvasClientToHost(p) ?? p,
+      hostRect: () => this.getBoundingClientRect(),
+      commit: (nodeId, json) =>
+        this.#dispatch(setRichText(this.#doc!, nodeId, json, this.#validateOptions())),
+      repaint: (nodeId) => this.#renderer?.repaintNode(nodeId),
+    };
+  }
+
+  // Pick + create the richtext provider. Lexical is dynamic-imported (lazy chunk)
+  // only when enabled; the plain-text fallback is static.
+  async #initRichText(): Promise<void> {
+    const host = this.#richTextHost();
+    if (this.config.lexicalEditor === false) {
+      this.#richtext = createPlainTextProvider(host);
+      return;
+    }
+    const { createLexicalProvider } = await import("../richtext/provider/lexical-provider");
+    // Guard against teardown during the await.
+    if (!this.isConnected) return;
+    this.#richtext = createLexicalProvider(host);
   }
 
   // A property-panel edit produced a new doc — apply it through the normal op path.
@@ -435,76 +448,6 @@ export class RimeEditor extends LitElement {
       if (isSection(section) && section.children[0]) return section.children[0].id;
     }
     return null;
-  }
-
-  #setupRichTextUi(canvasDoc: Document): void {
-    const root = this.renderRoot as ShadowRoot;
-    const toolbar = new RichTextToolbar();
-    const popover = new LinkPopover();
-    root.append(toolbar, popover);
-    this.#toolbar = toolbar;
-    this.#linkPopover = popover;
-
-    toolbar.addEventListener("eb-request-link", () => {
-      this.#positionPopover();
-      popover.show(this.#currentLinkHref());
-    });
-
-    popover.addEventListener("eb-link-apply", (e: Event) => {
-      const detail = (e as CustomEvent<LinkApplyDetail>).detail;
-      const mount = this.#richtext?.activeMount;
-      if (mount) makeCommands(mount.editor).setLink(detail.href);
-      mount?.editor.focus();
-    });
-    popover.addEventListener("eb-link-cancel", () => this.#richtext?.activeMount?.editor.focus());
-
-    // Reposition the toolbar as the in-iframe selection moves.
-    canvasDoc.addEventListener("selectionchange", () => this.#repositionToolbar());
-  }
-
-  #currentLinkHref(): string | null {
-    const el = this.#richtext?.activeNodeId
-      ? this.#renderer?.elementForNode(this.#richtext.activeNodeId)
-      : null;
-    const sel = this.#canvas?.document?.getSelection();
-    if (!sel || sel.rangeCount === 0 || !el) return null;
-    let node: Node | null = sel.getRangeAt(0).startContainer;
-    while (node && node !== el) {
-      if (node instanceof HTMLAnchorElement) return node.getAttribute("href");
-      node = node.parentNode;
-    }
-    return null;
-  }
-
-  #repositionToolbar(): void {
-    const toolbar = this.#toolbar;
-    const coords = this.#coords;
-    const canvasDoc = this.#canvas?.document;
-    if (!toolbar || !coords || !canvasDoc) return;
-    if (!this.#richtext?.activeNodeId) {
-      toolbar.open = false;
-      return;
-    }
-    const sel = canvasDoc.getSelection();
-    if (!sel || sel.rangeCount === 0) {
-      toolbar.open = false;
-      return;
-    }
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
-    // A collapsed caret has a zero-width rect; still show the bar above the line.
-    const host = coords.canvasClientToHost({ x: rect.left, y: rect.top });
-    const hostRect = this.getBoundingClientRect();
-    toolbar.style.left = `${host.x - hostRect.left}px`;
-    toolbar.style.top = `${host.y - hostRect.top - 40}px`;
-    toolbar.open = true;
-  }
-
-  #positionPopover(): void {
-    const popover = this.#linkPopover;
-    const toolbar = this.#toolbar;
-    if (!popover || !toolbar) return;
-    popover.style.left = toolbar.style.left;
-    popover.style.top = `${parseFloat(toolbar.style.top || "0") + 36}px`;
   }
 
   // Make leaf blocks keyboard-reachable so a user can select one to move.
