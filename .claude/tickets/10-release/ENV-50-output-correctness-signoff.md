@@ -1,7 +1,7 @@
 ---
 id: ENV-50
 title: Output-correctness sign-off (email-client matrix)
-status: ready
+status: done
 priority: P0
 milestone: 10 — Release readiness
 depends_on: [ENV-13]
