@@ -46,6 +46,7 @@ describe("registerCoreBlocks", () => {
         "social",
         "spacer",
         "text",
+        "video",
       ].sort(),
     );
   });
