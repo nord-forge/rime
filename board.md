@@ -3,7 +3,7 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 56 / 67 tickets done.** Milestones 0–7 complete (M7 personalization
+**Progress: 57 / 68 tickets done.** Milestones 0–7 complete (M7 personalization
 tokens: ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker, ENV-41
 `registerToken`/`TokenRegistry` + config merge). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
@@ -29,7 +29,7 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 | 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
-| 10 — Release readiness | 🔶 6 / 11 |
+| 10 — Release readiness | 🔶 7 / 12 |
 
 Conventions:
 - ID format `ENV-NN`. Each ticket links back to the PRD section it satisfies.
@@ -169,6 +169,7 @@ Conventions:
 | ENV-69 | ✅ | **Lit chrome lifecycle & a11y hardening** — palette re-register, timer cleanup, popover dialog/focus, no reactive write in render | P1 | ENV-40 | §6.5, §10 |
 | ENV-70 | ✅ | **Model patch round-trip + history coalesce invariant** — additive-set undo deletes key; coalesce guard test | P2 | ENV-07, ENV-09 | §6.1, §6.10 |
 | ENV-71 | ✅ | **Declare `/richtext` side effects + build-granularity polish** | P2 | ENV-66 | §7, §8 |
+| ENV-72 | ✅ | **Prewarm rich-text at init** — no first-focus stutter; chunk loads + warms at init, not on focus | P2 | ENV-27, ENV-66 | §6.7, §10 |
 
 ---
 

@@ -144,4 +144,15 @@ describe("mountLexical", () => {
     mount.destroy();
     expect(() => mount.destroy()).not.toThrow();
   });
+
+  // The provider's prewarm() mounts a throwaway editor on a DETACHED element and
+  // destroys it immediately to pay Lexical's cold start off the focus path. This is
+  // that exact shape: it must work on an unattached element and leave it unbound.
+  test("mount + immediate destroy on a detached element (prewarm shape) leaves no editor", () => {
+    const scratch = win.document.createElement("div") as unknown as HTMLElement;
+    const mount = mountLexical(scratch, doc({ type: "paragraph", content: [] }));
+    expect(() => mount.destroy()).not.toThrow();
+    expect(mount.editor.getRootElement()).toBeNull();
+    expect(scratch.getAttribute("contenteditable")).toBeNull();
+  });
 });

@@ -411,6 +411,20 @@ export class RimeEditor extends LitElement {
     // Guard against teardown during the await.
     if (!this.isConnected) return;
     this.#richtext = createLexicalProvider(host);
+    // Warm Lexical's cold start during idle init time so the first text-block focus
+    // is instant (no first-edit stutter). Best-effort; never blocks init.
+    this.#schedulePrewarm();
+  }
+
+  #schedulePrewarm(): void {
+    const warm = () => {
+      if (this.isConnected) this.#richtext?.prewarm?.();
+    };
+    // Defer to idle so warm-up never competes with first paint / canvas setup.
+    const ric = (globalThis as { requestIdleCallback?: (cb: () => void) => void })
+      .requestIdleCallback;
+    if (ric) ric(warm);
+    else setTimeout(warm, 200);
   }
 
   // A property-panel edit produced a new doc — apply it through the normal op path.

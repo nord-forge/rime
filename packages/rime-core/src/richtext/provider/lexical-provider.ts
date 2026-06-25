@@ -3,7 +3,7 @@
 // runtime — the editor loads it via dynamic import() (a code-split boundary), so
 // Lexical lands in a lazy chunk that is never fetched when richtext is disabled.
 
-import type { NodeId } from "@nord-forge/rime-model";
+import { type NodeId, emptyRichText } from "@nord-forge/rime-model";
 import type { RichTextHost, RichTextProvider } from "./richtext-provider";
 import { RichTextLifecycle } from "../richtext-lifecycle/richtext-lifecycle";
 import { canonicalize, richTextEqual } from "../serialize/serialize";
@@ -12,7 +12,7 @@ import { type LinkApplyDetail, LinkPopover } from "../ui/link-popover";
 import { EbTokenPicker, type TokenSelectDetail } from "../token-picker/token-picker";
 import { makeCommands } from "../ui/rich-text-commands";
 import { findNodeById } from "../../a11y/announce-messages/announce-messages";
-import type { LexicalMount } from "../lexical-editor/lexical-editor";
+import { type LexicalMount, mountLexical } from "../lexical-editor/lexical-editor";
 
 export class LexicalRichTextProvider implements RichTextProvider {
   readonly #host: RichTextHost;
@@ -85,6 +85,22 @@ export class LexicalRichTextProvider implements RichTextProvider {
 
   get activeNodeId(): NodeId | null {
     return this.#lifecycle.activeNodeId;
+  }
+
+  // Pay Lexical's cold-start cost (createEditor + node/plugin registration + the
+  // first reconcile) on a throwaway editor mounted on a detached element, then tear
+  // it down immediately. The first real focus then reuses the warmed engine, so the
+  // user's first edit doesn't stutter. Mounts on a DETACHED element so it never
+  // touches a real block or the single-live-instance invariant.
+  prewarm(): void {
+    const canvasDoc = this.#host.canvasDocument();
+    if (!canvasDoc) return;
+    const scratch = canvasDoc.createElement("div");
+    try {
+      mountLexical(scratch, emptyRichText()).destroy();
+    } catch {
+      // Warm-up is best-effort; a failure here must never break the editor.
+    }
   }
 
   focus(nodeId: NodeId): void {
