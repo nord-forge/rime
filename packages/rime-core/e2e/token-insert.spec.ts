@@ -48,7 +48,7 @@ async function mountOnTextBlock(host: import("@playwright/test").Locator) {
     editor.loadDoc(doc);
     const blockEl = mount.querySelector('[data-node-id="txt_1"]') as HTMLElement;
     const mountLexical = (
-      window as unknown as { __mountLexical: typeof import("../src/index.ts").mountLexical }
+      window as unknown as { __mountLexical: typeof import("../src/richtext.ts").mountLexical }
     ).__mountLexical;
     (window as unknown as { __mount: unknown }).__mount = mountLexical(
       blockEl,

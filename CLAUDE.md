@@ -33,7 +33,10 @@ source of truth.
   (each package.json `exports`) — a fresh checkout works before any build. Vite's
   `resolve.conditions` (`scripts/vite-lib.ts`) handles the e2e dev server.
 - CI runs `bun test` BEFORE `build`, so packages must be resolvable from `src`.
-- The size gate (`bun run size`) sums all dist chunks; budget ~100 kB gzip.
+- The size gate (`bun run size`) sums all dist chunks (~100 kB gzip budget) AND, for
+  rime-core, enforces **per-entry eager-load budgets**: it walks the static-import
+  closure of `index.js` (pure SDK) and `register.js` (editor) and FAILS if Lexical
+  leaks into either (ENV-66). The all-chunks total alone is blind to eager loading.
 - A pre-existing **drag-preview e2e is quarantined** (`test.fixme`) — flakes on slow CI.
   Tracked as ENV-26b. Not a regression.
 - **Don't set `display` on `rime-editor` from host CSS** — it overrides the `:host` grid
@@ -45,10 +48,18 @@ source of truth.
   DOM-free logic) — pulls in NO Lit custom elements. The editor element + ALL Lit chrome
   UI live on **`@nord-forge/rime-core/register`**: `defineRimeEditor(config?)`, `RimeEditor`/
   `RimeConfig`/`RimeChangeDetail`/`TokenSource`, `EbPropertiesPanel`, `EbPalette`,
-  `RichTextToolbar`, `LinkPopover`, `MoveToMenu`. **Rule:** a value-export on the root
-  barrel must not transitively import `lit/decorators`; pure logic co-located with a Lit
-  component (e.g. `destinationsFor`) must be split into its own module to be barrel-exported.
-  `"sideEffects"`: only `register.*` in core; `false` for model/mjml/react/vue.
+  `MoveToMenu`. The **Lexical-coupled** rich-text surface — `mountLexical`, serialize
+  (`$applyRichTextJSON`/`canonicalize`/…), `RichTextLifecycle`, `makeCommands`,
+  `registerSelectionFormat`, and the Lexical-bound chrome `RichTextToolbar`/`LinkPopover`/
+  `EbTokenPicker` — lives on a THIRD deep entry **`@nord-forge/rime-core/richtext`** (ENV-66),
+  NOT on `/register`: re-exporting them from `/register` dragged Lexical into the eager
+  `register.js` closure. The editor mounts that chrome via the dynamic Lexical provider.
+  **Rule:** a value-export on the root barrel (or `/register`) must not transitively import
+  `lit/decorators` OR `lexical`/`@lexical/*`; pure logic co-located with a Lit/Lexical
+  module (e.g. `destinationsFor`, `normalizeHref`) must be split into its own module to be
+  barrel-exported. Guarded by `no-eager-lexical.test.ts` (walks the source import graph of
+  `index.ts`/`register.ts`) + the eager-budget size gate. `"sideEffects"`: only `register.*`
+  in core; `false` for model/mjml/react/vue.
 - **Blocks:** every block (built-in or custom) is a `BlockDefinition`
   (`{ type, placement?, schema, palette, renderCanvas, renderExport }`) registered via
   `registerBlock`. Canvas reuses `render-node` helpers; export returns `{ mjml }` (native

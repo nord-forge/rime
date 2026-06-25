@@ -26,6 +26,12 @@
       "bun": "./src/register.ts",
       "development": "./src/register.ts",
       "import": "./dist/register.js"
+    },
+    "./richtext": {
+      "types": "./dist/richtext.d.ts",
+      "bun": "./src/richtext.ts",
+      "development": "./src/richtext.ts",
+      "import": "./dist/richtext.js"
     }
   },
   "publishConfig": {
