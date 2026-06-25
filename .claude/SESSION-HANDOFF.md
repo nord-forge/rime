@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #20 merged. Branch: `main` (clean).
+Last updated after PR #21 merged. Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,17 +11,15 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **45/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties): **13/15** — the full
-  block CATALOG ships + the properties panel. Done: ENV-33 (registerBlock), ENV-34
-  (seven core blocks), ENV-65 (schema field types + open validator), ENV-57 (Heading),
-  ENV-58 (Quote), ENV-38 (Social), ENV-60 (Hero), ENV-61 (Column presets), Batch B —
-  ENV-59 (Menu/`mj-navbar`, PR #16), ENV-62 (HTML/`mj-raw`, PR #17), ENV-63 (Video/
-  raw-table, PR #18), ENV-64 (Table/raw-table, PR #19), and ENV-35 (properties panel,
-  PR #20).
-- **Remaining in M6: ENV-36 (palette UI, drag source) + ENV-37 (example custom block).**
-  Both consume the registry + DnD already built; ENV-36 reads `blockRegistry.byCategory()`
-  + `presetRegistry.all()` and wires `editor.registerPaletteItem(el, typeOrPresetId)`.
+- **46/61 tickets done.**
+- **Milestones 0–5 complete.** Milestone 6 (blocks & properties): **14/15** — catalog +
+  properties panel + palette all ship. Done: ENV-33 (registerBlock), ENV-34 (seven core
+  blocks), ENV-65 (schema field types + open validator), ENV-57 (Heading), ENV-58 (Quote),
+  ENV-38 (Social), ENV-60 (Hero), ENV-61 (Column presets), Batch B — ENV-59 (Menu, PR #16),
+  ENV-62 (HTML, PR #17), ENV-63 (Video, PR #18), ENV-64 (Table, PR #19), ENV-35 (properties
+  panel, PR #20), ENV-36 (palette UI, PR #21).
+- **Remaining in M6: only ENV-37 (example custom block — the SDK proof, documented
+  end-to-end).** After that M6 is done and the demo (ENV-46, Milestone 9) is unblocked.
 - Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
   node interface declared in rime-core (NOT the rime-model union), validated via
   `validateDoc`'s `extraLeafTypes`, exported as native MJML. They go in the core
@@ -59,7 +57,7 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   `resolve.conditions` (in `scripts/vite-lib.ts`) handles the e2e dev server.
 - CI runs `bun test` BEFORE `build`, so packages must be resolvable from `src`.
 - The size gate (`bun run size`) sums all dist chunks; budget ~100 kB gzip, currently
-  ~80.8 kB.
+  ~81.8 kB.
 - A pre-existing **drag-preview e2e is quarantined** (`test.fixme`) — flakes on slow CI
   (leftover preview node). Tracked as ENV-26b. Not a regression.
 
@@ -118,24 +116,27 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   test with `page.mouse`.
 
 ## NEXT UP — the last two M6 UI tickets (catalog + panel DONE)
-The full block catalog ships (ENV-34 core + ENV-57/58/38/60/61/59/62/63/64) and the
-schema-driven properties panel (ENV-35). What's left in M6:
-- **ENV-36 — palette UI:** categorized, icons, drag source. Reads `blockRegistry.byCategory()`
-  AND `presetRegistry.all()` (presets are section-level). Wire each entry via
-  `editor.registerPaletteItem(el, typeOrPresetId)` — the DnD + section-level drop already
-  work. Like the panel, mount it as chrome (Shadow DOM, `part="palette"`, `--eb-*` themed).
-- **ENV-37 — example custom block:** the SDK proof, documented end-to-end (uses the crib below).
-These unblock the demo (ENV-46).
+The full block catalog ships (ENV-34 core + ENV-57/58/38/60/61/59/62/63/64), the
+schema-driven properties panel (ENV-35), and the registry-driven palette (ENV-36).
+**Only ENV-37 remains in M6:**
+- **ENV-37 — example custom block:** the SDK proof — a custom block defined OUTSIDE the
+  core set, registered via the public `registerBlock` / `defineRimeEditor({ blocks: [...] })`
+  path, documented end-to-end so a host can copy it. Use the block-authoring crib below.
+  Likely lives as a doc/example (README or `apps/` example) + a test asserting it registers,
+  renders on canvas, and exports through the MjmlRenderer. Confirm with the ticket where it
+  should live (example app vs docs) before building.
+After ENV-37, M6 is done and the demo (ENV-46, Milestone 9) is unblocked.
 
-**Properties panel (ENV-35, PR #20) — for reference when building ENV-36:** `<eb-properties-
-panel>` lives in `properties/`, renders in the shell's `part="properties"` region (Shadow
-DOM, NOT slotted), and is fed `doc` + `selectedId` by the editor (`#syncProperties` on
-select/dispatch/loadDoc). Edits go through `updateNode` → `eb-doc-change { doc, patch,
-inverse }` → editor `#dispatch` (so undo/redo works), debounced one op/frame. Dot-path field
-keys (`style.*`, `button.*`) are written as nested partials (`properties/field-path.ts`);
-the Section column-count uses `properties/columns-op.ts`. Themed-Lit components register
-idempotently (`if (!customElements.get(...))`) and are exported from the root barrel
-alongside the toolbar/popover.
+**Chrome-UI pattern (ENV-35 panel PR #20 + ENV-36 palette PR #21):** both live in their own
+dir (`properties/`, `palette/`), render in the shell region (`part="properties"` /
+`part="palette"`, Shadow DOM, NOT slotted), and the editor holds a `@query` ref + feeds
+state. Pure grouping/assembly logic is factored into a DOM-free helper so it's unit-testable
+(`properties/field-path.ts`, `palette/palette-entries.ts`); the Lit component just renders it.
+Edits/adds go through the model ops → editor `#dispatch` (panel: `eb-doc-change`; palette:
+`eb-palette-add` → `editor.addBlock()`), so undo/redo + ARIA-live are covered. Themed-Lit
+components register idempotently (`if (!customElements.get(...))`) and are exported from the
+root barrel alongside the toolbar/popover. **Gotcha:** don't set `display` on `rime-editor`
+from host CSS — it overrides the `:host` grid (the harness did this; fixed in PR #21).
 
 **Block-authoring crib (for ENV-37 / any new block):** every block is a `BlockDefinition`
 `{ type, placement?, schema, palette, renderCanvas, renderExport }` in
