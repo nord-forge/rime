@@ -11,6 +11,7 @@ import { headingBlock } from "./heading";
 import { quoteBlock } from "./quote";
 import { socialBlock } from "./social";
 import { heroBlock } from "./hero";
+import { menuBlock } from "./menu";
 
 // Each block is typed against its own node; the registry stores them as the base
 // BlockDefinition (a node-type → handler map), so widen here at the boundary.
@@ -26,6 +27,7 @@ export const CORE_BLOCKS: BlockDefinition[] = [
   quoteBlock,
   socialBlock,
   heroBlock,
+  menuBlock,
 ] as BlockDefinition[];
 
 export {
@@ -40,6 +42,7 @@ export {
   quoteBlock,
   socialBlock,
   heroBlock,
+  menuBlock,
 };
 
 // Register the core blocks. Idempotent — a double import (or a re-call after
