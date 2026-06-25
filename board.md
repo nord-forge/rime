@@ -3,9 +3,10 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 49 / 61 tickets done.** Milestones 0–6 complete; Milestone 7 in
+**Progress: 50 / 62 tickets done.** Milestones 0–6 complete; Milestone 7 in
 progress (ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker landed;
-ENV-41 `registerToken`/config left). Milestone 6 (blocks &
+ENV-41 `registerToken`/config left). ENV-66 (bundle hardening: pure barrel no longer
+eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. Milestone 6 (blocks &
 properties) closed: the full block catalog (ENV-57–64 + ENV-65 field types), the
 schema-driven properties panel (ENV-35), the registry-driven palette (ENV-36), and
 the example custom block / SDK proof (ENV-37). The pure SDK barrel was purified along
@@ -161,6 +162,7 @@ Conventions:
 | ENV-50 | ⬜ | **Output-correctness sign-off** — email-client matrix passes | P0 | ENV-13 | §11 |
 | ENV-51 | ⬜ | **Docs site / API reference** — `init` config, `registerBlock`, `registerToken`, theming tokens | P1 | ENV-33, ENV-41 | §1 |
 | ENV-52 | ⬜ | **npm publish** `@nord-forge/*` (core, doc-model, renderer-mjml, react, vue) | P1 | ENV-48, ENV-49, ENV-50, ENV-51 | §8 |
+| ENV-66 | ✅ | **Pure-barrel Lexical leak fix** — `/richtext` deep entry; eager-load budgets + guard | P0 | ENV-39, ENV-40 | §6.7, §10 |
 
 ---
 

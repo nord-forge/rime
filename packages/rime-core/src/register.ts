@@ -73,10 +73,8 @@ export { RimeEditor, type RimeChangeDetail, type RimeConfig, type TokenSource };
 export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
 export { EbPalette, type PaletteAddDetail } from "./palette/palette";
 export { MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
-export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
-export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
-export {
-  EbTokenPicker,
-  type TokenItem,
-  type TokenSelectDetail,
-} from "./richtext/token-picker/token-picker";
+// The Lexical-coupled rich-text chrome (toolbar, link popover, token picker) is
+// NOT re-exported here: doing so dragged its Lexical-bound chunk into the eager
+// `register.js` closure. The editor instantiates these dynamically via the Lexical
+// provider; consumers who need the classes import them from
+// "@nord-forge/rime-core/richtext". See ENV-66.

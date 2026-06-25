@@ -98,28 +98,12 @@ export {
   registerCorePresets,
   registerLayoutPreset,
 } from "./blocks/column-presets";
-export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
-export {
-  $applyRichTextJSON,
-  $readRichTextJSON,
-  canonicalize,
-  richTextEqual,
-} from "./richtext/serialize/serialize";
-export {
-  type Mounter,
-  RichTextLifecycle,
-  type RichTextLifecycleDeps,
-} from "./richtext/richtext-lifecycle/richtext-lifecycle";
-export {
-  makeCommands,
-  normalizeHref,
-  type RichTextCommands,
-} from "./richtext/ui/rich-text-commands";
-export {
-  EMPTY_FORMAT,
-  type FormatState,
-  registerSelectionFormat,
-} from "./richtext/ui/selection-format";
+// `normalizeHref` (URL sanitizer) is exported from the standalone, Lexical-free
+// helper in mjml-attrs — NOT from rich-text-commands, which drags in Lexical. The
+// Lexical-coupled rich-text surface (mountLexical, serialize, lifecycle, commands,
+// selection-format) lives on the deep entry "@nord-forge/rime-core/richtext" so this
+// barrel stays Lexical-free. See ENV-66.
+export { normalizeHref } from "./blocks/core/mjml-attrs";
 export { LiveAnnouncer } from "./a11y/live-region/live-region";
 export {
   blockLabel,
