@@ -72,3 +72,23 @@ describe("Lexical never loads eagerly from the public entries", () => {
     expect(lexicalImporters.length).toBeGreaterThan(0);
   });
 });
+
+describe("side-effect entries are declared (custom-element registrations survive)", () => {
+  // richtext.ts re-exports element classes whose modules customElements.define() at
+  // top level; both register.* and richtext.* must be in sideEffects so importing a
+  // single value from them doesn't let the registrations be tree-shaken away.
+  const pkg = JSON.parse(readFileSync(resolve(SRC, "..", "package.json"), "utf8")) as {
+    sideEffects: string[];
+  };
+
+  for (const entry of [
+    "./src/register.ts",
+    "./dist/register.js",
+    "./src/richtext.ts",
+    "./dist/richtext.js",
+  ]) {
+    test(`${entry} is listed in sideEffects`, () => {
+      expect(pkg.sideEffects).toContain(entry);
+    });
+  }
+});
