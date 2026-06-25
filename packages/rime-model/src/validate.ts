@@ -28,6 +28,7 @@ export interface ValidateOptions {
 }
 
 const VALID_MARKS = new Set<Mark>(["bold", "italic", "underline"]);
+const TOKEN_KEY = /^[A-Za-z0-9_.-]+$/;
 const VALID_ALIGN = new Set(["left", "center", "right"]);
 const COLUMN_SUM_TOLERANCE = 1; // ±1% for rounding
 
@@ -344,8 +345,16 @@ function validateRuns(runs: unknown, path: string, errors: ValidationError[]): v
   runs.forEach((run, j) => {
     const runPath = `${path}[${j}]`;
     if (isObject(run) && run["type"] === "token") {
-      if (typeof run["token"] !== "string" || run["token"].trim() === "") {
+      const token = run["token"];
+      if (typeof token !== "string" || token.trim() === "") {
         errors.push({ path: `${runPath}.token`, message: "token must be a non-empty string" });
+      } else if (!TOKEN_KEY.test(token)) {
+        // The key is emitted literally inside {{ }} on export; an unsafe key (braces,
+        // spaces) could smuggle extra merge tags, so constrain it to identifier chars.
+        errors.push({
+          path: `${runPath}.token`,
+          message: "token key must match [A-Za-z0-9_.-]",
+        });
       }
       if (run["label"] !== undefined && typeof run["label"] !== "string") {
         errors.push({ path: `${runPath}.label`, message: "label must be a string" });

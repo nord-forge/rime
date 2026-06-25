@@ -12,6 +12,24 @@ export function escapeAttr(value: string): string {
   return escapeHtml(value).replaceAll('"', "&quot;");
 }
 
+// Allow only http(s) and mailto; reject javascript:/data: and anything unparseable.
+// Kept in parity with the standalone copy in rime-core's blocks/core/mjml-attrs.ts
+// (the parity test asserts both export paths agree).
+export function normalizeHref(raw: string): string | null {
+  const value = raw.trim();
+  if (value === "") return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`;
+  let url: URL;
+  try {
+    url = new URL(candidate);
+  } catch {
+    return null;
+  }
+  const scheme = url.protocol.toLowerCase();
+  if (scheme !== "http:" && scheme !== "https:" && scheme !== "mailto:") return null;
+  return url.href;
+}
+
 const MARK_TAGS: Record<Mark, string> = {
   bold: "strong",
   italic: "em",
@@ -36,7 +54,8 @@ function renderInline(run: Inline): string {
   }
 
   if (run.link !== undefined) {
-    html = `<a href="${escapeAttr(run.link)}">${html}</a>`;
+    const href = normalizeHref(run.link);
+    if (href !== null) html = `<a href="${escapeAttr(href)}">${html}</a>`;
   }
 
   return html;

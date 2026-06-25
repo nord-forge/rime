@@ -99,6 +99,25 @@ describe("RichTextJSON schema — blocks", () => {
     expect(errors.some((m) => m.includes("token must be a non-empty string"))).toBe(true);
   });
 
+  test("rejects a token key with unsafe characters (brace/space injection)", () => {
+    for (const bad of ["a}} {{evil", "has space", "semi;colon", "{{nested}}"]) {
+      const errors = errorsFor({
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "token", token: bad }] }],
+      });
+      expect(errors.some((m) => m.includes("[A-Za-z0-9_.-]"))).toBe(true);
+    }
+  });
+
+  test("accepts safe token keys (letters/digits/_.-)", () => {
+    expect(
+      errorsFor({
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "token", token: "order.total_2-x" }] }],
+      }),
+    ).toEqual([]);
+  });
+
   test("rejects a token with a non-string label", () => {
     const errors = errorsFor({
       type: "doc",

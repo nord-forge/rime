@@ -20,9 +20,16 @@ export interface TokenSource {
   tokens: { key: string; label: string }[];
 }
 
+// A token key is emitted literally inside {{ }} on export, so constrain it to safe
+// identifier chars (mirrors validateRuns in rime-model).
+const TOKEN_KEY = /^[A-Za-z0-9_.-]+$/;
+
 function assertSafeKey(key: string): void {
   if (typeof key !== "string" || key.trim() === "") {
     throw new Error("token key must be a non-empty string");
+  }
+  if (!TOKEN_KEY.test(key)) {
+    throw new Error(`token key "${key}" must match [A-Za-z0-9_.-]`);
   }
 }
 

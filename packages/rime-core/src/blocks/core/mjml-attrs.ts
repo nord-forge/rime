@@ -57,7 +57,11 @@ function renderInline(run: Inline): string {
   for (const mark of ["bold", "italic", "underline"] as const) {
     if (run.marks?.includes(mark)) html = `<${MARK_TAGS[mark]}>${html}</${MARK_TAGS[mark]}>`;
   }
-  if (run.link !== undefined) html = `<a href="${escapeAttr(run.link)}">${html}</a>`;
+  if (run.link !== undefined) {
+    // Drop javascript:/data:/unparseable links; render the text without an anchor.
+    const href = normalizeHref(run.link);
+    if (href !== null) html = `<a href="${escapeAttr(href)}">${html}</a>`;
+  }
   return html;
 }
 

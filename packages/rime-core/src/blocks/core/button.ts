@@ -1,7 +1,7 @@
 import type { ButtonBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
 import { renderButton } from "../../canvas/render-node/render-node";
-import { attrsToString, escapeAttr, styleToMjmlAttrs } from "./mjml-attrs";
+import { attrsToString, escapeAttr, normalizeHref, styleToMjmlAttrs } from "./mjml-attrs";
 
 export const buttonBlock: BlockDefinition<ButtonBlock> = {
   type: "button",
@@ -23,7 +23,9 @@ export const buttonBlock: BlockDefinition<ButtonBlock> = {
   renderCanvas: (node, ctx) => renderButton(node, ctx.doc),
   renderExport: (node) => {
     const attrs = styleToMjmlAttrs(node.style);
-    attrs["href"] = node.href;
+    // Drop javascript:/data:/unparseable hrefs so they never reach the sent email.
+    const href = normalizeHref(node.href);
+    if (href !== null) attrs["href"] = href;
     return { mjml: `<mj-button${attrsToString(attrs)}>${escapeAttr(node.label)}</mj-button>` };
   },
 };

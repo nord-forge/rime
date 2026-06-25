@@ -40,7 +40,8 @@ describe("richTextToInlineHtml", () => {
     const html = richTextToInlineHtml(rt);
     expect(html).toBe(
       "<p>plain <em><strong>bi</strong></em>" +
-        '<a href="https://x.test"><u>link</u></a></p><p></p>',
+        // normalizeHref runs the link through URL(), which appends the root path.
+        '<a href="https://x.test/"><u>link</u></a></p><p></p>',
     );
   });
 
@@ -56,7 +57,8 @@ describe("richTextToInlineHtml", () => {
     };
     const html = richTextToInlineHtml(rt);
     expect(html).toContain("a&lt;b&gt;&amp;");
-    expect(html).toContain('href="https://x.test?a=1&amp;b=&quot;2&quot;"');
+    // normalizeHref percent-encodes the quote and normalizes the path before escaping.
+    expect(html).toContain('href="https://x.test/?a=1&amp;b=%222%22"');
     expect(html).not.toContain("<b>");
   });
 

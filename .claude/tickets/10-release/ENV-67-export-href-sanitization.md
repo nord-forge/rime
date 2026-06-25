@@ -1,7 +1,7 @@
 ---
 id: ENV-67
 title: Sanitize hrefs/tokens on the MJML export boundary + harden the parity test
-status: ready
+status: done
 priority: P0
 milestone: 10 — Release readiness
 depends_on: [ENV-39]

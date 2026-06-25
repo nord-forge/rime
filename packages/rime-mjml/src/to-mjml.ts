@@ -17,7 +17,7 @@ import type {
 } from "@nord-forge/rime-model";
 import type { BlockRenderer, RenderableNode, RenderContext, RenderOptions } from "./renderer";
 import { RenderError } from "./renderer";
-import { escapeAttr } from "./rich-text-to-html";
+import { escapeAttr, normalizeHref } from "./rich-text-to-html";
 import { richTextToInlineHtml } from "./rich-text-to-html";
 
 /** Map a BlockStyle to MJML attribute key/value pairs (deterministic order). */
@@ -54,7 +54,10 @@ const imageRenderer: BlockRenderer<ImageBlock> = {
     const attrs = styleToMjmlAttrs(node.style);
     attrs["src"] = node.src;
     attrs["alt"] = node.alt;
-    if (node.href !== undefined) attrs["href"] = node.href;
+    if (node.href !== undefined) {
+      const href = normalizeHref(node.href);
+      if (href !== null) attrs["href"] = href;
+    }
     return `<mj-image${attrsToString(attrs)} />`;
   },
 };
@@ -63,7 +66,8 @@ const buttonRenderer: BlockRenderer<ButtonBlock> = {
   type: "button",
   renderExport(node) {
     const attrs = styleToMjmlAttrs(node.style);
-    attrs["href"] = node.href;
+    const href = normalizeHref(node.href);
+    if (href !== null) attrs["href"] = href;
     return `<mj-button${attrsToString(attrs)}>${escapeAttr(node.label)}</mj-button>`;
   },
 };
