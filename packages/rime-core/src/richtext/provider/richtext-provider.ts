@@ -8,11 +8,15 @@
 // selection moves. It mounts its own UI into the host's shadow root.
 
 import type { NodeId, RichTextJSON, RimeDoc } from "@nord-forge/rime-model";
+import type { TokenItem } from "../token-picker/token-filter";
 
 /** Services the host editor exposes to a provider (no Lexical knowledge here). */
 export interface RichTextHost {
   /** Current document (source of truth a focused block is seeded from). */
   getDoc(): RimeDoc | null;
+  /** The merge tags available to the token picker (flattened from the host's
+   *  token sources / registry). Empty when none are configured. */
+  tokens(): TokenItem[];
   /** The TextBlock element inside the canvas iframe for a node id, or null. */
   elementForNode(id: NodeId): HTMLElement | null;
   /** The canvas iframe document (selection lives here). */

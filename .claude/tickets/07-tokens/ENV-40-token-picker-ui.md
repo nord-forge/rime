@@ -1,7 +1,7 @@
 ---
 id: ENV-40
 title: Token picker UI
-status: ready
+status: done
 priority: P1
 milestone: 7 — Personalization tokens
 depends_on: [ENV-39]

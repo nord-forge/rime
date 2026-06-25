@@ -9,6 +9,7 @@ import { RichTextLifecycle } from "../richtext-lifecycle/richtext-lifecycle";
 import { canonicalize, richTextEqual } from "../serialize/serialize";
 import { RichTextToolbar } from "../ui/rich-text-toolbar";
 import { type LinkApplyDetail, LinkPopover } from "../ui/link-popover";
+import { EbTokenPicker, type TokenSelectDetail } from "../token-picker/token-picker";
 import { makeCommands } from "../ui/rich-text-commands";
 import { findNodeById } from "../../a11y/announce-messages/announce-messages";
 import type { LexicalMount } from "../lexical-editor/lexical-editor";
@@ -18,6 +19,7 @@ export class LexicalRichTextProvider implements RichTextProvider {
   readonly #lifecycle: RichTextLifecycle;
   readonly #toolbar: RichTextToolbar;
   readonly #popover: LinkPopover;
+  readonly #picker: EbTokenPicker;
   readonly #onSelectionChange: () => void;
 
   constructor(host: RichTextHost) {
@@ -25,12 +27,26 @@ export class LexicalRichTextProvider implements RichTextProvider {
     const root = host.overlayHost();
     this.#toolbar = new RichTextToolbar();
     this.#popover = new LinkPopover();
-    root.append(this.#toolbar, this.#popover);
+    this.#picker = new EbTokenPicker();
+    root.append(this.#toolbar, this.#popover, this.#picker);
 
     this.#toolbar.addEventListener("eb-request-link", () => {
       this.#positionPopover();
       this.#popover.show(this.#currentLinkHref());
     });
+    this.#toolbar.addEventListener("eb-request-token", () => {
+      this.#picker.tokens = this.#host.tokens();
+      this.#positionPicker();
+      this.#picker.show();
+    });
+    this.#picker.addEventListener("eb-token-select", (e: Event) => {
+      const detail = (e as CustomEvent<TokenSelectDetail>).detail;
+      this.insertToken(detail.key, detail.label);
+      this.#lifecycle.activeMount?.editor.focus();
+    });
+    this.#picker.addEventListener("eb-token-cancel", () =>
+      this.#lifecycle.activeMount?.editor.focus(),
+    );
     this.#popover.addEventListener("eb-link-apply", (e: Event) => {
       const detail = (e as CustomEvent<LinkApplyDetail>).detail;
       const mount = this.#lifecycle.activeMount;
@@ -55,7 +71,10 @@ export class LexicalRichTextProvider implements RichTextProvider {
       repaint: (nodeId) => host.repaint(nodeId),
       onActiveChange: (mount: LexicalMount | null) => {
         this.#toolbar.bind(mount?.editor ?? null);
-        if (!mount) this.#popover.hide();
+        if (!mount) {
+          this.#popover.hide();
+          this.#picker.hide();
+        }
         this.reposition();
       },
     });
@@ -110,11 +129,17 @@ export class LexicalRichTextProvider implements RichTextProvider {
     this.#lifecycle.destroy();
     this.#toolbar.remove();
     this.#popover.remove();
+    this.#picker.remove();
   }
 
   #positionPopover(): void {
     this.#popover.style.left = this.#toolbar.style.left;
     this.#popover.style.top = `${parseFloat(this.#toolbar.style.top || "0") + 36}px`;
+  }
+
+  #positionPicker(): void {
+    this.#picker.style.left = this.#toolbar.style.left;
+    this.#picker.style.top = `${parseFloat(this.#toolbar.style.top || "0") + 36}px`;
   }
 
   #currentLinkHref(): string | null {

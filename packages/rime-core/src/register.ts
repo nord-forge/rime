@@ -75,3 +75,8 @@ export { EbPalette, type PaletteAddDetail } from "./palette/palette";
 export { MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
 export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
 export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
+export {
+  EbTokenPicker,
+  type TokenItem,
+  type TokenSelectDetail,
+} from "./richtext/token-picker/token-picker";
