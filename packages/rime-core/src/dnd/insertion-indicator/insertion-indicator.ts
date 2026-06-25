@@ -8,7 +8,7 @@ import type {
   DragCoordinateController,
   Point,
 } from "../../canvas/coordinate-controller/coordinate-controller";
-import type { ColumnGeometry } from "../resolve-drop-target/resolve-drop-target";
+import type { ColumnGeometry, DocumentGeometry } from "../resolve-drop-target/resolve-drop-target";
 import type { DropTarget } from "../dnd-types/dnd-types";
 
 /** Compute the indicator line (in iframe-client coords) for a resolved target. */
@@ -35,6 +35,26 @@ export function indicatorLineFor(
   return { x: left, y: child.rect.top, width };
 }
 
+/** Compute the indicator line for a section-level drop (between sections), full
+ *  document width. Insert-before a section → line at its top; append → below the
+ *  last; empty document → the document body's top. */
+export function sectionIndicatorLineFor(
+  target: DropTarget,
+  doc: DocumentGeometry,
+): { x: number; y: number; width: number } | null {
+  if (target.parentId !== doc.documentId) return null;
+  const left = doc.rect.left;
+  const width = doc.rect.right - doc.rect.left;
+  if (doc.sections.length === 0) {
+    return { x: left, y: doc.rect.top, width };
+  }
+  if (target.index >= doc.sections.length) {
+    const last = doc.sections[doc.sections.length - 1]!;
+    return { x: left, y: last.rect.bottom, width };
+  }
+  return { x: left, y: doc.sections[target.index]!.rect.top, width };
+}
+
 export class InsertionIndicator {
   readonly #el: HTMLElement;
   readonly #coords: DragCoordinateController;
@@ -55,9 +75,17 @@ export class InsertionIndicator {
     parent.append(this.#el);
   }
 
-  /** Show the indicator for a resolved target using cached column geometry. */
+  /** Show the indicator for a resolved leaf target using cached column geometry. */
   show(target: DropTarget, columns: ColumnGeometry[]): void {
-    const line = indicatorLineFor(target, columns);
+    this.#draw(indicatorLineFor(target, columns));
+  }
+
+  /** Show the indicator for a section-level target (between sections). */
+  showSection(target: DropTarget, doc: DocumentGeometry): void {
+    this.#draw(sectionIndicatorLineFor(target, doc));
+  }
+
+  #draw(line: { x: number; y: number; width: number } | null): void {
     if (!line) {
       this.hide();
       return;

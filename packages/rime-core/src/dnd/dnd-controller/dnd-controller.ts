@@ -20,7 +20,12 @@ import type {
   Point,
 } from "../../canvas/coordinate-controller/coordinate-controller";
 import type { DragData, DropTarget } from "../dnd-types/dnd-types";
-import { type ColumnGeometry, resolveDropTarget } from "../resolve-drop-target/resolve-drop-target";
+import {
+  type ColumnGeometry,
+  type DocumentGeometry,
+  resolveDropTarget,
+  resolveSectionDropTarget,
+} from "../resolve-drop-target/resolve-drop-target";
 import { DropDetector, type Scheduler } from "../drop-detector/drop-detector";
 import { InsertionIndicator } from "../insertion-indicator/insertion-indicator";
 import { DragPreview } from "../drag-preview/drag-preview";
@@ -41,6 +46,11 @@ export interface DndDeps {
   overlayHost: ParentNode & { ownerDocument: Document };
   getDoc: () => RimeDoc;
   createBlock: (blockType: string) => BaseNode;
+  /** True for a drag whose block lives at the document level (a band like a hero,
+   *  or a column-layout preset's Section subtree). Such drags resolve BETWEEN
+   *  sections, not into a column. `blockType` is a palette block type, a preset id,
+   *  or an existing node's type (for canvas moves). Defaults to "leaf" if omitted. */
+  isSectionLevel?: (blockType: string) => boolean;
   /** Apply an op result: the editor merges patch into doc + undo history + re-renders. */
   dispatch: (op: OpResult) => void;
   /** Announce a completed drop (insert for palette, move for canvas) against the result doc. */
@@ -60,6 +70,10 @@ interface ActiveDrag {
   started: boolean; // crossed the threshold
   /** Column geometry snapshotted at drag start (re-snapshotted on scroll/resize). */
   geometry: ColumnGeometry[];
+  /** Document-level geometry (section rects) for section-level drops. */
+  docGeometry: DocumentGeometry;
+  /** This drag inserts at the document level (a band/preset), not into a column. */
+  sectionLevel: boolean;
   /** Last target resolved this drag — used by drop (no re-hit-test on drop). */
   lastTarget: DropTarget | null;
 }
@@ -161,19 +175,21 @@ export class DndController {
     // machine is slow enough to interleave/coalesce events, e.g. CI) would orphan
     // the prior drag's listeners + preview node in the shared cleanup registry.
     if (this.#active) this.#endDrag();
-    // Snapshot column geometry ONCE per drag (no live getBoundingClientRect per
-    // move — layout-thrash killer). Re-snapshotted on scroll/resize via refresh().
+    // Snapshot geometry ONCE per drag (no live getBoundingClientRect per move —
+    // layout-thrash killer). Re-snapshotted on scroll/resize via refresh().
     this.#active = {
       data,
       startX: hostX,
       startY: hostY,
       started: false,
       geometry: this.#columnGeometry(),
+      docGeometry: this.#documentGeometry(),
+      sectionLevel: this.#isSectionLevel(data),
       lastTarget: null,
     };
     // rAF-gated detection: a burst of moves → one hit-test per frame.
     const detector = new DropDetector(
-      (p) => resolveDropTarget(this.#deps.coords.hostToCanvasClient(p), this.#active!.geometry),
+      (p) => (this.#active ? this.#resolveAt(this.#active, p) : null),
       (target) => this.#onDetect(target),
       this.#deps.scheduler,
     );
@@ -200,7 +216,30 @@ export class DndController {
 
   /** Re-snapshot geometry (call when the canvas scrolls/resizes mid-drag). */
   refreshGeometry(): void {
-    if (this.#active) this.#active.geometry = this.#columnGeometry();
+    if (!this.#active) return;
+    this.#active.geometry = this.#columnGeometry();
+    this.#active.docGeometry = this.#documentGeometry();
+  }
+
+  /** Resolve a host-space point to a drop target via the active drag's resolver. */
+  // Resolve against a SPECIFIC active drag (the caller passes it so resolution
+  // survives #endDrag() niling #active — e.g. #onUp ends the drag, then resolves).
+  #resolveAt(active: ActiveDrag, p: Point): DropTarget | null {
+    const canvasPoint = this.#deps.coords.hostToCanvasClient(p);
+    return active.sectionLevel
+      ? resolveSectionDropTarget(canvasPoint, active.docGeometry)
+      : resolveDropTarget(canvasPoint, active.geometry);
+  }
+
+  #isSectionLevel(data: DragData): boolean {
+    const type = data.source === "palette" ? data.blockType : this.#nodeType(data.nodeId);
+    return type !== null && (this.#deps.isSectionLevel?.(type) ?? false);
+  }
+
+  /** The type of an existing node by id (for canvas-move drags), or null. */
+  #nodeType(id: NodeId): string | null {
+    const el = this.#deps.renderer.elementForNode(id);
+    return el?.dataset["nodeType"] ?? null;
   }
 
   #onMove(hostX: number, hostY: number): void {
@@ -227,8 +266,15 @@ export class DndController {
   #onDetect(target: DropTarget | null): void {
     if (!this.#active) return;
     this.#active.lastTarget = target;
-    if (target) this.#indicator.show(target, this.#active.geometry);
-    else this.#indicator.hide();
+    if (!target) {
+      this.#indicator.hide();
+      return;
+    }
+    if (this.#active.sectionLevel) {
+      this.#indicator.showSection(target, this.#active.docGeometry);
+    } else {
+      this.#indicator.show(target, this.#active.geometry);
+    }
   }
 
   #onUp(hostX: number, hostY: number): void {
@@ -242,7 +288,7 @@ export class DndController {
     // Resolve at the drop point (lastTarget may be stale if no frame ran yet).
     const point: Point = { x: hostX, y: hostY };
     if (!this.#deps.coords.isOverCanvas(point)) return;
-    const target = resolveDropTarget(this.#deps.coords.hostToCanvasClient(point), active.geometry);
+    const target = this.#resolveAt(active, point);
     if (target) this.#applyDrop(active.data, target);
   }
 
@@ -302,6 +348,26 @@ export class DndController {
       }
     }
     return columns;
+  }
+
+  /** Read the document body + its children's (sections/bands) rects for
+   *  section-level drops. Falls back to a zero rect if the document element isn't
+   *  resolvable (then resolveSectionDropTarget just won't match). */
+  #documentGeometry(): DocumentGeometry {
+    const doc = this.#deps.getDoc();
+    const docEl = this.#deps.renderer.elementForNode(doc.id);
+    const zero: DocumentGeometry["rect"] = { top: 0, bottom: 0, left: 0, right: 0 };
+    const sections = doc.children
+      .map((child) => {
+        const el = this.#deps.renderer.elementForNode(child.id);
+        return el ? { nodeId: child.id, rect: el.getBoundingClientRect() } : null;
+      })
+      .filter((s): s is { nodeId: string; rect: DOMRect } => s !== null);
+    return {
+      documentId: doc.id,
+      rect: docEl ? docEl.getBoundingClientRect() : zero,
+      sections,
+    };
   }
 }
 

@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { type ColumnGeometry, resolveDropTarget } from "./resolve-drop-target";
+import {
+  type ColumnGeometry,
+  type DocumentGeometry,
+  resolveDropTarget,
+  resolveSectionDropTarget,
+} from "./resolve-drop-target";
 
 const rect = (top: number, bottom: number, left = 0, right = 100) => ({ top, bottom, left, right });
 
@@ -53,6 +58,58 @@ describe("resolveDropTarget", () => {
     const right: ColumnGeometry = { columnId: "R", rect: rect(0, 300, 100, 200), children: [] };
     expect(resolveDropTarget({ x: 150, y: 50 }, [left, right])).toEqual({
       parentId: "R",
+      index: 0,
+    });
+  });
+});
+
+/** A document body y[0..300] with two 150px-tall sections stacked. */
+function docWithTwoSections(): DocumentGeometry {
+  return {
+    documentId: "doc_1",
+    rect: rect(0, 300, 0, 600),
+    sections: [
+      { nodeId: "s1", rect: rect(0, 150, 0, 600) }, // midpoint 75
+      { nodeId: "s2", rect: rect(150, 300, 0, 600) }, // midpoint 225
+    ],
+  };
+}
+
+describe("resolveSectionDropTarget", () => {
+  test("returns null when the point is outside the document body", () => {
+    expect(resolveSectionDropTarget({ x: 50, y: 900 }, docWithTwoSections())).toBeNull();
+  });
+
+  test("above the first section midpoint → index 0", () => {
+    expect(resolveSectionDropTarget({ x: 300, y: 20 }, docWithTwoSections())).toEqual({
+      parentId: "doc_1",
+      index: 0,
+    });
+  });
+
+  test("between the two section midpoints → index 1", () => {
+    // y=160 is below s1's midpoint (75), above s2's (225)
+    expect(resolveSectionDropTarget({ x: 300, y: 160 }, docWithTwoSections())).toEqual({
+      parentId: "doc_1",
+      index: 1,
+    });
+  });
+
+  test("below the last section midpoint → append at the end", () => {
+    expect(resolveSectionDropTarget({ x: 300, y: 290 }, docWithTwoSections())).toEqual({
+      parentId: "doc_1",
+      index: 2,
+    });
+  });
+
+  test("empty document → index 0 anywhere in the body", () => {
+    const empty: DocumentGeometry = {
+      documentId: "doc_e",
+      rect: rect(0, 300, 0, 600),
+      sections: [],
+    };
+    expect(resolveSectionDropTarget({ x: 100, y: 100 }, empty)).toEqual({
+      parentId: "doc_e",
       index: 0,
     });
   });

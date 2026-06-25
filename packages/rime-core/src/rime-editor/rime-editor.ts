@@ -14,7 +14,6 @@ import {
   type RimeDoc,
   type IdFactory,
   insertNode,
-  type LeafBlock,
   moveNode,
   type OpResult,
   removeNode,
@@ -23,7 +22,8 @@ import {
 } from "@nord-forge/rime-model";
 import { CanvasController, type CanvasReadyEvent } from "../canvas/iframe-canvas/iframe-canvas";
 import { CanvasRenderer } from "../canvas/canvas-renderer/canvas-renderer";
-import { blockRegistry } from "../blocks/registry";
+import { blockRegistry, placementOf } from "../blocks/registry";
+import { presetRegistry } from "../blocks/column-presets";
 import {
   DragCoordinateController,
   type Point,
@@ -159,6 +159,7 @@ export class RimeEditor extends LitElement {
           return this.#doc;
         },
         createBlock: (blockType) => this.#createBlock(blockType),
+        isSectionLevel: (blockType) => this.#isSectionLevel(blockType),
         dispatch: (op) => this.#dispatch(op),
         announceDrop: (kind, resultDoc, nodeId) => {
           const msg =
@@ -315,8 +316,9 @@ export class RimeEditor extends LitElement {
     this.#coords = null;
   }
 
-  /** Register a host palette element as a drag source creating `blockType`. */
-  registerPaletteItem(element: HTMLElement, blockType: LeafBlock["type"]): () => void {
+  /** Register a host palette element as a drag source creating `blockType` (a
+   *  registered block type or a column-layout preset id). */
+  registerPaletteItem(element: HTMLElement, blockType: string): () => void {
     if (!this.#dnd) throw new Error("drag-and-drop not initialized yet");
     return this.#dnd.registerPaletteItem(element, blockType);
   }
@@ -472,11 +474,23 @@ export class RimeEditor extends LitElement {
       case "spacer":
         return createSpacerBlock(this.#newId);
       default: {
+        // A column-layout preset builds a whole Section subtree with fresh ids.
+        const preset = presetRegistry.get(blockType);
+        if (preset) return preset.create(this.#newId);
         const def = blockRegistry.get(blockType);
         if (!def) throw new Error(`unknown block type "${blockType}"`);
         return { ...def.palette.defaults, id: this.#newId(blockType), type: blockType };
       }
     }
+  }
+
+  // Whether a palette block type / preset id / node type lives at the document
+  // level (a band or a preset's Section subtree), so DnD resolves it between
+  // sections rather than into a column.
+  #isSectionLevel(blockType: string): boolean {
+    if (blockType === "section" || presetRegistry.get(blockType)) return true;
+    const def = blockRegistry.get(blockType);
+    return def ? placementOf(def) === "section" : false;
   }
 
   // Validate options the operations need to accept registered blocks: every

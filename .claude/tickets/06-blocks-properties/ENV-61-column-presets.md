@@ -1,7 +1,7 @@
 ---
 id: ENV-61
 title: Column layout presets (2-col, 3-col, sidebar, image+text)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]

@@ -63,15 +63,27 @@ export {
   CORE_BLOCKS,
   dividerBlock,
   headingBlock,
+  heroBlock,
   imageBlock,
   quoteBlock,
   registerCoreBlocks,
   sectionBlock,
+  socialBlock,
   spacerBlock,
   textBlock,
 } from "./blocks/core/index";
 export type { HeadingBlock, HeadingLevel } from "./blocks/core/heading";
 export type { QuoteBlock } from "./blocks/core/quote";
+export type { HeroBlock, HeroButton } from "./blocks/core/hero";
+export type { SocialBlock, SocialLink, SocialNetwork } from "./blocks/core/social";
+export {
+  type LayoutPreset,
+  LAYOUT_PRESETS,
+  PresetRegistry,
+  presetRegistry,
+  registerCorePresets,
+  registerLayoutPreset,
+} from "./blocks/column-presets";
 export { type LexicalMount, mountLexical } from "./richtext/lexical-editor/lexical-editor";
 export {
   $applyRichTextJSON,
