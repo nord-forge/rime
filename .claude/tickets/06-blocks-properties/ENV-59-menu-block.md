@@ -1,7 +1,7 @@
 ---
 id: ENV-59
 title: Menu / Nav block (horizontal links)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]
