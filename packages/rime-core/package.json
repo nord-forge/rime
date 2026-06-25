@@ -9,7 +9,9 @@
   "type": "module",
   "sideEffects": [
     "./dist/register.js",
-    "./src/register.ts"
+    "./src/register.ts",
+    "./dist/richtext.js",
+    "./src/richtext.ts"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",

@@ -1,7 +1,7 @@
 ---
 id: ENV-71
 title: Declare /richtext side effects + optional build-granularity polish
-status: ready
+status: done
 priority: P2
 milestone: 10 — Release readiness
 depends_on: [ENV-66]
@@ -28,14 +28,15 @@ couple of informational build-granularity notes.
    editor path is safe — the provider references the classes — so no test catches it.)
    Fix: add `./dist/richtext.js` + `./src/richtext.ts` to the `sideEffects` array.
 
-## Optional (do only if touching the build)
-- `rime-mjml` exposes no deep-import paths (single barrel mixes the `mjml`-pulling
-  `MjmlRenderer` with light type contracts + escape helpers). Consider deep entries
-  (e.g. `./contract`, `./html`) so a consumer wanting only the `Renderer` type or
-  `escapeHtml` doesn't risk pulling `mjml`. Informational — rime-mjml is off the
-  in-browser hot path.
-- The pure-SDK closure currently collapses into one `live-region-*` chunk (misleading
-  name; it's the whole SDK). Consider a `manualChunks` hint for clarity. Cosmetic.
+## Optional (do only if touching the build) — DEFERRED
+Both items below were evaluated and **deferred** (cosmetic/informational, no
+correctness or eager-load impact; rime-mjml is off the in-browser hot path):
+- `rime-mjml` deep-import paths (`./contract`, `./html`): rime-mjml runs at export
+  time on the server, is excluded from the core budget, and `mjml` is its whole point
+  — splitting it buys nothing measurable. Left as a single barrel.
+- `manualChunks` for the pure-SDK `live-region-*` chunk name: purely a naming nicety;
+  the eager-budget gate already reports the closure accurately. Not worth the build
+  complexity.
 
 ## Goal
 `/richtext`'s element registrations survive tree-shaking for all import shapes; build

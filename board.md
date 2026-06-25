@@ -3,17 +3,15 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 55 / 67 tickets done.** Milestones 0–7 complete (M7 personalization
+**Progress: 56 / 67 tickets done.** Milestones 0–7 complete (M7 personalization
 tokens: ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker, ENV-41
 `registerToken`/`TokenRegistry` + config merge). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
 multi-agent audit (barrel/eager-load · Lit frontend · performance · model/mjml; 17
-verified findings) filed ENV-67–71 — headline is a **P0 export-boundary href/token
-sanitization gap** (built-in button/image/link skip `normalizeHref`). Milestone 6 (blocks &
-properties) closed: the full block catalog (ENV-57–64 + ENV-65 field types), the
-schema-driven properties panel (ENV-35), the registry-driven palette (ENV-36), and
-the example custom block / SDK proof (ENV-37). The pure SDK barrel was purified along
-the way (editor + Lit UI moved to `/register`). Core 81.88 kB gzip vs ~100 kB.
+verified findings) filed ENV-67–71 — **all now landed**: export-boundary href/token
+sanitization (P0), rAF-coalesced viewport drag path, Lit chrome lifecycle/a11y
+hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
+~87 kB gzip vs ~100 kB budget (eager closures: pure SDK 17 kB, editor 24 kB).
 
 > ENV-32 caveat: the composition guard + QA checklist (`packages/rime-core/docs/
 > RICHTEXT-QA-CHECKLIST.md`) are landed; the **real-device iOS Safari + CJK IME
@@ -31,7 +29,7 @@ the way (editor + Lit UI moved to `/register`). Core 81.88 kB gzip vs ~100 kB.
 | 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
-| 10 — Release readiness | 🔶 5 / 11 |
+| 10 — Release readiness | 🔶 6 / 11 |
 
 Conventions:
 - ID format `ENV-NN`. Each ticket links back to the PRD section it satisfies.
@@ -170,7 +168,7 @@ Conventions:
 | ENV-68 | ✅ | **rAF-coalesce mid-drag viewport path** — scroll/resize geometry re-walk gated + drag-gated | P1 | ENV-21 | §10 |
 | ENV-69 | ✅ | **Lit chrome lifecycle & a11y hardening** — palette re-register, timer cleanup, popover dialog/focus, no reactive write in render | P1 | ENV-40 | §6.5, §10 |
 | ENV-70 | ✅ | **Model patch round-trip + history coalesce invariant** — additive-set undo deletes key; coalesce guard test | P2 | ENV-07, ENV-09 | §6.1, §6.10 |
-| ENV-71 | ⬜ | **Declare `/richtext` side effects + build-granularity polish** | P2 | ENV-66 | §7, §8 |
+| ENV-71 | ✅ | **Declare `/richtext` side effects + build-granularity polish** | P2 | ENV-66 | §7, §8 |
 
 ---
 
