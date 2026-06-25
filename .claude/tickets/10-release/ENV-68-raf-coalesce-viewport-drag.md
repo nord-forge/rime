@@ -1,7 +1,7 @@
 ---
 id: ENV-68
 title: rAF-coalesce the mid-drag viewport (scroll/resize) path
-status: ready
+status: done
 priority: P1
 milestone: 10 — Release readiness
 depends_on: [ENV-21]

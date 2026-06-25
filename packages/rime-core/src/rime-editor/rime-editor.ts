@@ -138,6 +138,8 @@ export class RimeEditor extends LitElement {
   #paletteCleanups: (() => void)[] = [];
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
+  // Pending rAF handle that coalesces scroll/resize viewport refreshes (0 = none).
+  #viewportFrame = 0;
   // Source ids already merged into the token registry (idempotent re-render guard).
   #mergedSources = new Set<string>();
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -242,10 +244,17 @@ export class RimeEditor extends LitElement {
       doc.addEventListener("compositionend", this.#onCompositionEnd);
 
       // The cached iframe rect + any in-drag geometry must refresh on scroll/resize.
+      // Bursts of scroll events coalesce into one refresh per animation frame (the
+      // move path is already rAF-gated; this is the one viewport path that wasn't).
       this.#onViewportChange = () => {
-        this.#coords?.invalidate();
-        this.#dnd?.refreshGeometry();
-        this.#richtext?.reposition();
+        if (this.#viewportFrame !== 0) return;
+        this.#viewportFrame = requestAnimationFrame(() => {
+          this.#viewportFrame = 0;
+          this.#coords?.invalidate();
+          // The whole-tree geometry re-walk only matters mid-drag.
+          if (this.#dnd?.isDragging) this.#dnd.refreshGeometry();
+          this.#richtext?.reposition();
+        });
       };
       window.addEventListener("scroll", this.#onViewportChange, true);
       window.addEventListener("resize", this.#onViewportChange);
@@ -297,6 +306,10 @@ export class RimeEditor extends LitElement {
       window.removeEventListener("scroll", this.#onViewportChange, true);
       window.removeEventListener("resize", this.#onViewportChange);
       this.#onViewportChange = null;
+    }
+    if (this.#viewportFrame !== 0) {
+      cancelAnimationFrame(this.#viewportFrame);
+      this.#viewportFrame = 0;
     }
     const canvasDoc = this.#canvas?.document;
     if (this.#onCanvasClick) canvasDoc?.removeEventListener("click", this.#onCanvasClick);
