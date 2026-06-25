@@ -3,10 +3,10 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 44 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
-properties) in progress — the full block catalog now ships (ENV-57–64 + ENV-65
-schema field-types), so the registration interface backs a real library. Remaining
-in M6: the panel/palette UI (ENV-35/36/37). Core 78.23 kB gzip vs ~100 kB budget.
+**Progress: 45 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
+properties) in progress — the full block catalog ships (ENV-57–64 + ENV-65 field
+types) and the schema-driven properties panel (ENV-35) lands. Remaining in M6: the
+palette UI (ENV-36) + example custom block (ENV-37). Core 80.75 kB gzip vs ~100 kB.
 
 > ENV-32 caveat: the composition guard + QA checklist (`packages/rime-core/docs/
 > RICHTEXT-QA-CHECKLIST.md`) are landed; the **real-device iOS Safari + CJK IME
@@ -20,7 +20,7 @@ in M6: the panel/palette UI (ENV-35/36/37). Core 78.23 kB gzip vs ~100 kB budget
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
-| 6 — Blocks & properties | 🔶 12 / 15 |
+| 6 — Blocks & properties | 🔶 13 / 15 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
@@ -111,7 +111,7 @@ Conventions:
 |----|----|-------|-----|------------|-----|
 | ENV-33 | ✅ | **Block registration interface** — `registerBlock({schema, renderCanvas, renderExport, palette})`; built-ins use same path | P0 | ENV-16, ENV-11 | §6.8 |
 | ENV-34 | ✅ | **Core blocks** — Section (styled container: full-bleed bg + padding, holds blocks), Column(s), Text, Image, Button, Divider, Spacer | P0 | ENV-33 | §12 |
-| ENV-35 | ⬜ | **Properties panel** — schema-driven forms (padding, colors, alignment, columns, etc.) | P0 | ENV-33 | §6.5 |
+| ENV-35 | ✅ | **Properties panel** — schema-driven forms (padding, colors, alignment, columns, etc.) | P0 | ENV-33 | §6.5 |
 | ENV-36 | ⬜ | **Palette** — categorized, icons, drag source | P0 | ENV-33, ENV-19 | §6.5 |
 | ENV-37 | ⬜ | **Example custom block** — documented end-to-end (the SDK proof) | P1 | ENV-33 | §12 |
 | ENV-65 | ✅ | **Schema field-type extensions** — `list`/repeater + `multiline`/`code` (shared by menu/html/video/table) | P1 | ENV-33 | §6.8 |
