@@ -3,10 +3,13 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 50 / 62 tickets done.** Milestones 0–6 complete; Milestone 7 in
+**Progress: 50 / 67 tickets done.** Milestones 0–6 complete; Milestone 7 in
 progress (ENV-39 merge-tag node + `{{var}}` export, ENV-40 token picker landed;
 ENV-41 `registerToken`/config left). ENV-66 (bundle hardening: pure barrel no longer
-eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. Milestone 6 (blocks &
+eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
+multi-agent audit (barrel/eager-load · Lit frontend · performance · model/mjml; 17
+verified findings) filed ENV-67–71 — headline is a **P0 export-boundary href/token
+sanitization gap** (built-in button/image/link skip `normalizeHref`). Milestone 6 (blocks &
 properties) closed: the full block catalog (ENV-57–64 + ENV-65 field types), the
 schema-driven properties panel (ENV-35), the registry-driven palette (ENV-36), and
 the example custom block / SDK proof (ENV-37). The pure SDK barrel was purified along
@@ -28,7 +31,7 @@ the way (editor + Lit UI moved to `/register`). Core 81.88 kB gzip vs ~100 kB.
 | 7 — Personalization tokens | 🔶 2 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
-| 10 — Release readiness | ⬜ 0 / 5 |
+| 10 — Release readiness | 🔶 1 / 11 |
 
 Conventions:
 - ID format `ENV-NN`. Each ticket links back to the PRD section it satisfies.
@@ -163,6 +166,11 @@ Conventions:
 | ENV-51 | ⬜ | **Docs site / API reference** — `init` config, `registerBlock`, `registerToken`, theming tokens | P1 | ENV-33, ENV-41 | §1 |
 | ENV-52 | ⬜ | **npm publish** `@nord-forge/*` (core, doc-model, renderer-mjml, react, vue) | P1 | ENV-48, ENV-49, ENV-50, ENV-51 | §8 |
 | ENV-66 | ✅ | **Pure-barrel Lexical leak fix** — `/richtext` deep entry; eager-load budgets + guard | P0 | ENV-39, ENV-40 | §6.7, §10 |
+| ENV-67 | ⬜ | **Export href/token sanitization** — `normalizeHref` on button/image/link export + token charset + hostile-input parity test | P0 | ENV-39 | §6.3, §6.9, §11 |
+| ENV-68 | ⬜ | **rAF-coalesce mid-drag viewport path** — scroll/resize geometry re-walk gated + drag-gated | P1 | ENV-21 | §10 |
+| ENV-69 | ⬜ | **Lit chrome lifecycle & a11y hardening** — palette re-register, timer cleanup, popover dialog/focus, no reactive write in render | P1 | ENV-40 | §6.5, §10 |
+| ENV-70 | ⬜ | **Model patch round-trip + history coalesce invariant** — additive-set undo deletes key; coalesce guard test | P2 | ENV-07, ENV-09 | §6.1, §6.10 |
+| ENV-71 | ⬜ | **Declare `/richtext` side effects + build-granularity polish** | P2 | ENV-66 | §7, §8 |
 
 ---
 
