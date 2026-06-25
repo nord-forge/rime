@@ -1,7 +1,7 @@
 ---
 id: ENV-44
 title: "@nord-forge/rime-react wrapper"
-status: ready
+status: done
 priority: P1
 milestone: 9 — Framework wrappers & demo
 depends_on: [ENV-14]
