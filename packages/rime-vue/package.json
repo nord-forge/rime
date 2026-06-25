@@ -31,6 +31,10 @@
   "dependencies": {
     "@nord-forge/rime-core": "workspace:*"
   },
+  "devDependencies": {
+    "@vue/test-utils": "^2.4.6",
+    "vue": "^3.5.13"
+  },
   "peerDependencies": {
     "vue": ">=3"
   }

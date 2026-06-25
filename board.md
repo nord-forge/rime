@@ -3,7 +3,7 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 60 / 68 tickets done.** Milestones 0–8 complete (M7 personalization
+**Progress: 61 / 68 tickets done.** Milestones 0–8 complete (M7 personalization
 tokens: ENV-39/40/41; M8 persistence & images: ENV-42 JSON in/out API +
 ENV-43 `onImageUpload` host uploader). ENV-66 (bundle hardening: pure barrel no longer
 eager-loads Lexical; `/richtext` deep entry + per-entry eager-load budgets) landed. A
@@ -28,7 +28,7 @@ hardening, model patch/coalesce invariants, and `/richtext` sideEffects. Core
 | 6 — Blocks & properties | ✅ 15 / 15 |
 | 7 — Personalization tokens | ✅ 3 / 3 |
 | 8 — Persistence & images | ✅ 2 / 2 |
-| 9 — Framework wrappers & demo | 🔶 1 / 4 |
+| 9 — Framework wrappers & demo | 🔶 2 / 4 |
 | 10 — Release readiness | 🔶 7 / 12 |
 
 Conventions:
@@ -150,7 +150,7 @@ Conventions:
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
 | ENV-44 | ✅ | **React wrapper** — props/events/ref over the web component | P1 | ENV-14 | §7 |
-| ENV-45 | ⬜ | **Vue wrapper** — props/events/v-model over the web component | P1 | ENV-14 | §7 |
+| ENV-45 | ✅ | **Vue wrapper** — props/events/v-model over the web component | P1 | ENV-14 | §7 |
 | ENV-46 | ⬜ | **Demo app** — local store, `onImageUpload` stub, theme showcase, proves end-user UX | P1 | ENV-34, ENV-42 | §4, §12 |
 | ENV-47 | ⬜ | **Astro/vanilla usage example** in README | P2 | ENV-14 | §7 |
 
