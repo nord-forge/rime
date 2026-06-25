@@ -1,7 +1,7 @@
 ---
 id: ENV-43
 title: onImageUpload host callback (image block)
-status: ready
+status: done
 priority: P1
 milestone: 8 — Persistence & images
 depends_on: [ENV-34]

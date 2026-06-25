@@ -188,6 +188,8 @@ export class RimeEditor extends LitElement {
     if (changed.has("config") && this.#palette) {
       void this.#palette.updateComplete.then(() => this.#registerPaletteSources());
     }
+    // Propagate config-derived inputs (e.g. onImageUpload) to the properties panel.
+    if (changed.has("config")) this.#syncProperties();
   }
 
   // Merge declarative config.tokenSources into the shared token registry (the
@@ -425,6 +427,7 @@ export class RimeEditor extends LitElement {
     if (!this.#properties) return;
     this.#properties.doc = this.#doc;
     this.#properties.selectedId = this.#selected;
+    this.#properties.onImageUpload = this.config.onImageUpload;
   }
 
   // Build the host services a richtext provider needs (no Lexical knowledge here).

@@ -5,7 +5,7 @@
 // so undo/redo covers property edits too. Chrome — Shadow DOM, themed by --eb-*.
 
 import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { property } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 import {
   createIdFactory,
   type IdFactory,
@@ -20,6 +20,7 @@ import type { FieldDef } from "../blocks/schema";
 import { findNodeById } from "../a11y/announce-messages/announce-messages";
 import { getByPath, nestedPartial } from "./field-path";
 import { columnsForCount } from "./columns-op";
+import { resolveUpload } from "./image-upload";
 
 export interface DocChangeDetail {
   doc: RimeDoc;
@@ -111,6 +112,32 @@ export class EbPropertiesPanel extends LitElement {
       font-size: 12px;
       opacity: 0.6;
     }
+    .image-upload {
+      margin-block-start: 4px;
+    }
+    .upload-btn {
+      block-size: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--eb-color-border, #e4e4e7);
+      border-radius: var(--eb-radius, 6px);
+      background: var(--eb-color-bg, #fff);
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+    .upload-btn:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--eb-color-accent, #5b5bd6) 12%, transparent);
+    }
+    .upload-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .error {
+      display: block;
+      margin-block-start: 4px;
+      font-size: 12px;
+      color: var(--eb-color-danger, #dc2626);
+    }
     .list-row {
       display: flex;
       gap: 4px;
@@ -135,6 +162,13 @@ export class EbPropertiesPanel extends LitElement {
   @property({ attribute: false }) doc: RimeDoc | null = null;
   @property({ attribute: false }) selectedId: NodeId | null = null;
   @property({ attribute: false }) registry: BlockRegistry = blockRegistry;
+  // Host uploader for image fields. When absent, the file-picker is disabled (the URL
+  // field still works) — the library never uploads/stores anything itself.
+  @property({ attribute: false }) onImageUpload?: (file: File) => Promise<string>;
+
+  // Per-field-key upload UI state (pending spinner / inline error message).
+  @state() private uploading: Record<string, boolean> = {};
+  @state() private uploadError: Record<string, string> = {};
 
   // Injectable id factory (deterministic in tests).
   newId: IdFactory = createIdFactory();
@@ -350,6 +384,8 @@ export class EbPropertiesPanel extends LitElement {
         </div>`;
       case "list":
         return this.#renderListField(field, value);
+      case "image":
+        return this.#renderImageField(field, value);
       case "url":
       case "text":
       default:
@@ -363,6 +399,67 @@ export class EbPropertiesPanel extends LitElement {
           />
         </div>`;
     }
+  }
+
+  // An image source field: a URL input (paste a URL directly) plus a host-driven
+  // file uploader. The library uploads NOTHING itself — it hands the File to
+  // config.onImageUpload and stores the returned URL. No callback → the picker is
+  // disabled with a hint, but the URL field stays usable.
+  #renderImageField(field: FieldDef, value: unknown) {
+    const id = `f-${field.key}`;
+    const canUpload = typeof this.onImageUpload === "function";
+    const pending = this.uploading[field.key] === true;
+    const error = this.uploadError[field.key];
+    return html`<div class="field">
+      <label for=${id}>${field.label}</label>
+      <input
+        id=${id}
+        type="url"
+        placeholder="https://… or upload"
+        .value=${typeof value === "string" ? value : ""}
+        @input=${(e: Event) => this.#edit(field.key, (e.target as HTMLInputElement).value)}
+      />
+      <div class="image-upload">
+        <button
+          type="button"
+          class="upload-btn"
+          ?disabled=${!canUpload || pending}
+          @click=${(e: Event) => {
+            const input = (e.target as HTMLElement)
+              .closest(".image-upload")
+              ?.querySelector<HTMLInputElement>("input[type=file]");
+            input?.click();
+          }}
+        >
+          ${pending ? "Uploading…" : "Choose image"}
+        </button>
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          @change=${(e: Event) => this.#onUpload(field.key, e)}
+        />
+      </div>
+      ${!canUpload
+        ? html`<span class="hint">Configure <code>onImageUpload</code> to enable uploads.</span>`
+        : nothing}
+      ${error ? html`<span class="error" role="alert">${error}</span>` : nothing}
+    </div>`;
+  }
+
+  async #onUpload(key: string, e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ""; // allow re-picking the same file
+    if (!file) return;
+    this.uploading = { ...this.uploading, [key]: true };
+    this.uploadError = { ...this.uploadError, [key]: "" };
+    const outcome = await resolveUpload(this.onImageUpload, file);
+    if (outcome.kind === "url") this.#edit(key, outcome.url, true);
+    else if (outcome.kind === "error") {
+      this.uploadError = { ...this.uploadError, [key]: outcome.message };
+    }
+    this.uploading = { ...this.uploading, [key]: false };
   }
 
   // A repeater for list fields whose rows are objects keyed by itemFields. A list
