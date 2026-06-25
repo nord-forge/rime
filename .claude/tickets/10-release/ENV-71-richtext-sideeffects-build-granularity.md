@@ -31,9 +31,11 @@ couple of informational build-granularity notes.
 ## Optional (do only if touching the build) — DEFERRED
 Both items below were evaluated and **deferred** (cosmetic/informational, no
 correctness or eager-load impact; rime-mjml is off the in-browser hot path):
-- `rime-mjml` deep-import paths (`./contract`, `./html`): rime-mjml runs at export
-  time on the server, is excluded from the core budget, and `mjml` is its whole point
-  — splitting it buys nothing measurable. Left as a single barrel.
+- `rime-mjml` deep-import paths: SUPERSEDED by ENV-46 — a `@nord-forge/rime-mjml/browser`
+  entry was added there (the Node-free `docToMjml` + helpers, excluding the Node-only
+  `MjmlRenderer`) because the in-browser demo's MJML preview needs the portable markup
+  without bundling `mjml`'s fs/path deps. So the deep-path split now exists where it
+  earns its keep.
 - `manualChunks` for the pure-SDK `live-region-*` chunk name: purely a naming nicety;
   the eager-budget gate already reports the closure accurately. Not worth the build
   complexity.

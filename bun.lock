@@ -21,6 +21,7 @@
       "dependencies": {
         "@nord-forge/rime-core": "workspace:*",
         "@nord-forge/rime-mjml": "workspace:*",
+        "@nord-forge/rime-model": "workspace:*",
         "lit": "^3.2.1",
       },
     },
