@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_HEADING } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { attrsToString, escapeAttr, escapeHtml, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -21,7 +22,7 @@ export const headingBlock: BlockDefinition<HeadingBlock> = {
   type: "heading",
   palette: {
     label: "Heading",
-    icon: "🅗",
+    icon: ICON_HEADING,
     category: "Content",
     defaults: { level: 2, text: "Heading", style: {} },
   },
@@ -48,7 +49,7 @@ export const headingBlock: BlockDefinition<HeadingBlock> = {
     const e = el(ctx.doc, node);
     applyStyle(e, node.style);
     const h = ctx.doc.createElement(tag(node.level));
-    h.textContent = node.text;
+    h.textContent = node.text ?? "";
     h.style.margin = "0";
     if (node.color !== undefined) h.style.color = node.color;
     e.append(h);
@@ -56,7 +57,7 @@ export const headingBlock: BlockDefinition<HeadingBlock> = {
   },
   renderExport: (node) => {
     const colorStyle = node.color !== undefined ? ` style="color:${escapeAttr(node.color)}"` : "";
-    const inner = `<${tag(node.level)}${colorStyle}>${escapeHtml(node.text)}</${tag(node.level)}>`;
+    const inner = `<${tag(node.level)}${colorStyle}>${escapeHtml(node.text ?? "")}</${tag(node.level)}>`;
     return { mjml: `<mj-text${attrsToString(styleToMjmlAttrs(node.style))}>${inner}</mj-text>` };
   },
 };

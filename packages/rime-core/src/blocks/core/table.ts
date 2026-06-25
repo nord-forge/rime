@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_TABLE } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { escapeHtml } from "./mjml-attrs";
 
@@ -27,7 +28,7 @@ export const tableBlock: BlockDefinition<TableBlock> = {
   type: "table",
   palette: {
     label: "Table",
-    icon: "⊞",
+    icon: ICON_TABLE,
     category: "Content",
     defaults: {
       rows: [

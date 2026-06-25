@@ -1,5 +1,6 @@
 import type { ButtonBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_BUTTON } from "../../palette/icons";
 import { renderButton } from "../../canvas/render-node/render-node";
 import { attrsToString, escapeAttr, normalizeHref, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -7,7 +8,7 @@ export const buttonBlock: BlockDefinition<ButtonBlock> = {
   type: "button",
   palette: {
     label: "Button",
-    icon: "🔘",
+    icon: ICON_BUTTON,
     category: "Content",
     defaults: { label: "Button", href: "#", style: {} },
   },

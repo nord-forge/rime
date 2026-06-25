@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState } from "react";
-import { RimeEditor, type RimeDoc, type RimeConfig } from "@nord-forge/rime-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RimeEditor, type RimeConfig, type RimeDoc } from "@nord-forge/rime-react";
 import { deserialize, serialize } from "@nord-forge/rime-model";
 import { docToMjml } from "@nord-forge/rime-mjml/browser";
 import { blockRegistry, registryToMjmlRenderers } from "@nord-forge/rime-core";
+import "./app.css";
 
 const STORAGE_KEY = "rime-react-demo-doc";
 
@@ -10,21 +11,28 @@ function starterDoc(): RimeDoc {
   return {
     id: "doc",
     type: "document",
-    settings: { contentWidth: 600, backgroundColor: "#f4f4f5", fontFamily: "Arial, sans-serif" },
+    settings: { contentWidth: 600, backgroundColor: "#ffffff", fontFamily: "Arial, sans-serif" },
     children: [
       {
-        id: "section",
+        id: "hero",
         type: "section",
-        style: { paddingTop: 24, paddingBottom: 24 },
+        style: { paddingTop: 36, paddingBottom: 8, paddingLeft: 28, paddingRight: 28 },
         children: [
           {
-            id: "column",
+            id: "hcol",
             type: "column",
             widthPercent: 100,
             style: {},
             children: [
               {
-                id: "intro",
+                id: "h1",
+                type: "heading",
+                level: 1,
+                text: "Welcome aboard 👋",
+                style: {},
+              } as never,
+              {
+                id: "p1",
                 type: "text",
                 style: {},
                 content: {
@@ -32,7 +40,11 @@ function starterDoc(): RimeDoc {
                   content: [
                     {
                       type: "paragraph",
-                      content: [{ type: "text", text: "Edit me — this is the React wrapper." }],
+                      content: [
+                        { type: "text", text: "Drag a block from the left, or edit this copy. " },
+                        { type: "text", text: "Everything is plain JSON", marks: ["bold"] },
+                        { type: "text", text: " — export it as MJML any time." },
+                      ],
                     },
                   ],
                 },
@@ -41,25 +53,57 @@ function starterDoc(): RimeDoc {
           },
         ],
       },
+      {
+        id: "ctaSec",
+        type: "section",
+        style: { paddingTop: 8, paddingBottom: 36, paddingLeft: 28, paddingRight: 28 },
+        children: [
+          {
+            id: "ctaCol",
+            type: "column",
+            widthPercent: 100,
+            style: { align: "center" },
+            children: [
+              {
+                id: "cta",
+                type: "button",
+                label: "Get started",
+                href: "https://example.com",
+                style: { backgroundColor: "#5b5bd6", align: "center" },
+              } as never,
+            ],
+          },
+        ],
+      },
     ],
   } as RimeDoc;
 }
 
-const THEMES: Record<string, RimeConfig["theme"]> = {
-  Default: {},
-  "Brand purple": {
-    "--eb-color-accent": "#7c3aed",
-    "--eb-color-surface": "#faf5ff",
-    "--eb-radius": "12px",
+// Theme presets map directly onto the editor's --eb-* chrome tokens. The canvas
+// (email styles) is unaffected — the two-surface model.
+const THEMES: { id: string; label: string; theme: RimeConfig["theme"] }[] = [
+  { id: "light", label: "Light", theme: {} },
+  {
+    id: "indigo",
+    label: "Indigo",
+    theme: {
+      "--eb-color-accent": "#5b5bd6",
+      "--eb-color-surface": "#f7f7fe",
+      "--eb-radius": "10px",
+    },
   },
-  Dark: {
-    "--eb-color-bg": "#18181b",
-    "--eb-color-surface": "#27272a",
-    "--eb-color-fg": "#e4e4e7",
-    "--eb-color-border": "#3f3f46",
-    "--eb-color-accent": "#22d3ee",
+  {
+    id: "dark",
+    label: "Dark",
+    theme: {
+      "--eb-color-bg": "#0c1020",
+      "--eb-color-surface": "#161b2e",
+      "--eb-color-fg": "#e7e9f5",
+      "--eb-color-border": "#2a3150",
+      "--eb-color-accent": "#8b8bf0",
+    },
   },
-};
+];
 
 // Stub uploader — object URL, no backend (a real app returns a CDN URL).
 const onImageUpload = (file: File): Promise<string> => Promise.resolve(URL.createObjectURL(file));
@@ -73,109 +117,125 @@ function loadInitialDoc(): RimeDoc {
   return starterDoc();
 }
 
+type SaveState = "idle" | "saving" | "saved";
+
 export function App(): JSX.Element {
-  // Controlled value — the React idiom the wrapper supports.
   const [doc, setDoc] = useState<RimeDoc>(loadInitialDoc);
-  const [themeName, setThemeName] = useState("Default");
+  const [themeId, setThemeId] = useState("light");
   const [mjml, setMjml] = useState<string | null>(null);
+  const [save, setSave] = useState<SaveState>("idle");
+  const [copied, setCopied] = useState(false);
   const docRef = useRef(doc);
   docRef.current = doc;
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const onChange = (next: RimeDoc): void => {
+  const onChange = useCallback((next: RimeDoc): void => {
     setDoc(next);
+    setSave("saving");
     localStorage.setItem(STORAGE_KEY, serialize(next));
-  };
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+    savedTimer.current = setTimeout(() => setSave("saved"), 350);
+  }, []);
 
-  const exported = useMemo(
-    () => () => {
-      setMjml(docToMjml(docRef.current, {}, registryToMjmlRenderers(blockRegistry)));
-    },
-    [],
-  );
+  useEffect(() => () => savedTimer.current && clearTimeout(savedTimer.current), []);
+
+  const theme = useMemo(() => THEMES.find((t) => t.id === themeId)?.theme, [themeId]);
+
+  const exportMjml = useCallback(() => {
+    setCopied(false);
+    setMjml(docToMjml(docRef.current, {}, registryToMjmlRenderers(blockRegistry)));
+  }, []);
+
+  const reset = useCallback(() => onChange(starterDoc()), [onChange]);
+
+  const copy = useCallback(() => {
+    if (mjml) void navigator.clipboard?.writeText(mjml).then(() => setCopied(true));
+  }, [mjml]);
+
+  const saveLabel = save === "saving" ? "Saving…" : save === "saved" ? "Saved" : "Up to date";
 
   return (
-    <div style={{ display: "grid", gridTemplateRows: "auto 1fr", blockSize: "100vh" }}>
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          alignItems: "center",
-          padding: "8px 12px",
-          borderBlockEnd: "1px solid #e4e4e7",
-        }}
-      >
-        <strong>Rime React demo</strong>
-        <button type="button" onClick={() => onChange(starterDoc())}>
+    <div className="app">
+      <header className="bar">
+        <div className="brand">
+          <span className="mark">rime</span>
+          <span className="tag">/email</span>
+        </div>
+
+        <span className="grow" />
+
+        <span className="savestate" data-state={save} title="Autosaved to localStorage as JSON">
+          <span className="dot" />
+          {saveLabel}
+        </span>
+
+        <div className="seg" role="group" aria-label="Editor theme">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              aria-pressed={t.id === themeId}
+              onClick={() => setThemeId(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <button type="button" className="btn ghost" onClick={reset}>
           Reset
         </button>
-        <span style={{ flex: 1 }} />
-        <label>
-          Theme{" "}
-          <select value={themeName} onChange={(e) => setThemeName(e.target.value)}>
-            {Object.keys(THEMES).map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button type="button" onClick={exported}>
-          View MJML
+        <button type="button" className="btn primary" onClick={exportMjml}>
+          <CodeIcon />
+          Export
         </button>
-      </div>
+      </header>
 
-      <RimeEditor
-        doc={doc}
-        theme={THEMES[themeName]}
-        onImageUpload={onImageUpload}
-        onChange={onChange}
-        style={{ blockSize: "100%", minBlockSize: 0 }}
-      />
+      <main className="stage">
+        <RimeEditor doc={doc} theme={theme} onImageUpload={onImageUpload} onChange={onChange} />
+      </main>
 
       {mjml !== null && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.4)",
-            display: "grid",
-            placeItems: "center",
-          }}
+          className="scrim"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Exported MJML"
           onClick={() => setMjml(null)}
         >
-          <div
-            style={{
-              inlineSize: "min(820px,90vw)",
-              blockSize: "80vh",
-              background: "#fff",
-              borderRadius: 10,
-              overflow: "hidden",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ padding: "10px 14px", borderBlockEnd: "1px solid #e4e4e7" }}>
-              <strong>Exported MJML (→ HTML server-side)</strong>
-              <button type="button" style={{ float: "right" }} onClick={() => setMjml(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="head">
+              <h2>Exported MJML</h2>
+              <span className="sub">rendered server-side to HTML</span>
+              <span style={{ flex: 1 }} />
+              <button type="button" className="btn ghost" onClick={copy}>
+                {copied ? "Copied" : "Copy"}
+              </button>
+              <button type="button" className="btn" onClick={() => setMjml(null)}>
                 Close
               </button>
             </div>
-            <pre
-              style={{
-                margin: 0,
-                padding: 14,
-                blockSize: "calc(80vh - 52px)",
-                overflow: "auto",
-                whiteSpace: "pre-wrap",
-                background: "#18181b",
-                color: "#e4e4e7",
-                font: "12px/1.5 ui-monospace, monospace",
-              }}
-            >
-              {mjml}
-            </pre>
+            <pre>{mjml}</pre>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function CodeIcon(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m8 8-4 4 4 4" />
+      <path d="m16 8 4 4-4 4" />
+    </svg>
   );
 }

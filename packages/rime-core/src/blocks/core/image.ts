@@ -1,5 +1,6 @@
 import type { ImageBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_IMAGE } from "../../palette/icons";
 import { renderImage } from "../../canvas/render-node/render-node";
 import { attrsToString, normalizeHref, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -7,7 +8,7 @@ export const imageBlock: BlockDefinition<ImageBlock> = {
   type: "image",
   palette: {
     label: "Image",
-    icon: "🖼️",
+    icon: ICON_IMAGE,
     category: "Content",
     defaults: { src: "", alt: "", style: {} },
   },

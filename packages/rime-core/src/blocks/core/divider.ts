@@ -1,5 +1,6 @@
 import type { DividerBlock } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_DIVIDER } from "../../palette/icons";
 import { renderDivider } from "../../canvas/render-node/render-node";
 import { attrsToString, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -7,7 +8,7 @@ export const dividerBlock: BlockDefinition<DividerBlock> = {
   type: "divider",
   palette: {
     label: "Divider",
-    icon: "➖",
+    icon: ICON_DIVIDER,
     category: "Layout",
     defaults: { style: {} },
   },

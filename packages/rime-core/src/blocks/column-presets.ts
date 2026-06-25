@@ -13,6 +13,7 @@ import {
   type IdFactory,
   type SectionNode,
 } from "@nord-forge/rime-model";
+import { ICON_COLS_2, ICON_COLS_3, ICON_IMAGE_TEXT, ICON_SIDEBAR } from "../palette/icons";
 
 export interface LayoutPreset {
   // Stable preset id (NOT a node type — the produced node is a plain "section").
@@ -34,14 +35,14 @@ export const LAYOUT_PRESETS: LayoutPreset[] = [
   {
     id: "preset-2-col",
     label: "2 columns",
-    icon: "▥",
+    icon: ICON_COLS_2,
     category: "Layout",
     create: (newId) => section(newId, [createColumn(newId, 50), createColumn(newId, 50)]),
   },
   {
     id: "preset-3-col",
     label: "3 columns",
-    icon: "▤",
+    icon: ICON_COLS_3,
     category: "Layout",
     // 33 / 34 / 33 = 100 (middle absorbs the remainder).
     create: (newId) =>
@@ -50,14 +51,14 @@ export const LAYOUT_PRESETS: LayoutPreset[] = [
   {
     id: "preset-sidebar",
     label: "Sidebar",
-    icon: "▦",
+    icon: ICON_SIDEBAR,
     category: "Layout",
     create: (newId) => section(newId, [createColumn(newId, 33), createColumn(newId, 67)]),
   },
   {
     id: "preset-image-text",
     label: "Image + text",
-    icon: "🖼",
+    icon: ICON_IMAGE_TEXT,
     category: "Layout",
     create: (newId) => {
       const left = createColumn(newId, 50);

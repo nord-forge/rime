@@ -1,5 +1,6 @@
 import type { BaseNode, BlockStyle } from "@nord-forge/rime-model";
 import type { BlockDefinition } from "../types";
+import { ICON_SOCIAL } from "../../palette/icons";
 import { applyStyle, el } from "../../canvas/render-node/render-node";
 import { attrsToString, escapeAttr, normalizeHref, styleToMjmlAttrs } from "./mjml-attrs";
 
@@ -71,7 +72,7 @@ export const socialBlock: BlockDefinition<SocialBlock> = {
   type: "social",
   palette: {
     label: "Social",
-    icon: "🔗",
+    icon: ICON_SOCIAL,
     category: "Content",
     defaults: {
       links: [

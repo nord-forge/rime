@@ -7,6 +7,7 @@
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property } from "lit/decorators.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { type PaletteGroup, paletteEntries } from "./palette-entries";
 
 export interface PaletteAddDetail {
@@ -61,8 +62,14 @@ export class EbPalette extends LitElement {
       outline: none;
     }
     .item .icon {
-      font-size: 20px;
-      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      block-size: 22px;
+      color: var(--eb-color-fg, #18181b);
+    }
+    .item .icon svg {
+      display: block;
     }
     .item .label {
       font-size: 12px;
@@ -112,7 +119,7 @@ export class EbPalette extends LitElement {
                       }
                     }}
                   >
-                    <span class="icon" aria-hidden="true">${item.icon}</span>
+                    <span class="icon" aria-hidden="true">${unsafeHTML(item.icon)}</span>
                     <span class="label">${item.label}</span>
                   </button>
                 `,
