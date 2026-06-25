@@ -188,6 +188,8 @@ bun run format:check  # oxfmt
 bun run typecheck     # tsc
 bun run size          # @nord-forge/rime-core bundle-size gate (~100 kB gzip)
 bun run e2e           # cross-browser Playwright (chromium + webkit)
+bun run demo          # runnable vanilla demo (apps/rime-demo)
+bun run demo:react    # runnable React demo using @nord-forge/rime-react (apps/rime-react-demo)
 ```
 
 ## Contributing
