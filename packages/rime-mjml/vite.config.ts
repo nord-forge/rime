@@ -7,4 +7,7 @@ export default libConfig({
   root: import.meta.dirname,
   node: true,
   external: ["mjml", /^mjml\//],
+  // ./browser is the Node-free subset (docToMjml + helpers, no MjmlRenderer) so a
+  // browser app can produce the portable MJML without bundling the Node `mjml` lib.
+  entries: { browser: "src/browser.ts" },
 });

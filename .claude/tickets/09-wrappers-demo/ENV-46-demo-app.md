@@ -1,7 +1,7 @@
 ---
 id: ENV-46
 title: Demo app (proves end-user UX)
-status: ready
+status: done
 priority: P1
 milestone: 9 — Framework wrappers & demo
 depends_on: [ENV-34, ENV-42]

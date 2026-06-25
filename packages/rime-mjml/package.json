@@ -17,6 +17,12 @@
       "bun": "./src/index.ts",
       "development": "./src/index.ts",
       "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "bun": "./src/browser.ts",
+      "development": "./src/browser.ts",
+      "import": "./dist/browser.js"
     }
   },
   "publishConfig": {
