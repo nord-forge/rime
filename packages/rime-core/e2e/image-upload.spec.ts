@@ -52,7 +52,7 @@ async function setup(page: Page, withUploader: boolean): Promise<void> {
 }
 
 function panelRoot(page: Page) {
-  return page.locator("rime-editor").locator("eb-properties-panel");
+  return page.locator("rime-editor").locator("rime-properties-panel");
 }
 
 async function selectImage(page: Page): Promise<void> {

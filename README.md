@@ -35,7 +35,7 @@ There is no great open-source email template builder. The good ones are closed/c
   import '@nord-forge/rime-core/register'; // defines <rime-editor> + core blocks
   const el = document.getElementById('editor');
   el.config = {
-    theme: { '--eb-color-accent': '#5b5bd6', '--eb-radius': '10px' },
+    theme: { '--rime-color-accent': '#5b5bd6', '--rime-radius': '10px' },
     onImageUpload: async (file) => uploadToMyCdn(file), // returns a URL
   };
   el.addEventListener('change', (e) => save(e.detail.doc)); // JSON doc
@@ -57,11 +57,11 @@ file, or a small island loaded with `client:only` / `client:load`:
 <script>
   import '@nord-forge/rime-core/register'; // runs in the browser; defines the element
   const el = document.getElementById('editor');
-  el.config = { theme: { '--eb-color-accent': '#5b5bd6' } };
+  el.config = { theme: { '--rime-color-accent': '#5b5bd6' } };
   el.addEventListener('change', (e) => localStorage.setItem('doc', JSON.stringify(e.detail.doc)));
 </script>
 ```
-Theming is entirely [`--eb-*` CSS custom properties](#importing-the-editor) on the
+Theming is entirely [`--rime-*` CSS custom properties](#importing-the-editor) on the
 element (or any ancestor) — no host stylesheet ever reaches the email canvas.
 
 ### React
@@ -70,7 +70,7 @@ import { RimeEditor } from '@nord-forge/rime-react';
 
 <RimeEditor
   doc={doc}
-  theme={{ '--eb-color-accent': '#5b5bd6' }}
+  theme={{ '--rime-color-accent': '#5b5bd6' }}
   onImageUpload={uploadToMyCdn}
   onChange={(doc) => save(doc)}
 />
@@ -135,7 +135,7 @@ user's first click into a text block is instant, with no first-edit stutter. Wit
   import '@nord-forge/rime-core/register'; // defines <rime-editor> + core blocks
   const el = document.getElementById('editor');
   // lexicalEditor defaults to true — nothing to set.
-  el.config = { theme: { '--eb-color-accent': '#5b5bd6' } };
+  el.config = { theme: { '--rime-color-accent': '#5b5bd6' } };
 </script>
 ```
 

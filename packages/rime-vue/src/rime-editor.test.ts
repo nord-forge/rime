@@ -41,13 +41,13 @@ describe("<RimeEditor> Vue wrapper", () => {
   test("maps theme/enabledBlocks/onImageUpload/lexicalEditor into config", () => {
     const onImageUpload = async () => "https://x/u.png";
     const w = mountEditor({
-      theme: { "--eb-color-accent": "#abc" },
+      theme: { "--rime-color-accent": "#abc" },
       enabledBlocks: ["text", "image"],
       onImageUpload,
       lexicalEditor: false,
     });
     const config = stub(w).config as Record<string, unknown>;
-    expect(config["theme"]).toEqual({ "--eb-color-accent": "#abc" });
+    expect(config["theme"]).toEqual({ "--rime-color-accent": "#abc" });
     expect(config["enabledBlocks"]).toEqual(["text", "image"]);
     expect(config["onImageUpload"]).toBe(onImageUpload);
     expect(config["lexicalEditor"]).toBe(false);
@@ -55,13 +55,13 @@ describe("<RimeEditor> Vue wrapper", () => {
   });
 
   test("config updates when props change", async () => {
-    const w = mountEditor({ theme: { "--eb-color-accent": "#111" } });
+    const w = mountEditor({ theme: { "--rime-color-accent": "#111" } });
     expect((stub(w).config as Record<string, unknown>)["theme"]).toEqual({
-      "--eb-color-accent": "#111",
+      "--rime-color-accent": "#111",
     });
-    await w.setProps({ theme: { "--eb-color-accent": "#222" } });
+    await w.setProps({ theme: { "--rime-color-accent": "#222" } });
     expect((stub(w).config as Record<string, unknown>)["theme"]).toEqual({
-      "--eb-color-accent": "#222",
+      "--rime-color-accent": "#222",
     });
     w.unmount();
   });

@@ -22,20 +22,20 @@ export class LinkPopover extends LitElement {
       gap: 4px;
       align-items: center;
       padding: 6px;
-      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 8px);
-      box-shadow: var(--eb-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
-      font: var(--eb-font-ui, 14px system-ui);
+      background: var(--rime-color-surface, var(--rime-color-bg, #fff));
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 8px);
+      box-shadow: var(--rime-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
+      font: var(--rime-font-ui, 14px system-ui);
     }
     input {
       inline-size: 220px;
       padding: 4px 6px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
       font: inherit;
-      color: var(--eb-color-fg, #18181b);
-      background: var(--eb-color-bg, #fff);
+      color: var(--rime-color-fg, #18181b);
+      background: var(--rime-color-bg, #fff);
     }
     input[aria-invalid="true"] {
       border-color: #dc2626;
@@ -44,17 +44,17 @@ export class LinkPopover extends LitElement {
       block-size: 28px;
       padding: 0 10px;
       border: 0;
-      border-radius: var(--eb-radius, 6px);
+      border-radius: var(--rime-radius, 6px);
       font: inherit;
       cursor: pointer;
     }
     .apply {
-      background: var(--eb-color-accent, #5b5bd6);
+      background: var(--rime-color-accent, #5b5bd6);
       color: #fff;
     }
     .remove {
       background: transparent;
-      color: var(--eb-color-fg, #18181b);
+      color: var(--rime-color-fg, #18181b);
     }
   `;
 
@@ -111,7 +111,7 @@ export class LinkPopover extends LitElement {
 
   #emit(href: string | null): void {
     this.dispatchEvent(
-      new CustomEvent<LinkApplyDetail>("eb-link-apply", {
+      new CustomEvent<LinkApplyDetail>("rime-link-apply", {
         detail: { href },
         bubbles: true,
         composed: true,
@@ -126,7 +126,7 @@ export class LinkPopover extends LitElement {
     } else if (e.key === "Escape") {
       e.preventDefault();
       this.hide();
-      this.dispatchEvent(new CustomEvent("eb-link-cancel", { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent("rime-link-cancel", { bubbles: true, composed: true }));
     }
   }
 
@@ -175,6 +175,6 @@ export class LinkPopover extends LitElement {
   }
 }
 
-if (!customElements.get("eb-link-popover")) {
-  customElements.define("eb-link-popover", LinkPopover);
+if (!customElements.get("rime-link-popover")) {
+  customElements.define("rime-link-popover", LinkPopover);
 }

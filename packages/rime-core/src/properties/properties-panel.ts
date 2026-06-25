@@ -1,8 +1,8 @@
-// <eb-properties-panel> — the right-hand chrome panel (§6.5). Schema-driven: it
+// <rime-properties-panel> — the right-hand chrome panel (§6.5). Schema-driven: it
 // reads the selected block's BlockSchema from the registry and renders a form, so
 // a custom block gets a properties form for free. Every edit goes through the
-// ENV-06 updateNode op (never in-place mutation) and is emitted as eb-doc-change,
-// so undo/redo covers property edits too. Chrome — Shadow DOM, themed by --eb-*.
+// ENV-06 updateNode op (never in-place mutation) and is emitted as rime-doc-change,
+// so undo/redo covers property edits too. Chrome — Shadow DOM, themed by --rime-*.
 
 import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
@@ -21,10 +21,10 @@ import { findNodeById } from "../a11y/announce-messages/announce-messages";
 import { getByPath, nestedPartial } from "./field-path";
 import { columnsForCount } from "./columns-op";
 import { resolveUpload } from "./image-upload";
-import { type ColorChangeDetail, EbColorPicker } from "../color/color-picker";
+import { type ColorChangeDetail, RimeColorPicker } from "../color/color-picker";
 
-// Referenced so the <eb-color-picker> element is registered when the panel loads.
-void EbColorPicker;
+// Referenced so the <rime-color-picker> element is registered when the panel loads.
+void RimeColorPicker;
 
 export interface DocChangeDetail {
   doc: RimeDoc;
@@ -35,22 +35,22 @@ export interface DocChangeDetail {
 
 const ALIGNMENTS = ["left", "center", "right"] as const;
 
-export class EbPropertiesPanel extends LitElement {
+export class RimePropertiesPanel extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
       block-size: 100%;
       overflow-y: auto;
-      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
-      color: var(--eb-color-fg, #18181b);
-      font: var(--eb-font-ui, 14px system-ui);
+      background: var(--rime-color-surface, var(--rime-color-bg, #fff));
+      color: var(--rime-color-fg, #18181b);
+      font: var(--rime-font-ui, 14px system-ui);
     }
     .empty {
       padding: 16px;
       opacity: 0.6;
     }
     .group {
-      border-block-end: 1px solid var(--eb-color-border, #e4e4e7);
+      border-block-end: 1px solid var(--rime-color-border, #e4e4e7);
       padding: 12px 16px;
     }
     .group > h3 {
@@ -75,18 +75,18 @@ export class EbPropertiesPanel extends LitElement {
       inline-size: 100%;
       box-sizing: border-box;
       padding: 5px 7px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
       font: inherit;
-      color: var(--eb-color-fg, #18181b);
-      background: var(--eb-color-bg, #fff);
+      color: var(--rime-color-fg, #18181b);
+      background: var(--rime-color-bg, #fff);
     }
     textarea {
       min-block-size: 80px;
       resize: vertical;
     }
     textarea.code {
-      font-family: var(--eb-font-mono, ui-monospace, monospace);
+      font-family: var(--rime-font-mono, ui-monospace, monospace);
     }
     .spacing,
     .align {
@@ -96,16 +96,16 @@ export class EbPropertiesPanel extends LitElement {
     .align button {
       flex: 1;
       block-size: 28px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       cursor: pointer;
     }
     .align button[aria-pressed="true"] {
-      background: var(--eb-color-accent, #5b5bd6);
+      background: var(--rime-color-accent, #5b5bd6);
       color: #fff;
-      border-color: var(--eb-color-accent, #5b5bd6);
+      border-color: var(--rime-color-accent, #5b5bd6);
     }
     .check {
       flex-direction: row;
@@ -122,15 +122,15 @@ export class EbPropertiesPanel extends LitElement {
     .upload-btn {
       block-size: 28px;
       padding: 0 10px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       font: inherit;
       cursor: pointer;
     }
     .upload-btn:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--eb-color-accent, #5b5bd6) 12%, transparent);
+      background: color-mix(in srgb, var(--rime-color-accent, #5b5bd6) 12%, transparent);
     }
     .upload-btn:disabled {
       opacity: 0.5;
@@ -140,7 +140,7 @@ export class EbPropertiesPanel extends LitElement {
       display: block;
       margin-block-start: 4px;
       font-size: 12px;
-      color: var(--eb-color-danger, #dc2626);
+      color: var(--rime-color-danger, #dc2626);
     }
     .swatch {
       display: flex;
@@ -149,9 +149,9 @@ export class EbPropertiesPanel extends LitElement {
       inline-size: 100%;
       block-size: 30px;
       padding: 0 8px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       font: inherit;
       cursor: pointer;
@@ -167,7 +167,7 @@ export class EbPropertiesPanel extends LitElement {
       font:
         12px ui-monospace,
         monospace;
-      color: var(--eb-color-fg, #18181b);
+      color: var(--rime-color-fg, #18181b);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -175,9 +175,9 @@ export class EbPropertiesPanel extends LitElement {
     .picker {
       margin-block-start: 8px;
       padding: 10px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 8px);
-      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 8px);
+      background: var(--rime-color-surface, var(--rime-color-bg, #fff));
     }
     .list-row {
       display: flex;
@@ -192,9 +192,9 @@ export class EbPropertiesPanel extends LitElement {
       flex: 0 0 auto;
       block-size: 28px;
       padding: 0 8px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       cursor: pointer;
     }
@@ -222,7 +222,7 @@ export class EbPropertiesPanel extends LitElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    // Drop any pending debounced flush so it can't dispatch eb-doc-change from a
+    // Drop any pending debounced flush so it can't dispatch rime-doc-change from a
     // detached element after teardown.
     if (this.#flushHandle) {
       clearTimeout(this.#flushHandle);
@@ -263,7 +263,7 @@ export class EbPropertiesPanel extends LitElement {
       return; // an edit that would invalidate the doc is dropped
     }
     this.dispatchEvent(
-      new CustomEvent<DocChangeDetail>("eb-doc-change", {
+      new CustomEvent<DocChangeDetail>("rime-doc-change", {
         detail: { doc: op.doc, patch: op.patch, inverse: op.inverse },
         bubbles: true,
         composed: true,
@@ -360,12 +360,12 @@ export class EbPropertiesPanel extends LitElement {
             <span class="val">${current}</span>
           </button>
           ${open
-            ? html`<eb-color-picker
+            ? html`<rime-color-picker
                 class="picker"
                 .value=${current}
-                @eb-color-change=${(e: Event) =>
+                @rime-color-change=${(e: Event) =>
                   this.#edit(field.key, (e as CustomEvent<ColorChangeDetail>).detail.value)}
-              ></eb-color-picker>`
+              ></rime-color-picker>`
             : nothing}
         </div>`;
       }
@@ -610,12 +610,12 @@ function mergeDeep(
   return out;
 }
 
-if (!customElements.get("eb-properties-panel")) {
-  customElements.define("eb-properties-panel", EbPropertiesPanel);
+if (!customElements.get("rime-properties-panel")) {
+  customElements.define("rime-properties-panel", RimePropertiesPanel);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "eb-properties-panel": EbPropertiesPanel;
+    "rime-properties-panel": RimePropertiesPanel;
   }
 }

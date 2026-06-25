@@ -16,7 +16,7 @@ estimate: S
 ## Context
 Surfaced by CI (slow Linux runner) while landing ENV-28. The e2e
 `drag-preview.spec.ts › only one preview node exists across repeated drags`
-intermittently finds **one** leftover `[data-eb-overlay="drag-preview"]` node in
+intermittently finds **one** leftover `[data-rime-overlay="drag-preview"]` node in
 the overlay after a burst of rapid palette drags. It passes locally (fast
 machine) and only flakes under CI load.
 
@@ -46,7 +46,7 @@ quarantined e2e (remove `test.fixme`).
 
 ## Acceptance criteria
 - [ ] After any sequence of drags (incl. rapid/overlapping, under CPU throttle),
-      `[data-eb-overlay="drag-preview"]` count is 0 when idle.
+      `[data-rime-overlay="drag-preview"]` count is 0 when idle.
 - [ ] The quarantined e2e is un-`fixme`'d and passes in chromium + webkit on CI.
 - [ ] ENV-26 leak-guard invariants still hold.
 

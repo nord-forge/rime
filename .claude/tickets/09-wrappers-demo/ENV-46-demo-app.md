@@ -17,7 +17,7 @@ estimate: M
 v1 ships a runnable demo (§4, §12) that proves the **end-user** experience is excellent
 by default — the secondary persona (marketers using the builder inside an integrator's
 product). It's also the integration reference: it consumes the public surface only
-(`<rime-editor>` + ENV-42 JSON in/out + ENV-43 `onImageUpload` stub + `--eb-*`
+(`<rime-editor>` + ENV-42 JSON in/out + ENV-43 `onImageUpload` stub + `--rime-*`
 theming), uses a trivial **local store** (no backend, per §6.10), and showcases
 theming. It registers the example custom block (ENV-37) to prove the SDK in context.
 
@@ -48,7 +48,7 @@ here; the wrappers have their own examples).
 3. **`onImageUpload` stub.** A callback that returns an object-URL (`URL.createObjectURL`)
    or a tiny data-URI — proving the host-uploader contract (ENV-43) with **no backend**.
    Document that a real app returns a CDN URL.
-4. **Theme showcase.** A switcher that applies different `--eb-*` token sets (e.g.
+4. **Theme showcase.** A switcher that applies different `--rime-*` token sets (e.g.
    "Default", "Brand purple", "Dark") at runtime, proving chrome theming. Show that the
    canvas (email styles) is unaffected by chrome theme (two-surface model, ENV-18).
 5. **Export preview.** A "View HTML" panel that runs `new MjmlRenderer().render(getDoc())`
@@ -68,7 +68,7 @@ here; the wrappers have their own examples).
       `deserialize`/`loadDoc`; Save/Load/Reset controls work.
 - [ ] A stub `onImageUpload` lets the user add an image (object-URL/data-URI), proving
       the uploader contract with no backend.
-- [ ] A theme switcher applies different `--eb-*` sets at runtime; the canvas email
+- [ ] A theme switcher applies different `--rime-*` sets at runtime; the canvas email
       styling is unaffected (two-surface model visible).
 - [ ] An "export HTML" view renders the current doc via `MjmlRenderer`.
 - [ ] The ENV-37 example custom block appears in the palette and works.

@@ -48,7 +48,7 @@ losslessly through the doc model, and exports to `{{var}}` text via the MJML ren
 2. **Lexical token node (`packages/core/src/richtext/token-node.ts`).** A custom
    `DecoratorNode`/`TextNode` subclass registered in the curated node set
    (lexical-adapter). It is **atomic** (not editable char-by-char; selectable/deletable
-   as a unit), renders a themed chip (`--eb-*`) showing `label ?? token`, and serializes
+   as a unit), renders a themed chip (`--rime-*`) showing `label ?? token`, and serializes
    to/from the `TokenInline` shape via the adapter's `to/fromRichTextJSON`.
 3. **Editor ↔ RichTextJSON round-trip.** Extend the ENV-30 adapter so:
    - Lexical token node → `TokenInline` on serialize,

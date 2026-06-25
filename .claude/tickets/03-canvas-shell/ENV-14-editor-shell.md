@@ -19,15 +19,15 @@ estimate: M
 three-region layout (palette / canvas / properties), the slots and parts, and the
 public `config` surface (theme tokens, enabled blocks, `onImageUpload`, token
 sources). Everything later (canvas, DnD, rich text, panels) plugs into regions this
-ticket defines. Chrome is themed exclusively via `--eb-*` CSS custom properties that
+ticket defines. Chrome is themed exclusively via `--rime-*` CSS custom properties that
 pierce the shadow boundary — the proven pattern from `.claude/spikes/od2-toolchain/src/themed-panel.ts`.
 > Note: the board lists ENV-14's dep as OD-2, but OD-2 is **DONE** (toolchain
 > spike). The real prerequisite is ENV-01. Reuse OD-2's outputs (rolldown-vite
-> lib config, the `css\`\``/`--eb-*` pattern) — do not redo them.
+> lib config, the `css\`\``/`--rime-*` pattern) — do not redo them.
 
 ## Goal
 `<rime-editor>` is defined, renders palette/canvas/properties regions, accepts
-a typed `config`, and exposes theme via `--eb-*` — with no feature logic inside yet.
+a typed `config`, and exposes theme via `--rime-*` — with no feature logic inside yet.
 
 ## Prerequisites
 - ENV-01 done (core builds in lib mode, `lit` installed, decorators on).
@@ -47,8 +47,8 @@ Create under `packages/core/src/`:
    import type { RimeDoc } from "@nord-forge/rime-model";
 
    export interface RimeConfig {
-     /** --eb-* token overrides applied to the chrome (host-piercing). */
-     theme?: Record<`--eb-${string}`, string>;
+     /** --rime-* token overrides applied to the chrome (host-piercing). */
+     theme?: Record<`--rime-${string}`, string>;
      /** Block type ids enabled in the palette; undefined = all built-ins. */
      enabledBlocks?: string[];
      /** Host uploader; returns the final URL for an image block. */
@@ -62,16 +62,16 @@ Create under `packages/core/src/`:
      static styles: CSSResultGroup = css`
        :host {
          display: grid;
-         grid-template-columns: var(--eb-palette-width, 240px) 1fr var(--eb-properties-width, 300px);
+         grid-template-columns: var(--rime-palette-width, 240px) 1fr var(--rime-properties-width, 300px);
          grid-template-areas: "palette canvas properties";
          block-size: 100%;
-         font: var(--eb-font-ui, 14px system-ui);
-         color: var(--eb-color-fg, #18181b);
-         background: var(--eb-color-bg, #fff);
+         font: var(--rime-font-ui, 14px system-ui);
+         color: var(--rime-color-fg, #18181b);
+         background: var(--rime-color-bg, #fff);
        }
-       [part="palette"]    { grid-area: palette;    border-inline-end: 1px solid var(--eb-color-border, #e4e4e7); }
+       [part="palette"]    { grid-area: palette;    border-inline-end: 1px solid var(--rime-color-border, #e4e4e7); }
        [part="canvas"]     { grid-area: canvas;     overflow: auto; }
-       [part="properties"] { grid-area: properties; border-inline-start: 1px solid var(--eb-color-border, #e4e4e7); }
+       [part="properties"] { grid-area: properties; border-inline-start: 1px solid var(--rime-color-border, #e4e4e7); }
      `;
 
      @property({ attribute: false }) config: RimeConfig = {};
@@ -86,7 +86,7 @@ Create under `packages/core/src/`:
    }
    customElements.define("rime-editor", RimeEditor);
    ```
-2. **Config application** — when `config.theme` is set, apply each `--eb-*` pair to
+2. **Config application** — when `config.theme` is set, apply each `--rime-*` pair to
    the host via `this.style.setProperty(k, v)` in `willUpdate`/`updated`. This is the
    only theming channel for chrome (see ENV-18). Do NOT read host stylesheets.
 3. **Public surface, stubbed** — declare the methods later tickets fill so the type
@@ -105,8 +105,8 @@ Create under `packages/core/src/`:
 - [ ] `customElements.get("rime-editor")` is defined after importing core.
 - [ ] Shell renders three regions with `part="palette|canvas|properties"` and
       matching named slots; layout is a 3-column grid.
-- [ ] `config.theme` overrides apply as `--eb-*` on the host and visibly affect the
-      chrome (e.g. `--eb-color-border`).
+- [ ] `config.theme` overrides apply as `--rime-*` on the host and visibly affect the
+      chrome (e.g. `--rime-color-border`).
 - [ ] `RimeConfig` (theme, enabledBlocks, onImageUpload, tokenSources) is typed
       and exported; no `any`.
 - [ ] `loadDoc`/`getDoc`/`change` are declared with stable signatures (stubbed).

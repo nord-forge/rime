@@ -10,11 +10,11 @@ test.describe("iframe canvas", () => {
     expect(count).toBe(1);
   });
 
-  test("iframe is same-origin: contentDocument + #eb-root reachable", async ({ editor }) => {
+  test("iframe is same-origin: contentDocument + #rime-root reachable", async ({ editor }) => {
     const hasRoot = await editor.host.evaluate(async (host) => {
       const el = host as unknown as { whenCanvasReady(): Promise<{ mount: HTMLElement }> };
       const { mount } = await el.whenCanvasReady();
-      return mount.id === "eb-root";
+      return mount.id === "rime-root";
     });
     expect(hasRoot).toBe(true);
   });
@@ -43,7 +43,7 @@ test.describe("iframe canvas", () => {
     expect(bg).toBe("rgb(9, 8, 7)");
   });
 
-  test("NO host CSS bleed: host `* { color: red }` does not reach #eb-root", async ({
+  test("NO host CSS bleed: host `* { color: red }` does not reach #rime-root", async ({
     editor,
     page,
   }) => {

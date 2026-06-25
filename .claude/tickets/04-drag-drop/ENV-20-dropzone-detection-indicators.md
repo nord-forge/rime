@@ -19,7 +19,7 @@ The PRD names drop-zone detection as the stated do-or-die: it must be performant
 across browsers and hardware tiers (§6.6). ENV-19 made drops *correct*; this
 ticket makes detection *fast* and gives the user a clear **insertion indicator**
 showing exactly where the block will land. The indicator is chrome (lives in the
-host, themed by `--eb-*`), but it points at a position inside the iframe canvas,
+host, themed by `--rime-*`), but it points at a position inside the iframe canvas,
 so it is positioned using the ENV-17 coordinate controller.
 
 ## Goal
@@ -31,7 +31,7 @@ smoothly in Chromium + WebKit.
 - ENV-19 done (`DndController`, `resolveDropTarget`, host↔iframe bridge).
 - ENV-17 `DragCoordinateController` (`canvasToHost` to place a host-space
   indicator over the iframe; `invalidate` on scroll/resize).
-- `--eb-*` theming tokens exist (ENV-18) for the indicator styling.
+- `--rime-*` theming tokens exist (ENV-18) for the indicator styling.
 
 ## Implementation notes
 Create under `packages/core/src/dnd/`:
@@ -65,15 +65,15 @@ Create under `packages/core/src/dnd/`:
    via `coords.invalidate()` + re-snapshot). Midpoint comparison then reads
    cached numbers, not live `getBoundingClientRect()` per move (layout-thrash
    killer). Re-snapshot only on scroll/resize, not per frame.
-3. **`insertion-indicator.ts`** — a Lit component `<eb-drop-indicator>` (or a
+3. **`insertion-indicator.ts`** — a Lit component `<rime-drop-indicator>` (or a
    plain absolutely-positioned host element if lighter) rendered in the chrome
    overlay layer, NOT inside the iframe.
    - Given a resolved `DropTarget`, compute the screen line: take the gap between
      the relevant child elements inside the iframe, convert their edges to host
      coords via `coords.canvasToHost(...)`, and draw a 2px line (horizontal for
      vertical stacks, vertical for the column gap case).
-   - Style strictly from tokens: `background: var(--eb-color-accent)`,
-     `border-radius: var(--eb-radius)`; no hard-coded colors.
+   - Style strictly from tokens: `background: var(--rime-color-accent)`,
+     `border-radius: var(--rime-radius)`; no hard-coded colors.
    - Hide the indicator when `resolveDropTarget` returns `null` (not over a valid
      zone) and on drop/cancel.
 4. **Wire into `DndController`** — replace the inline move handling from ENV-19
@@ -95,7 +95,7 @@ Create under `packages/core/src/dnd/`:
       the pointer moves (within/between columns, empty column, section gap).
 - [ ] The indicator is positioned over the iframe via `coords.canvasToHost` and
       stays correct when the canvas is scrolled.
-- [ ] The indicator is themed only via `--eb-*` tokens (no hard-coded colors).
+- [ ] The indicator is themed only via `--rime-*` tokens (no hard-coded colors).
 - [ ] Indicator hides when not over a valid drop zone, and on drop/cancel.
 - [ ] No live `getBoundingClientRect()` per move — geometry is snapshotted +
       invalidated on scroll/resize.

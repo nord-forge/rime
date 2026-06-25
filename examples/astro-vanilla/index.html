@@ -16,10 +16,10 @@
 
       const el = document.getElementById("editor");
 
-      // Config is an object PROPERTY (not an attribute). Theme via --eb-* tokens;
+      // Config is an object PROPERTY (not an attribute). Theme via --rime-* tokens;
       // images via your own uploader (here: a demo object URL, no backend).
       el.config = {
-        theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
+        theme: { "--rime-color-accent": "#5b5bd6", "--rime-radius": "10px" },
         onImageUpload: async (file) => URL.createObjectURL(file),
       };
 

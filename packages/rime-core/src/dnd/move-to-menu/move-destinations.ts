@@ -1,5 +1,5 @@
 // Pure move-destination computation (no DOM / no Lit) so it can live on the pure
-// SDK barrel. The <eb-move-to-menu> Lit component imports these and renders them.
+// SDK barrel. The <rime-move-to-menu> Lit component imports these and renders them.
 
 import { isSection, type RimeDoc } from "@nord-forge/rime-model";
 import type { DropTarget } from "../dnd-types/dnd-types";

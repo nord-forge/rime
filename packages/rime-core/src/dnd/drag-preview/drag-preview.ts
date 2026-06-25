@@ -1,7 +1,7 @@
 // Branded drag preview. Because canvas DnD is pointer-event based
 // there is NO native HTML5 drag image to replace — instead we render a
 // small themed card and move it to follow the pointer during the drag, then
-// remove it on drag end. Styled exclusively from --eb-* tokens.
+// remove it on drag end. Styled exclusively from --rime-* tokens.
 
 import type { DragData } from "../dnd-types/dnd-types";
 
@@ -27,9 +27,9 @@ function metaFor(data: DragData): { icon: string; label: string } {
 export function renderPreviewCard(doc: Document, data: DragData): HTMLElement {
   const { icon, label } = metaFor(data);
   const card = doc.createElement("div");
-  card.dataset["ebOverlay"] = "drag-preview";
+  card.dataset["rimeOverlay"] = "drag-preview";
   // Longhand properties (not `background`/`border`/`font` shorthands) so the
-  // --eb-* var() fallbacks survive CSSOM round-tripping.
+  // --rime-* var() fallbacks survive CSSOM round-tripping.
   const s = card.style;
   s.position = "fixed";
   s.insetBlockStart = "0";
@@ -39,14 +39,14 @@ export function renderPreviewCard(doc: Document, data: DragData): HTMLElement {
   s.gap = "8px";
   s.paddingBlock = "6px";
   s.paddingInline = "10px";
-  s.backgroundColor = "var(--eb-color-bg, #fff)";
-  s.color = "var(--eb-color-fg, #18181b)";
+  s.backgroundColor = "var(--rime-color-bg, #fff)";
+  s.color = "var(--rime-color-fg, #18181b)";
   s.borderWidth = "1px";
   s.borderStyle = "solid";
-  s.borderColor = "var(--eb-color-border, #e4e4e7)";
-  s.borderRadius = "var(--eb-radius, 8px)";
-  s.boxShadow = "var(--eb-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18))";
-  s.fontFamily = "var(--eb-font-ui, system-ui)";
+  s.borderColor = "var(--rime-color-border, #e4e4e7)";
+  s.borderRadius = "var(--rime-radius, 8px)";
+  s.boxShadow = "var(--rime-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18))";
+  s.fontFamily = "var(--rime-font-ui, system-ui)";
   s.pointerEvents = "none";
   s.zIndex = "2147483647";
   s.willChange = "transform";
@@ -54,7 +54,7 @@ export function renderPreviewCard(doc: Document, data: DragData): HTMLElement {
   const iconEl = doc.createElement("span");
   iconEl.textContent = icon;
   iconEl.style.fontWeight = "600";
-  iconEl.style.color = "var(--eb-color-accent, #5b5bd6)";
+  iconEl.style.color = "var(--rime-color-accent, #5b5bd6)";
   const labelEl = doc.createElement("span");
   labelEl.textContent = label;
   card.append(iconEl, labelEl);
@@ -69,7 +69,7 @@ export class DragPreview {
     // Enforce the single-preview invariant structurally: clear any stragglers in
     // this overlay before inserting ours, so no event-ordering race can leave more
     // than one drag-preview node in the DOM.
-    for (const stale of parent.querySelectorAll('[data-eb-overlay="drag-preview"]')) {
+    for (const stale of parent.querySelectorAll('[data-rime-overlay="drag-preview"]')) {
       stale.remove();
     }
     this.#el = renderPreviewCard(parent.ownerDocument, data);

@@ -30,7 +30,7 @@ export {
 export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
 export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
 export {
-  EbTokenPicker,
+  RimeTokenPicker,
   type TokenItem,
   type TokenSelectDetail,
 } from "./richtext/token-picker/token-picker";

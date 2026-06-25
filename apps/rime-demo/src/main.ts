@@ -1,6 +1,6 @@
 // Rime vanilla demo — proves the end-user UX on the PUBLIC surface only:
 // <rime-editor> + the ENV-42 JSON in/out API + the ENV-43 onImageUpload contract +
-// --eb-* theming, with a trivial localStorage store (no backend, per §6.10). It also
+// --rime-* theming, with a trivial localStorage store (no backend, per §6.10). It also
 // registers the example custom block (ENV-37) to prove registerBlock end to end.
 
 import { defineRimeEditor } from "@nord-forge/rime-core/register";
@@ -83,7 +83,7 @@ function starterDoc(): RimeDoc {
   };
 }
 
-// --eb-* theme presets, applied to the chrome at runtime. The CANVAS (email styles)
+// --rime-* theme presets, applied to the chrome at runtime. The CANVAS (email styles)
 // is unaffected — the two-surface model.
 const THEMES: { id: string; label: string; theme: RimeConfig["theme"] }[] = [
   { id: "light", label: "Light", theme: {} },
@@ -91,20 +91,20 @@ const THEMES: { id: string; label: string; theme: RimeConfig["theme"] }[] = [
     id: "indigo",
     label: "Indigo",
     theme: {
-      "--eb-color-accent": "#5b5bd6",
-      "--eb-color-surface": "#f7f7fe",
-      "--eb-radius": "10px",
+      "--rime-color-accent": "#5b5bd6",
+      "--rime-color-surface": "#f7f7fe",
+      "--rime-radius": "10px",
     },
   },
   {
     id: "dark",
     label: "Dark",
     theme: {
-      "--eb-color-bg": "#0c1020",
-      "--eb-color-surface": "#161b2e",
-      "--eb-color-fg": "#e7e9f5",
-      "--eb-color-border": "#2a3150",
-      "--eb-color-accent": "#8b8bf0",
+      "--rime-color-bg": "#0c1020",
+      "--rime-color-surface": "#161b2e",
+      "--rime-color-fg": "#e7e9f5",
+      "--rime-color-border": "#2a3150",
+      "--rime-color-accent": "#8b8bf0",
     },
   },
 ];

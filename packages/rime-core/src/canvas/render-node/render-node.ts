@@ -49,8 +49,8 @@ export function renderTokenChip(
   chip.style.display = "inline-block";
   chip.style.padding = "0 4px";
   chip.style.borderRadius = "3px";
-  chip.style.background = "var(--eb-token-bg, var(--eb-accent-soft, #e8eefc))";
-  chip.style.color = "var(--eb-token-fg, var(--eb-accent, #2748b8))";
+  chip.style.background = "var(--rime-token-bg, var(--rime-accent-soft, #e8eefc))";
+  chip.style.color = "var(--rime-token-fg, var(--rime-accent, #2748b8))";
   chip.style.fontSize = "0.9em";
   chip.style.whiteSpace = "nowrap";
   return chip;
@@ -122,7 +122,7 @@ export function renderSection(node: SectionNode, doc: Document): HTMLElement {
   e.style.display = "block";
   applyStyle(e, node.style);
   // The column row is a flex container.
-  e.style.setProperty("--eb-section", "1");
+  e.style.setProperty("--rime-section", "1");
   const row = doc.createElement("div");
   row.dataset["nodeRole"] = "column-row";
   row.style.display = "flex";

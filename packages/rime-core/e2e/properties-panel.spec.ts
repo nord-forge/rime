@@ -55,7 +55,7 @@ async function selectBlock(page: Page, id: string): Promise<void> {
 function panelField(page: Page, label: string) {
   return page
     .locator("rime-editor")
-    .locator("eb-properties-panel")
+    .locator("rime-properties-panel")
     .locator(
       `.field:has(label:text-is("${label}")) input, .field:has(label:text-is("${label}")) textarea`,
     )
@@ -83,7 +83,7 @@ function headingText(page: Page, id: string): Promise<string> {
 test.describe("schema-driven properties panel", () => {
   test("empty state when nothing is selected", async ({ page }) => {
     await setup(page);
-    const empty = page.locator("rime-editor").locator("eb-properties-panel").locator(".empty");
+    const empty = page.locator("rime-editor").locator("rime-properties-panel").locator(".empty");
     await expect(empty).toContainText("Select a block");
   });
 

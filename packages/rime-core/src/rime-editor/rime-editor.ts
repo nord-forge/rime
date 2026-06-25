@@ -1,5 +1,5 @@
 // <rime-editor> — the public custom element: the shell hosting the palette,
-// canvas, and properties regions. Chrome is themed via --eb-* custom properties.
+// canvas, and properties regions. Chrome is themed via --rime-* custom properties.
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, query } from "lit/decorators.js";
@@ -44,8 +44,8 @@ import {
 } from "../a11y/announce-messages/announce-messages";
 import type { RichTextHost, RichTextProvider } from "../richtext/provider/richtext-provider";
 import { createPlainTextProvider } from "../richtext/provider/plain-text-provider";
-import { type DocChangeDetail, EbPropertiesPanel } from "../properties/properties-panel";
-import { EbPalette, type PaletteAddDetail } from "../palette/palette";
+import { type DocChangeDetail, RimePropertiesPanel } from "../properties/properties-panel";
+import { RimePalette, type PaletteAddDetail } from "../palette/palette";
 import { type TokenSource, registerTokenSource, tokenRegistry } from "../tokens/registry";
 
 // TokenSource is owned by the token registry (single definition); re-exported on
@@ -54,8 +54,8 @@ export type { TokenSource };
 
 /** The public configuration surface for the editor. */
 export interface RimeConfig {
-  /** --eb-* token overrides applied to the chrome (host-piercing). */
-  theme?: Record<`--eb-${string}`, string>;
+  /** --rime-* token overrides applied to the chrome (host-piercing). */
+  theme?: Record<`--rime-${string}`, string>;
   /** Block type ids enabled in the palette; undefined = all built-ins. */
   enabledBlocks?: string[];
   /** Host uploader; returns the final URL for an image block. */
@@ -98,20 +98,23 @@ export class RimeEditor extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: grid;
-      grid-template-columns: var(--eb-palette-width, 240px) 1fr var(--eb-properties-width, 300px);
+      grid-template-columns: var(--rime-palette-width, 240px) 1fr var(
+          --rime-properties-width,
+          300px
+        );
       grid-template-rows: minmax(0, 1fr);
       grid-template-areas: "palette canvas properties";
       /* The embedder sizes the element (e.g. height: 100vh). Default to a usable
          height so it is never zero/collapsed if unsized. */
       min-block-size: 400px;
-      font: var(--eb-font-ui, 14px system-ui);
-      color: var(--eb-color-fg, #18181b);
-      background: var(--eb-color-bg, #fff);
+      font: var(--rime-font-ui, 14px system-ui);
+      color: var(--rime-color-fg, #18181b);
+      background: var(--rime-color-bg, #fff);
     }
     [part="palette"] {
       grid-area: palette;
       overflow: auto;
-      border-inline-end: 1px solid var(--eb-color-border, #e4e4e7);
+      border-inline-end: 1px solid var(--rime-color-border, #e4e4e7);
     }
     [part="canvas"] {
       grid-area: canvas;
@@ -134,7 +137,7 @@ export class RimeEditor extends LitElement {
     [part="properties"] {
       grid-area: properties;
       overflow: auto;
-      border-inline-start: 1px solid var(--eb-color-border, #e4e4e7);
+      border-inline-start: 1px solid var(--rime-color-border, #e4e4e7);
     }
   `;
 
@@ -142,8 +145,8 @@ export class RimeEditor extends LitElement {
   @property({ attribute: false }) config: RimeConfig = {};
 
   @query('[part="canvas"]') private canvasRegion!: HTMLElement;
-  @query("eb-properties-panel") private propertiesPanel!: EbPropertiesPanel;
-  @query("eb-palette") private palette!: EbPalette;
+  @query("rime-properties-panel") private propertiesPanel!: RimePropertiesPanel;
+  @query("rime-palette") private palette!: RimePalette;
 
   #doc: RimeDoc | null = null;
 
@@ -154,8 +157,8 @@ export class RimeEditor extends LitElement {
   #keyboard: KeyboardMoveController | null = null;
   #announcer: LiveAnnouncer | null = null;
   #richtext: RichTextProvider | null = null;
-  #properties: EbPropertiesPanel | null = null;
-  #palette: EbPalette | null = null;
+  #properties: RimePropertiesPanel | null = null;
+  #palette: RimePalette | null = null;
   #paletteCleanups: (() => void)[] = [];
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
@@ -674,9 +677,9 @@ export class RimeEditor extends LitElement {
     return this.#canvas.whenReady();
   }
 
-  // Apply --eb-* overrides to the host element — the only theming channel for
+  // Apply --rime-* overrides to the host element — the only theming channel for
   // chrome. We never read host stylesheets.
-  // --eb-* keys this component set on the last applyTheme, so switching to a theme
+  // --rime-* keys this component set on the last applyTheme, so switching to a theme
   // that omits a key (e.g. back to a {} "default" theme) clears it instead of
   // leaving the previous theme's value stuck on the element.
   #appliedThemeKeys: string[] = [];
@@ -732,17 +735,17 @@ export class RimeEditor extends LitElement {
   override render() {
     return html`
       <section part="palette">
-        <eb-palette
+        <rime-palette
           .enabledBlocks=${this.config.enabledBlocks}
-          @eb-palette-add=${(e: Event) => this.#onPaletteAdd(e)}
-        ></eb-palette>
+          @rime-palette-add=${(e: Event) => this.#onPaletteAdd(e)}
+        ></rime-palette>
         <slot name="palette"></slot>
       </section>
       <section part="canvas"><slot name="canvas"></slot></section>
       <section part="properties">
-        <eb-properties-panel
-          @eb-doc-change=${(e: Event) => this.#onPropertyChange(e)}
-        ></eb-properties-panel>
+        <rime-properties-panel
+          @rime-doc-change=${(e: Event) => this.#onPropertyChange(e)}
+        ></rime-properties-panel>
         <slot name="properties"></slot>
       </section>
     `;

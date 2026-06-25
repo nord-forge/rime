@@ -1,9 +1,9 @@
-// <eb-palette> — the left-hand chrome region (§6.5). Data-driven from the block +
+// <rime-palette> — the left-hand chrome region (§6.5). Data-driven from the block +
 // preset registries: every registered block/preset contributes an entry, so custom
 // blocks appear automatically. Each item is BOTH a pointer-drag source (the editor
 // registers it via registerPaletteItem → the canvas DnD) AND keyboard-operable
-// (Enter/Space emits eb-palette-add for a11y parity — drag is not the only way to
-// add). Chrome: Shadow DOM, themed by --eb-*.
+// (Enter/Space emits rime-palette-add for a11y parity — drag is not the only way to
+// add). Chrome: Shadow DOM, themed by --rime-*.
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property } from "lit/decorators.js";
@@ -15,18 +15,18 @@ export interface PaletteAddDetail {
   id: string;
 }
 
-export class EbPalette extends LitElement {
+export class RimePalette extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
       block-size: 100%;
       overflow-y: auto;
-      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
-      color: var(--eb-color-fg, #18181b);
-      font: var(--eb-font-ui, 14px system-ui);
+      background: var(--rime-color-surface, var(--rime-color-bg, #fff));
+      color: var(--rime-color-fg, #18181b);
+      font: var(--rime-font-ui, 14px system-ui);
     }
     .group {
-      border-block-end: 1px solid var(--eb-color-border, #e4e4e7);
+      border-block-end: 1px solid var(--rime-color-border, #e4e4e7);
       padding: 12px;
     }
     .group > h3 {
@@ -47,9 +47,9 @@ export class EbPalette extends LitElement {
       align-items: center;
       gap: 4px;
       padding: 10px 6px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 8px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 8px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       font: inherit;
       cursor: grab;
@@ -58,7 +58,7 @@ export class EbPalette extends LitElement {
     }
     .item:hover,
     .item:focus-visible {
-      border-color: var(--eb-color-accent, #5b5bd6);
+      border-color: var(--rime-color-accent, #5b5bd6);
       outline: none;
     }
     .item .icon {
@@ -66,7 +66,7 @@ export class EbPalette extends LitElement {
       align-items: center;
       justify-content: center;
       block-size: 22px;
-      color: var(--eb-color-fg, #18181b);
+      color: var(--rime-color-fg, #18181b);
     }
     .item .icon svg {
       display: block;
@@ -90,7 +90,7 @@ export class EbPalette extends LitElement {
 
   #add(id: string): void {
     this.dispatchEvent(
-      new CustomEvent<PaletteAddDetail>("eb-palette-add", {
+      new CustomEvent<PaletteAddDetail>("rime-palette-add", {
         detail: { id },
         bubbles: true,
         composed: true,
@@ -132,12 +132,12 @@ export class EbPalette extends LitElement {
   }
 }
 
-if (!customElements.get("eb-palette")) {
-  customElements.define("eb-palette", EbPalette);
+if (!customElements.get("rime-palette")) {
+  customElements.define("rime-palette", RimePalette);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "eb-palette": EbPalette;
+    "rime-palette": RimePalette;
   }
 }

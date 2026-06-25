@@ -11,7 +11,7 @@ stock Vite.** No fallback required.
 A real Lit component (`src/themed-panel.ts`) exercising the toolchain's hardest
 cases for this project:
 - `static styles = css\`...\`` (Lit tagged-template CSS — must survive minify)
-- `--eb-*` CSS custom properties piercing shadow DOM (the theming model)
+- `--rime-*` CSS custom properties piercing shadow DOM (the theming model)
 - a same-origin `srcdoc` iframe (the canvas pattern)
 - a `@property` decorator (needs `useDefineForClassFields:false`)
 
@@ -25,7 +25,7 @@ Run through the full intended pipeline with **both** engines.
 | `oxfmt --check` | ✅ (after applying) | — | **oxfmt is Lit-safe** — reformatted code incl. CSS *inside* `css\`\`` without breaking the template; switched to double-quotes |
 | `tsc` declaration emit | ✅ clean | ✅ | decorators OK with `useDefineForClassFields:false` |
 | `vite build` (lib, ESM) | ✅ 36ms | ✅ 111ms | both succeed |
-| CSS vars in output | ✅ | ✅ | `--eb-color-accent` present |
+| CSS vars in output | ✅ | ✅ | `--rime-color-accent` present |
 | `customElements.define` | ✅ | ✅ | element registers |
 | iframe `srcdoc` | ✅ | ✅ | canvas pattern intact |
 | **Browser smoke (Chromium + WebKit)** | ✅ 2/2 | ✅ 2/2 | element renders, heading shows, **CSS var applies through shadow DOM** (`rgb(10,20,30)`), iframe mounts |

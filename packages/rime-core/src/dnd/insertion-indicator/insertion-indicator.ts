@@ -1,5 +1,5 @@
 // The insertion indicator: a 2px line showing where a dragged block will land.
-// It is CHROME (lives in the host overlay, themed by --eb-*), but points at a
+// It is CHROME (lives in the host overlay, themed by --rime-*), but points at a
 // position inside the iframe canvas — so its screen rect is computed from the
 // cached canvas geometry and converted to host space via the coordinate
 // controller. A plain absolutely-positioned element (lighter than a component).
@@ -62,12 +62,12 @@ export class InsertionIndicator {
   constructor(parent: ParentNode & { ownerDocument: Document }, coords: DragCoordinateController) {
     this.#coords = coords;
     this.#el = parent.ownerDocument.createElement("div");
-    this.#el.dataset["ebOverlay"] = "drop-indicator";
+    this.#el.dataset["rimeOverlay"] = "drop-indicator";
     this.#el.style.cssText = [
       "position:fixed",
       "block-size:2px",
-      "background:var(--eb-color-accent, #5b5bd6)",
-      "border-radius:var(--eb-radius, 8px)",
+      "background:var(--rime-color-accent, #5b5bd6)",
+      "border-radius:var(--rime-radius, 8px)",
       "pointer-events:none",
       "z-index:2147483647",
       "display:none",

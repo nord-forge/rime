@@ -79,7 +79,7 @@ function starterDoc(): RimeDoc {
   } as RimeDoc;
 }
 
-// Theme presets map directly onto the editor's --eb-* chrome tokens. The canvas
+// Theme presets map directly onto the editor's --rime-* chrome tokens. The canvas
 // (email styles) is unaffected — the two-surface model.
 const THEMES: { id: string; label: string; theme: RimeConfig["theme"] }[] = [
   { id: "light", label: "Light", theme: {} },
@@ -87,20 +87,20 @@ const THEMES: { id: string; label: string; theme: RimeConfig["theme"] }[] = [
     id: "indigo",
     label: "Indigo",
     theme: {
-      "--eb-color-accent": "#5b5bd6",
-      "--eb-color-surface": "#f7f7fe",
-      "--eb-radius": "10px",
+      "--rime-color-accent": "#5b5bd6",
+      "--rime-color-surface": "#f7f7fe",
+      "--rime-radius": "10px",
     },
   },
   {
     id: "dark",
     label: "Dark",
     theme: {
-      "--eb-color-bg": "#0c1020",
-      "--eb-color-surface": "#161b2e",
-      "--eb-color-fg": "#e7e9f5",
-      "--eb-color-border": "#2a3150",
-      "--eb-color-accent": "#8b8bf0",
+      "--rime-color-bg": "#0c1020",
+      "--rime-color-surface": "#161b2e",
+      "--rime-color-fg": "#e7e9f5",
+      "--rime-color-border": "#2a3150",
+      "--rime-color-accent": "#8b8bf0",
     },
   },
 ];

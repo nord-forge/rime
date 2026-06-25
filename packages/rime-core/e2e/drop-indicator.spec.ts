@@ -52,7 +52,7 @@ async function setup(page: Page): Promise<void> {
     };
     await el.whenCanvasReady();
     el.loadDoc(doc);
-    el.config = { theme: { "--eb-color-accent": "rgb(10, 20, 30)" } };
+    el.config = { theme: { "--rime-color-accent": "rgb(10, 20, 30)" } };
     const item = document.createElement("div");
     item.id = "palette-button";
     item.style.cssText = "position:fixed;top:0;right:0;width:80px;height:24px;z-index:9999";
@@ -68,7 +68,7 @@ function indicatorState(page: Page) {
     await new Promise((r) => requestAnimationFrame(() => r(null)));
     const host = document.querySelector("rime-editor")!;
     const ind = host.shadowRoot!.querySelector(
-      '[data-eb-overlay="drop-indicator"]',
+      '[data-rime-overlay="drop-indicator"]',
     ) as HTMLElement | null;
     if (!ind) return { present: false };
     const cs = getComputedStyle(ind);
@@ -94,7 +94,7 @@ async function nodeCenter(page: Page, id: string) {
 }
 
 test.describe("drop indicator", () => {
-  test("appears while dragging over the canvas, themed by --eb-accent", async ({ page }) => {
+  test("appears while dragging over the canvas, themed by --rime-accent", async ({ page }) => {
     await setup(page);
     const palette = (await page.locator("#palette-button").boundingBox())!;
     const b = await nodeCenter(page, "t_b");

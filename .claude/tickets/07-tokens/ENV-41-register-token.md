@@ -57,7 +57,7 @@ Create under `packages/core/src/tokens/`:
    declarative JSON path — integrators who prefer config over code use only this.
    Programmatic `registerToken(...)` is the code path; both land in the same registry.
 3. **Feed the picker.** Pass `tokenRegistry.all()` (or `bySource()`) into
-   `<eb-token-picker>` (ENV-40). The picker stays presentational; the registry is the
+   `<rime-token-picker>` (ENV-40). The picker stays presentational; the registry is the
    source of truth for "what tokens exist".
 4. **Validation.** A token `key` must be a safe identifier-ish string (the substring
    that ends up inside `{{ }}` on export, ENV-39). Reject empty/whitespace keys.

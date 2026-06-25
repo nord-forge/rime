@@ -19,12 +19,12 @@ padding, colors, alignment, columns, etc. It is **schema-driven**: it reads the
 selected block's `BlockSchema` (ENV-33) and renders the matching form controls, so a
 custom block gets a properties form for free. Edits mutate the **one** document model
 through ENV-06 immutable ops (never direct DOM/node mutation), keeping the doc the
-single source of truth. Chrome, so themed by `--eb-*` and Shadow DOM, not the canvas.
+single source of truth. Chrome, so themed by `--rime-*` and Shadow DOM, not the canvas.
 
 ## Goal
-A Lit component `<eb-properties-panel>` renders form controls generated from the
+A Lit component `<rime-properties-panel>` renders form controls generated from the
 selected block's schema and writes every edit back to the doc via ENV-06 ops, themed
-entirely with `--eb-*`.
+entirely with `--rime-*`.
 
 ## Prerequisites
 - ENV-33 done (`BlockSchema`, `FieldDef`, `FieldType`, `blockRegistry`).
@@ -38,21 +38,21 @@ entirely with `--eb-*`.
 ## Implementation notes
 Create under `packages/core/src/properties/`:
 
-1. **`properties-panel.ts`** — `EbPropertiesPanel extends LitElement`
-   (`eb-properties-panel`):
+1. **`properties-panel.ts`** — `RimePropertiesPanel extends LitElement`
+   (`rime-properties-panel`):
    ```ts
    @property({ attribute: false }) doc!: RimeDoc;
    @property({ attribute: false }) selectedId: NodeId | null = null;
-   // emits `eb-doc-change` { detail: { doc, patch } } when a field edits the doc
+   // emits `rime-doc-change` { detail: { doc, patch } } when a field edits the doc
    ```
    - Resolve the selected node from `doc` by id; look up its `BlockDefinition` via
      `blockRegistry.get(node.type)`; render the schema's fields grouped by `field.group`
      (collapsible sections: "Layout", "Spacing", "Colors", block-specific).
    - Empty state when nothing is selected ("Select a block to edit").
-2. **`fields/` — one Lit control per `FieldType`**, all themed via `--eb-*`:
-   `eb-field-text`, `eb-field-number`, `eb-field-color`, `eb-field-select`,
-   `eb-field-boolean`, `eb-field-spacing` (T/R/B/L group), `eb-field-align`
-   (left/center/right toggle), `eb-field-url`. (`richtext` is edited inline on canvas,
+2. **`fields/` — one Lit control per `FieldType`**, all themed via `--rime-*`:
+   `rime-field-text`, `rime-field-number`, `rime-field-color`, `rime-field-select`,
+   `rime-field-boolean`, `rime-field-spacing` (T/R/B/L group), `rime-field-align`
+   (left/center/right toggle), `rime-field-url`. (`richtext` is edited inline on canvas,
    not here — render a hint, not an editor.) Each control:
    - reads its current value from the node via the field's `key` dot-path
      (`getByPath(node, "style.paddingTop")`),
@@ -60,32 +60,32 @@ Create under `packages/core/src/properties/`:
 3. **Edit → doc op.** The panel translates a field change into an ENV-06 immutable
    update keyed by `selectedId` + `field.key` dot-path, e.g.
    `setNodeProp(doc, selectedId, "style.paddingTop", 12) → { doc, patch }`, then
-   dispatches `eb-doc-change`. The editor applies it (so undo/redo via patch diffs
+   dispatches `rime-doc-change`. The editor applies it (so undo/redo via patch diffs
    works for property edits too). **Debounce** rapid inputs (color/number drags) to one
    doc op per idle frame to protect the perf budget and keep undo history sane.
 4. **Columns control.** The Section block's column-count field adds/removes
    `ColumnNode` children and re-distributes `widthPercent` to sum to 100 (ENV-05
    invariant) — implement as a dedicated op the section field calls. Per-column width
    is editable on the selected column.
-5. **Theming.** All controls use `--eb-color-*`, `--eb-radius`, `--eb-font-ui`, spacing
+5. **Theming.** All controls use `--rime-color-*`, `--rime-radius`, `--rime-font-ui`, spacing
    tokens (ENV-18). No host-CSS reads; Shadow DOM only. Match the chrome look from
    `.claude/spikes/od2-toolchain/src/themed-panel.ts`.
 6. **Mount** into the shell's `part="properties"` slot; wire `doc`/`selectedId` from
-   the editor and listen for `eb-doc-change`.
+   the editor and listen for `rime-doc-change`.
 7. **Budget** — Lit + small controls; no heavy form lib. Reuse Lit's templating; no new
    runtime dep.
 
 ## Acceptance criteria
-- [ ] `<eb-properties-panel>` renders a form generated from the selected block's
+- [ ] `<rime-properties-panel>` renders a form generated from the selected block's
       `schema.fields`, grouped by `field.group`.
 - [ ] Each `FieldType` has a working control; current values are read from the node via
       the field `key` dot-path.
-- [ ] Editing a field emits `eb-doc-change` carrying a **new** doc + patch produced by
+- [ ] Editing a field emits `rime-doc-change` carrying a **new** doc + patch produced by
       ENV-06 ops (no in-place node mutation); undo/redo therefore covers property edits.
 - [ ] Rapid input is debounced to bounded doc ops per frame.
 - [ ] The Section column-count control adds/removes columns and keeps widths summing
       to 100 (round-trips `validateDoc`).
-- [ ] All controls are themed via `--eb-*`; no host CSS reaches them (Shadow DOM).
+- [ ] All controls are themed via `--rime-*`; no host CSS reaches them (Shadow DOM).
 - [ ] Empty state shows when nothing is selected.
 - [ ] Unit tests cover schema→fields generation, value read/write by path, the
       doc-op emission, and the columns op (`bun test`); a Playwright test edits a field
@@ -108,4 +108,4 @@ bun run e2e  # chromium + webkit: select a block, change padding/color, canvas r
 
 ## Definition of done
 See `_conventions.md`. Schema-driven panel mutates the doc via ENV-06; themed by
-`--eb-*`; size gate green; status → `review`.
+`--rime-*`; size gate green; status → `review`.

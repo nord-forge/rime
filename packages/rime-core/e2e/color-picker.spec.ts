@@ -1,6 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// The properties-panel color field opens a custom <eb-color-picker> (saturation
+// The properties-panel color field opens a custom <rime-color-picker> (saturation
 // square + hue strip + hex/rgb/oklch input & toggle). Real browser (chromium +
 // webkit) — pointer math + Shadow DOM. Driven via the panel's shadow root.
 
@@ -49,12 +49,12 @@ test.describe("color picker", () => {
     const present = await page.evaluate(async () => {
       const panel = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-properties-panel")!;
+        .shadowRoot!.querySelector("rime-properties-panel")!;
       const swatch = panel.shadowRoot!.querySelector<HTMLButtonElement>("button.swatch");
       if (!swatch) return { hasSwatch: false, hasPicker: false };
       swatch.click();
       await new Promise((r) => requestAnimationFrame(r)); // Lit re-renders async
-      const picker = panel.shadowRoot!.querySelector("eb-color-picker");
+      const picker = panel.shadowRoot!.querySelector("rime-color-picker");
       return { hasSwatch: true, hasPicker: !!picker };
     });
     expect(present.hasSwatch).toBe(true);
@@ -71,10 +71,10 @@ test.describe("color picker", () => {
       };
       const panel = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-properties-panel")!;
+        .shadowRoot!.querySelector("rime-properties-panel")!;
       panel.shadowRoot!.querySelector<HTMLButtonElement>("button.swatch")!.click();
       await new Promise((r) => requestAnimationFrame(r));
-      const picker = panel.shadowRoot!.querySelector("eb-color-picker")!.shadowRoot!;
+      const picker = panel.shadowRoot!.querySelector("rime-color-picker")!.shadowRoot!;
       const input = picker.querySelector<HTMLInputElement>("input.text")!;
       const fmt = picker.querySelector<HTMLButtonElement>("button.fmt")!;
 
@@ -103,10 +103,10 @@ test.describe("color picker", () => {
     const fmt = await page.evaluate(async () => {
       const panel = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-properties-panel")!;
+        .shadowRoot!.querySelector("rime-properties-panel")!;
       panel.shadowRoot!.querySelector<HTMLButtonElement>("button.swatch")!.click();
       await new Promise((r) => requestAnimationFrame(r));
-      const picker = panel.shadowRoot!.querySelector("eb-color-picker")!.shadowRoot!;
+      const picker = panel.shadowRoot!.querySelector("rime-color-picker")!.shadowRoot!;
       const input = picker.querySelector<HTMLInputElement>("input.text")!;
       input.value = "rgb(16, 185, 129)";
       input.dispatchEvent(new Event("input", { bubbles: true }));

@@ -19,10 +19,10 @@ The palette (§6.5) is the left-hand region where users pick blocks to add. It i
 entry (icon, label, category), so custom blocks appear automatically. Critically, the
 palette is the **drag SOURCE** for the Pragmatic DnD system (ENV-19) — dragging a
 palette item onto the canvas creates a new block from its `palette.defaults`. Chrome,
-so themed by `--eb-*`, Shadow DOM, no host-CSS bleed.
+so themed by `--rime-*`, Shadow DOM, no host-CSS bleed.
 
 ## Goal
-A Lit component `<eb-palette>` lists registry blocks grouped by category with their
+A Lit component `<rime-palette>` lists registry blocks grouped by category with their
 icons/labels, and registers each item as a Pragmatic-DnD draggable that, on drop,
 inserts a new block (built from `palette.defaults`) into the doc.
 
@@ -31,13 +31,13 @@ inserts a new block (built from `palette.defaults`) into the doc.
   defaults`).
 - ENV-19 done (Pragmatic DnD integration: the `draggable()` registration + the
   drop-target/insertion machinery on the canvas that consumes a "new block" payload).
-- ENV-14 shell (`part="palette"` mount + `--eb-*` theming).
+- ENV-14 shell (`part="palette"` mount + `--rime-*` theming).
 - `config.enabledBlocks` (ENV-14) to optionally filter which entries show.
 
 ## Implementation notes
 Create under `packages/core/src/palette/`:
 
-1. **`palette.ts`** — `EbPalette extends LitElement` (`eb-palette`):
+1. **`palette.ts`** — `RimePalette extends LitElement` (`rime-palette`):
    ```ts
    @property({ attribute: false }) enabledBlocks?: string[]; // from config; undefined = all
    ```
@@ -60,7 +60,7 @@ Create under `packages/core/src/palette/`:
    "Add" affordance (Enter / a context action) that inserts the block at a sensible
    default location, feeding the same ARIA-live path as ENV-23/45. Drag is not the only
    way to add a block.
-4. **Theming.** Items, headers, hover/focus states use `--eb-*` tokens (ENV-18);
+4. **Theming.** Items, headers, hover/focus states use `--rime-*` tokens (ENV-18);
    Shadow DOM; no host CSS. Icons are the `palette.icon` strings (emoji or inline SVG).
 5. **Mount** into the shell's `part="palette"` slot; pass `enabledBlocks` from
    `config`. Live-update if the registry changes after init is out of scope (registry is
@@ -68,14 +68,14 @@ Create under `packages/core/src/palette/`:
 6. **Budget** — Lit + small templates; reuse ENV-19's `draggable()`; no new runtime dep.
 
 ## Acceptance criteria
-- [ ] `<eb-palette>` lists every registered block grouped by `category`, showing
+- [ ] `<rime-palette>` lists every registered block grouped by `category`, showing
       `icon` + `label` from each `PaletteEntry`.
 - [ ] `config.enabledBlocks` filters which entries appear; undefined shows all built-ins.
 - [ ] Each item is a Pragmatic-DnD drag source carrying a `{ kind: "new-block",
       blockType }` payload; dropping on the canvas inserts a new block built from
       `palette.defaults` (fresh id, valid via `validateDoc`) via an ENV-06 op.
 - [ ] Each item is keyboard-operable to add a block (not drag-only), feeding ARIA-live.
-- [ ] Themed entirely via `--eb-*`; no host CSS bleed (Shadow DOM).
+- [ ] Themed entirely via `--rime-*`; no host CSS bleed (Shadow DOM).
 - [ ] Unit tests cover registry→grouped-rendering and the enabledBlocks filter; a
       Playwright test drags a palette item to the canvas and asserts a new block appears
       (chromium + webkit).
@@ -97,4 +97,4 @@ bun run e2e  # chromium + webkit: drag "Text" from palette to canvas → block c
 
 ## Definition of done
 See `_conventions.md`. Registry-driven palette acts as DnD source + keyboard add;
-themed by `--eb-*`; size gate green; status → `review`.
+themed by `--rime-*`; size gate green; status → `review`.

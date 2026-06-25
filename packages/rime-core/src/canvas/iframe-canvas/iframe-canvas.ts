@@ -4,7 +4,7 @@
 // system (elementFromPoint answers about the canvas, not the host).
 //
 // CanvasController owns one iframe's lifecycle. The shell creates it and mounts
-// the iframe into part="canvas"; the doc→DOM renderer draws into #eb-root.
+// the iframe into part="canvas"; the doc→DOM renderer draws into #rime-root.
 
 /** Resolved when the canvas document has loaded and its mount node is ready. */
 export interface CanvasReadyEvent {
@@ -13,11 +13,11 @@ export interface CanvasReadyEvent {
   iframe: HTMLIFrameElement;
 }
 
-// Minimal, self-contained canvas document — no external requests. `#eb-base` is
-// the swappable email stylesheet; `#eb-root` is where the renderer draws.
+// Minimal, self-contained canvas document — no external requests. `#rime-base` is
+// the swappable email stylesheet; `#rime-root` is where the renderer draws.
 const SRCDOC = `<!doctype html><html><head><meta charset="utf-8">
-<style id="eb-base">*,*::before,*::after{box-sizing:border-box}html,body{margin:0}body{font:15px system-ui;background:#fff}</style>
-</head><body><div id="eb-root"></div></body></html>`;
+<style id="rime-base">*,*::before,*::after{box-sizing:border-box}html,body{margin:0}body{font:15px system-ui;background:#fff}</style>
+</head><body><div id="rime-root"></div></body></html>`;
 
 export class CanvasController {
   readonly iframe: HTMLIFrameElement;
@@ -46,7 +46,7 @@ export class CanvasController {
 
     this.#onLoad = () => {
       const doc = this.iframe.contentDocument;
-      const mount = doc?.getElementById("eb-root");
+      const mount = doc?.getElementById("rime-root");
       if (doc && mount) {
         this.#resolveReady({ doc, mount, iframe: this.iframe });
       }
@@ -66,14 +66,14 @@ export class CanvasController {
     return this.iframe.contentDocument;
   }
 
-  /** The `#eb-root` render node, or null before load. */
+  /** The `#rime-root` render node, or null before load. */
   get mountPoint(): HTMLElement | null {
-    return this.iframe.contentDocument?.getElementById("eb-root") ?? null;
+    return this.iframe.contentDocument?.getElementById("rime-root") ?? null;
   }
 
-  /** Replace the injected email base stylesheet (`#eb-base`). */
+  /** Replace the injected email base stylesheet (`#rime-base`). */
   setBaseStyles(css: string): void {
-    const style = this.iframe.contentDocument?.getElementById("eb-base");
+    const style = this.iframe.contentDocument?.getElementById("rime-base");
     if (style) style.textContent = css;
   }
 

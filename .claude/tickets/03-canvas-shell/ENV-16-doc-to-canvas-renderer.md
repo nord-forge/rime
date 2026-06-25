@@ -24,11 +24,11 @@ every keystroke/drag would blow the §10 perf budget.
 
 ## Goal
 Given an `RimeDoc`, the renderer paints a divs/flex preview into the canvas
-iframe's `#eb-root`, tags each node with its id for hit-testing, and updates
+iframe's `#rime-root`, tags each node with its id for hit-testing, and updates
 efficiently when the doc changes.
 
 ## Prerequisites
-- ENV-15 done (`CanvasController` exposes `#eb-root` mount + `whenReady()`).
+- ENV-15 done (`CanvasController` exposes `#rime-root` mount + `whenReady()`).
 - ENV-05 done (`RimeDoc`, node types, `validateDoc` from `@nord-forge/rime-model`).
 - The doc is immutable and edits arrive as new docs / patches (ENV-06); the renderer
   consumes whole docs and may use patch info later for finer diffing.
@@ -95,7 +95,7 @@ Create under `packages/core/src/`:
 
 ## Acceptance criteria
 - [ ] `render(doc)` paints document → sections → columns (flex) → leaf blocks into
-      `#eb-root`; every element carries `data-node-id` + `data-node-type`.
+      `#rime-root`; every element carries `data-node-id` + `data-node-type`.
 - [ ] Columns lay out side-by-side via flex with widths matching `widthPercent`.
 - [ ] `BlockStyle` (padding/background/align) is applied to the right elements.
 - [ ] `update(next)` is incremental: an unchanged subtree's DOM element is the **same

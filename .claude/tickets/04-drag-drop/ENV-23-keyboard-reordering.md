@@ -70,10 +70,10 @@ Create under `packages/core/src/dnd/`:
      previous/next column's end/start (resolveMove decides; null if no neighbour).
    - Do NOT intercept arrows when a Lexical editor is focused inside a TextBlock
      (ENV-27/51) — guard on whether the active element is the live editor.
-3. **"Move to" menu** — `<eb-move-to-menu>` Lit component: a small popover listing
+3. **"Move to" menu** — `<rime-move-to-menu>` Lit component: a small popover listing
    valid destinations (this column ↑/↓, each other column, each section) for the
    selected block, each invoking `move(...)` / a direct `moveNode` to an explicit
-   target. Themed via `--eb-*`. Opened from a block's selection toolbar / a key
+   target. Themed via `--rime-*`. Opened from a block's selection toolbar / a key
    (e.g. `Alt+M`). Fully keyboard-operable (roving focus, `Enter` to apply,
    `Esc` to close).
 4. **Every move = ENV-06** — `move()` calls `moveNode(doc, id, target.parentId,
@@ -90,9 +90,9 @@ Create under `packages/core/src/dnd/`:
 - [ ] A selected block moves into an adjacent column via keyboard.
 - [ ] At a column boundary, up/down carries the block to the neighbouring column
       (or is a no-op with no neighbour) — `resolveMove` unit-tested for edges.
-- [ ] An `<eb-move-to-menu>` lists valid destinations and applies a move on
+- [ ] An `<rime-move-to-menu>` lists valid destinations and applies a move on
       selection; fully keyboard-operable (`Tab`/arrows/`Enter`/`Esc`), themed via
-      `--eb-*`.
+      `--rime-*`.
 - [ ] Arrow keys are NOT hijacked while a Lexical text editor is focused.
 - [ ] Every move goes through ENV-06 `moveNode`; no direct DOM mutation.
 - [ ] `announce(...)` is called with a message on each move (content filled by

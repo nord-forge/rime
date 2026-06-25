@@ -10,7 +10,7 @@ import { EMPTY_DOC } from './adapter';
 export class CanvasHost extends LitElement {
   static styles = css`
     :host { display: block; font: 14px system-ui; }
-    iframe { width: 100%; height: 220px; border: 1px solid var(--eb-border, #d4d4d8); border-radius: var(--eb-radius, 8px); }
+    iframe { width: 100%; height: 220px; border: 1px solid var(--rime-border, #d4d4d8); border-radius: var(--rime-radius, 8px); }
     .bar { display: flex; gap: 6px; margin-bottom: 8px; }
     button { font: inherit; padding: 4px 10px; border-radius: 6px; border: 1px solid #d4d4d8; background: #fff; cursor: pointer; }
   `;

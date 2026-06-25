@@ -2,7 +2,7 @@
 // (registerBlock). Merge tags reach it two ways, matching the hybrid extensibility
 // model: declaratively via `config.tokenSources` (merged at editor init) and
 // programmatically via `registerToken`/`registerTokenSource`. The token picker
-// (eb-token-picker) reads it. Pure + DOM-free (no Lit, no Lexical), so it lives on
+// (rime-token-picker) reads it. Pure + DOM-free (no Lit, no Lexical), so it lives on
 // the pure "@nord-forge/rime-core" barrel alongside registerBlock.
 
 /** A single merge tag. `key` is the substring that ends up inside {{ }} on export. */
