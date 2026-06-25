@@ -38,7 +38,7 @@ Cross-package deps use `workspace:*`.
 - **Rich-text engine = Lexical**, used headless, **one live instance at a time**
   (create on focus / destroy on blur). 100% custom UI (no library toolbar).
 - **Canvas = same-origin `srcdoc` iframe.** Host app CSS must never reach it.
-- **Chrome theming = `--eb-*` CSS custom properties** only.
+- **Chrome theming = `--rime-*` CSS custom properties** only.
 - **Canvas DnD = custom pointer-event dragging inside the iframe** (OD-6) — via
   the single drag controller, NOT a library. (Pragmatic was dropped: it binds to
   the host document + native HTML5 drag, which the srcdoc iframe canvas defeats.)

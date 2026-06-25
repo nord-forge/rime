@@ -47,11 +47,11 @@ source of truth.
   PURE, tree-shakeable SDK (types, registerBlock, registry, blocks, render helpers,
   DOM-free logic) — pulls in NO Lit custom elements. The editor element + ALL Lit chrome
   UI live on **`@nord-forge/rime-core/register`**: `defineRimeEditor(config?)`, `RimeEditor`/
-  `RimeConfig`/`RimeChangeDetail`/`TokenSource`, `EbPropertiesPanel`, `EbPalette`,
+  `RimeConfig`/`RimeChangeDetail`/`TokenSource`, `RimePropertiesPanel`, `RimePalette`,
   `MoveToMenu`. The **Lexical-coupled** rich-text surface — `mountLexical`, serialize
   (`$applyRichTextJSON`/`canonicalize`/…), `RichTextLifecycle`, `makeCommands`,
   `registerSelectionFormat`, and the Lexical-bound chrome `RichTextToolbar`/`LinkPopover`/
-  `EbTokenPicker` — lives on a THIRD deep entry **`@nord-forge/rime-core/richtext`** (ENV-66),
+  `RimeTokenPicker` — lives on a THIRD deep entry **`@nord-forge/rime-core/richtext`** (ENV-66),
   NOT on `/register`: re-exporting them from `/register` dragged Lexical into the eager
   `register.js` closure. The editor mounts that chrome via the dynamic Lexical provider.
   **Rule:** a value-export on the root barrel (or `/register`) must not transitively import
@@ -94,16 +94,16 @@ source of truth.
   (`richtext/provider/richtext-provider.ts`), never on Lexical directly. `config.lexicalEditor`
   (default true) selects the **Lexical provider** (`lexical-provider.ts` — headless Lexical,
   ONE live instance create-on-focus/destroy-on-blur via `RichTextLifecycle`, the
-  `<eb-rich-text-toolbar>` + `<eb-link-popover>` UI, IME composition guard) loaded via
+  `<rime-rich-text-toolbar>` + `<rime-link-popover>` UI, IME composition guard) loaded via
   `await import()`; or the **plain-text provider** (`plain-text-provider.ts` — a `<textarea>`,
   lossy `RichTextJSON`↔string in `plain-text.ts`). Lossless richtext↔Lexical round-trip in
   `richtext/serialize/serialize.ts`. **Rule:** `rime-editor.ts` must NOT statically import
   Lexical (guard: `no-static-lexical.test.ts`) — only via the dynamic split.
 - **Chrome UI (panel/palette):** each in its own dir (`properties/`, `palette/`), rendered in
-  the shell region (Shadow DOM, themed by `--eb-*`), editor holds a `@query` ref + feeds
+  the shell region (Shadow DOM, themed by `--rime-*`), editor holds a `@query` ref + feeds
   state. Pure grouping/assembly factored into DOM-free helpers (`field-path.ts`,
   `palette-entries.ts`) so they're unit-testable; the Lit component just renders. Edits/adds
-  go through model ops → editor `#dispatch` (panel: `eb-doc-change`; palette: `eb-palette-add`
+  go through model ops → editor `#dispatch` (panel: `rime-doc-change`; palette: `rime-palette-add`
   → `editor.addBlock()`), so undo/redo + ARIA-live are covered.
 - **Canvas DnD = custom pointer events** in the srcdoc iframe (OD-6), NOT a library; test
   with `page.mouse`.

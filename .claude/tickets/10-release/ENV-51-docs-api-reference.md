@@ -17,19 +17,19 @@ estimate: M
 v1 must be embeddable in <30 minutes from docs (§1, §11). This ticket produces the API
 reference covering the four public surfaces a developer needs: the `init`/`config`
 shape, `registerBlock` (the custom-block SDK), `registerToken` (custom merge tags), and
-the `--eb-*` theming tokens. It pulls the canonical example custom block (ENV-37) in as
+the `--rime-*` theming tokens. It pulls the canonical example custom block (ENV-37) in as
 the worked SDK example. Accurate, runnable, matching the real exported APIs — not
 aspirational prose.
 
 ## Goal
 A docs site / API reference documents `RimeConfig`/`init`, `registerBlock`,
-`registerToken`, and the `--eb-*` theming tokens — accurate to the shipped public APIs,
+`registerToken`, and the `--rime-*` theming tokens — accurate to the shipped public APIs,
 with the ENV-37 example as the SDK walkthrough.
 
 ## Prerequisites
 - ENV-33 done (`registerBlock`/`BlockDefinition`/schema) and ENV-41 done
   (`registerToken`/token sources) — the SDKs being documented.
-- ENV-14 (`RimeConfig`), ENV-18 (the `--eb-*` token catalog), ENV-37 (the example
+- ENV-14 (`RimeConfig`), ENV-18 (the `--rime-*` token catalog), ENV-37 (the example
   custom block), ENV-44/91/93 (framework usage snippets).
 
 ## Implementation notes
@@ -47,8 +47,8 @@ with the ENV-37 example as the SDK walkthrough.
      the **ENV-37 example** as the full walkthrough (it's heavily commented for this).
    - **`registerToken` / token sources:** `registerToken`/`registerTokenSource` +
      `config.tokenSources` (ENV-41), and how tokens export to `{{var}}` (ENV-39).
-   - **Theming tokens:** the full `--eb-*` catalog (ENV-18) — names, defaults, purpose —
-     and the two-surface model (chrome via `--eb-*`, canvas walled off).
+   - **Theming tokens:** the full `--rime-*` catalog (ENV-18) — names, defaults, purpose —
+     and the two-surface model (chrome via `--rime-*`, canvas walled off).
 3. **Accuracy.** Pull signatures from the actual exported types; keep code samples
    runnable (ideally lifted from real example files/tests so they can't drift). Note the
    ≤100 kB core budget and headless/no-backend constraints where relevant to integrators.
@@ -59,10 +59,10 @@ with the ENV-37 example as the SDK walkthrough.
 
 ## Acceptance criteria
 - [ ] Docs cover all four surfaces: `init`/`RimeConfig`, `registerBlock`,
-      `registerToken`, and `--eb-*` theming tokens — accurate to the shipped exports.
+      `registerToken`, and `--rime-*` theming tokens — accurate to the shipped exports.
 - [ ] The `registerBlock` page embeds the ENV-37 example as a complete, runnable
       walkthrough (schema → properties → canvas → export, incl. raw-table fallback).
-- [ ] The theming page lists the `--eb-*` token catalog with defaults + the two-surface
+- [ ] The theming page lists the `--rime-*` token catalog with defaults + the two-surface
       model explained.
 - [ ] Vanilla/React/Vue embedding snippets match the wrappers (ENV-44/91/93) and the
       `loadDoc`/`getDoc`/`change` API (ENV-42).

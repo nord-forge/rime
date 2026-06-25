@@ -8,14 +8,14 @@ import type { RimeConfig, TokenSource } from "./rime-editor";
 describe("RimeConfig contract", () => {
   test("accepts theme tokens, enabledBlocks, onImageUpload, tokenSources", () => {
     const config: RimeConfig = {
-      theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
+      theme: { "--rime-color-accent": "#5b5bd6", "--rime-radius": "10px" },
       enabledBlocks: ["text", "image"],
       onImageUpload: async (file: File) => `https://cdn.test/${file.name}`,
       tokenSources: [
         { id: "user", label: "User", tokens: [{ key: "first_name", label: "First name" }] },
       ],
     };
-    expect(config.theme?.["--eb-color-accent"]).toBe("#5b5bd6");
+    expect(config.theme?.["--rime-color-accent"]).toBe("#5b5bd6");
     expect(config.enabledBlocks).toEqual(["text", "image"]);
     expect(typeof config.onImageUpload).toBe("function");
   });

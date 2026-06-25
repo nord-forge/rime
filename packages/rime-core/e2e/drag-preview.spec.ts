@@ -43,7 +43,7 @@ async function setup(page: Page): Promise<void> {
     };
     await el.whenCanvasReady();
     el.loadDoc(doc);
-    el.config = { theme: { "--eb-color-bg": "rgb(7, 8, 9)" } };
+    el.config = { theme: { "--rime-color-bg": "rgb(7, 8, 9)" } };
     const item = document.createElement("div");
     item.id = "palette-button";
     item.style.cssText = "position:fixed;top:0;right:0;width:80px;height:24px;z-index:9999";
@@ -56,7 +56,7 @@ function previewState(page: Page) {
   return page.evaluate(() => {
     const host = document.querySelector("rime-editor")!;
     const el = host.shadowRoot!.querySelector(
-      '[data-eb-overlay="drag-preview"]',
+      '[data-rime-overlay="drag-preview"]',
     ) as HTMLElement | null;
     if (!el) return { present: false };
     const cs = getComputedStyle(el);
@@ -80,7 +80,7 @@ test.describe("drag preview", () => {
     const mid = await previewState(page);
     expect(mid.present).toBe(true);
     expect(mid.label).toContain("Button");
-    expect(mid.bg).toBe("rgb(7, 8, 9)"); // --eb-color-bg applied
+    expect(mid.bg).toBe("rgb(7, 8, 9)"); // --rime-color-bg applied
 
     await page.mouse.up();
     // cleaned up: no detached preview node remains
@@ -108,7 +108,7 @@ test.describe("drag preview", () => {
       .poll(() =>
         page.evaluate(() => {
           const host = document.querySelector("rime-editor")!;
-          return host.shadowRoot!.querySelectorAll('[data-eb-overlay="drag-preview"]').length;
+          return host.shadowRoot!.querySelectorAll('[data-rime-overlay="drag-preview"]').length;
         }),
       )
       .toBe(0);

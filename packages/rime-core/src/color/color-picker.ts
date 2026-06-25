@@ -17,22 +17,22 @@ export interface ColorChangeDetail {
 
 const FORMATS: ColorFormat[] = ["hex", "rgb", "oklch"];
 
-// <eb-color-picker> — a saturation/value square + hue strip, a text input that
+// <rime-color-picker> — a saturation/value square + hue strip, a text input that
 // renders/accepts hex · rgb · oklch, and a format toggle. Pasting a value in any of
-// the three formats switches the toggle to the detected format. Themed by --eb-*;
+// the three formats switches the toggle to the detected format. Themed by --rime-*;
 // holds RGB internally (via HSV for the square) so format is purely presentational.
-export class EbColorPicker extends LitElement {
+export class RimeColorPicker extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
       inline-size: 220px;
-      font: var(--eb-font-ui, 13px system-ui);
-      color: var(--eb-color-fg, #18181b);
+      font: var(--rime-font-ui, 13px system-ui);
+      color: var(--rime-color-fg, #18181b);
     }
     .sv {
       position: relative;
       block-size: 132px;
-      border-radius: var(--eb-radius, 8px) var(--eb-radius, 8px) 0 0;
+      border-radius: var(--rime-radius, 8px) var(--rime-radius, 8px) 0 0;
       cursor: crosshair;
       touch-action: none;
     }
@@ -90,9 +90,9 @@ export class EbColorPicker extends LitElement {
       min-inline-size: 0;
       block-size: 28px;
       padding: 0 8px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       font: inherit;
     }
@@ -103,9 +103,9 @@ export class EbColorPicker extends LitElement {
       appearance: none;
       block-size: 28px;
       padding: 0 8px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
-      background: var(--eb-color-bg, #fff);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
+      background: var(--rime-color-bg, #fff);
       color: inherit;
       font: inherit;
       font-size: 11px;
@@ -154,7 +154,7 @@ export class EbColorPicker extends LitElement {
     this.#selfEdit = true;
     this.value = formatted;
     this.dispatchEvent(
-      new CustomEvent<ColorChangeDetail>("eb-color-change", {
+      new CustomEvent<ColorChangeDetail>("rime-color-change", {
         detail: { value: formatted },
         bubbles: true,
         composed: true,
@@ -267,6 +267,6 @@ export class EbColorPicker extends LitElement {
   }
 }
 
-if (!customElements.get("eb-color-picker")) {
-  customElements.define("eb-color-picker", EbColorPicker);
+if (!customElements.get("rime-color-picker")) {
+  customElements.define("rime-color-picker", RimeColorPicker);
 }

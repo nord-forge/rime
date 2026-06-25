@@ -14,7 +14,7 @@ estimate: L
 # ENV-29 — Custom rich-text UI (toolbar / bubble / link popover)
 
 ## Context
-All rich-text UI is **100% custom-rendered** as Lit components themed by `--eb-*`,
+All rich-text UI is **100% custom-rendered** as Lit components themed by `--rime-*`,
 so the editing experience matches the builder design exactly; the engine is used
 headless with no library-shipped toolbar (§6.5, §6.7). This ticket builds that
 chrome — an inline/bubble toolbar and a link popover — living in the **host
@@ -23,7 +23,7 @@ ENV-27 mounted **inside the iframe**. The UI reads the current selection's forma
 to show active states and dispatches Lexical commands to change it.
 
 ## Goal
-A custom Lit bubble toolbar and link popover, themed by `--eb-*`, drive
+A custom Lit bubble toolbar and link popover, themed by `--rime-*`, drive
 bold/italic/underline/link/list/heading on the active Lexical editor, with active
 states reflecting the current selection, in Chromium + WebKit.
 
@@ -33,7 +33,7 @@ states reflecting the current selection, in Chromium + WebKit.
   instance and hides when no editor is live.
 - ENV-17 coordinate controller (`canvasToHost`) to position the bubble toolbar
   over the in-iframe selection.
-- `--eb-*` theme tokens (ENV-18).
+- `--rime-*` theme tokens (ENV-18).
 
 ## Implementation notes
 Create under `packages/core/src/richtext/ui/`:
@@ -70,21 +70,21 @@ Create under `packages/core/src/richtext/ui/`:
    ... s.hasFormat("bold") ... })`, emitting a `FormatState`
    (`{ bold, italic, underline, list: "bullet"|"ordered"|null, heading: 1|2|3|null,
    link: string|null }`).
-3. **`<eb-rich-text-toolbar>`** — the bubble toolbar Lit component:
+3. **`<rime-rich-text-toolbar>`** — the bubble toolbar Lit component:
    - Positioned over the current selection: get the selection's client rect from
      inside the iframe (`getSelection().getRangeAt(0).getBoundingClientRect()` in
      the iframe document), translate to host coords via `coords.canvasToHost`,
      render the floating bar above it. Reposition on selection/scroll change.
    - Buttons: B / I / U / bullet / ordered / H1–H3 / link. Each calls the
      corresponding `RichTextCommands` method; active state from `FormatState`
-     (`aria-pressed`). Themed only with `--eb-*` (`--eb-color-surface`,
-     `--eb-color-accent`, `--eb-radius`, `--eb-font-ui`).
+     (`aria-pressed`). Themed only with `--rime-*` (`--rime-color-surface`,
+     `--rime-color-accent`, `--rime-radius`, `--rime-font-ui`).
    - Show only while an editor is active with a non-collapsed selection (or always
      while focused — your call, but hide when no active editor).
-4. **`<eb-link-popover>`** — link editor: an input for the URL + apply/remove
+4. **`<rime-link-popover>`** — link editor: an input for the URL + apply/remove
    buttons, opened by the toolbar link button. Pre-fills from `FormatState.link`.
    Apply → `commands.setLink(href)`, remove → `setLink(null)`. Keyboard-operable
-   (`Enter` apply, `Esc` close), themed via `--eb-*`. Validate/normalize the href
+   (`Enter` apply, `Esc` close), themed via `--rime-*`. Validate/normalize the href
    minimally (allow `http(s):`, `mailto:`; reject `javascript:`).
 5. **Keyboard shortcuts** — wire B/I/U to `Cmd/Ctrl+B/I/U` via Lexical's command
    registration on the editor (so they work whether or not the toolbar is visible).
@@ -94,7 +94,7 @@ Create under `packages/core/src/richtext/ui/`:
 
 ## Acceptance criteria
 - [ ] A custom Lit bubble toolbar appears over the active selection (positioned via
-      `coords.canvasToHost`) and is themed only with `--eb-*` (no Lexical CSS).
+      `coords.canvasToHost`) and is themed only with `--rime-*` (no Lexical CSS).
 - [ ] Bold / italic / underline toggle on the active editor and reflect the
       selection's current format as active states.
 - [ ] Bullet + ordered list and H1–H3 / paragraph work via the toolbar
@@ -122,5 +122,5 @@ bun run e2e   # chromium + webkit: select text → bubble toolbar → B/I/U/list
 ```
 
 ## Definition of done
-See `_conventions.md`. Custom `--eb-*`-themed rich-text UI driving Lexical
+See `_conventions.md`. Custom `--rime-*`-themed rich-text UI driving Lexical
 commands, cross-browser, within budget; status → `review`.

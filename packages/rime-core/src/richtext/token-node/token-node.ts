@@ -1,7 +1,7 @@
 // An atomic inline merge tag inside the Lexical editor. A TextNode subclass in
 // "token" mode (navigated/deleted as a unit, not editable char-by-char). It stores
 // the bare key (no braces) and an optional display label; the chip shows
-// `label ?? token`, themed via --eb-*. Serializes to/from the portable TokenInline
+// `label ?? token`, themed via --rime-*. Serializes to/from the portable TokenInline
 // in serialize.ts. It is part of the curated node set so it survives paste round
 // trips and nothing else.
 
@@ -51,8 +51,8 @@ export class TokenNode extends TextNode {
     dom.style.display = "inline-block";
     dom.style.padding = "0 4px";
     dom.style.borderRadius = "3px";
-    dom.style.background = "var(--eb-token-bg, var(--eb-accent-soft, #e8eefc))";
-    dom.style.color = "var(--eb-token-fg, var(--eb-accent, #2748b8))";
+    dom.style.background = "var(--rime-token-bg, var(--rime-accent-soft, #e8eefc))";
+    dom.style.color = "var(--rime-token-fg, var(--rime-accent, #2748b8))";
     dom.style.fontSize = "0.9em";
     dom.style.whiteSpace = "nowrap";
     return dom;

@@ -1,5 +1,5 @@
 // Chrome theming tokens — the source of truth for the editor's two-surface model.
-// These --eb-* custom properties theme the CHROME (palette, panels,
+// These --rime-* custom properties theme the CHROME (palette, panels,
 // toolbars in the Lit shadow DOM) and intentionally pierce shadow boundaries when
 // set on the host or any ancestor.
 //
@@ -7,21 +7,21 @@
 // separate surface styled only by its injected base stylesheet, walled off from
 // both host CSS and this chrome theme (proven by e2e/theming.spec.ts). Chrome
 // components read each token with a fallback — never hard-code the themed value:
-//   color: var(--eb-color-accent, #5b5bd6)
+//   color: var(--rime-color-accent, #5b5bd6)
 
-export const EB_TOKENS = {
-  "--eb-color-accent": "#5b5bd6",
-  "--eb-color-fg": "#18181b",
-  "--eb-color-bg": "#ffffff",
-  "--eb-color-border": "#e4e4e7",
-  "--eb-radius": "8px",
-  "--eb-space": "12px",
-  "--eb-font-ui": "system-ui, sans-serif",
-  "--eb-palette-width": "240px",
-  "--eb-properties-width": "300px",
+export const RIME_TOKENS = {
+  "--rime-color-accent": "#5b5bd6",
+  "--rime-color-fg": "#18181b",
+  "--rime-color-bg": "#ffffff",
+  "--rime-color-border": "#e4e4e7",
+  "--rime-radius": "8px",
+  "--rime-space": "12px",
+  "--rime-font-ui": "system-ui, sans-serif",
+  "--rime-palette-width": "240px",
+  "--rime-properties-width": "300px",
 } as const;
 
-export type EbToken = keyof typeof EB_TOKENS;
+export type RimeToken = keyof typeof RIME_TOKENS;
 
 /** A theme override map (subset of the catalogue). */
-export type EbTheme = Partial<Record<EbToken, string>>;
+export type RimeTheme = Partial<Record<RimeToken, string>>;

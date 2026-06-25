@@ -133,14 +133,14 @@ test.describe("keyboard reordering", () => {
       const el = document.querySelector("rime-editor") as unknown as { getDoc(): unknown };
       const dests = destinationsFor(el.getDoc(), "t_a");
 
-      const menu = document.createElement("eb-move-to-menu") as unknown as {
+      const menu = document.createElement("rime-move-to-menu") as unknown as {
         destinations: unknown[];
       } & HTMLElement;
       menu.destinations = dests;
       document.body.append(menu);
 
       let picked: unknown = null;
-      menu.addEventListener("eb-move-select", (e) => {
+      menu.addEventListener("rime-move-select", (e) => {
         picked = (e as CustomEvent).detail;
       });
       // activate the first menu item

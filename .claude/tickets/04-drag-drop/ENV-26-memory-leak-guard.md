@@ -35,7 +35,7 @@ returns to its pre-drag baseline.
 
 ## Implementation notes
 1. **Make cleanups countable** — `DndController` (and `DropDetector`,
-   `<eb-drop-indicator>`, drag preview from ENV-22 if present) must funnel every
+   `<rime-drop-indicator>`, drag preview from ENV-22 if present) must funnel every
    `addEventListener`, `requestAnimationFrame`, observer, and Pragmatic
    `draggable`/`dropTargetForElements` registration through a single internal
    registry so it can be counted and fully disposed:

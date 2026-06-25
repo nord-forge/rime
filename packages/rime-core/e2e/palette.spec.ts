@@ -53,7 +53,7 @@ async function setup(page: Page): Promise<void> {
 function paletteItem(page: Page, blockType: string) {
   return page
     .locator("rime-editor")
-    .locator("eb-palette")
+    .locator("rime-palette")
     .locator(`.item[data-block-type="${blockType}"]`);
 }
 

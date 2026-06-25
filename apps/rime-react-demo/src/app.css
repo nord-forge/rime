@@ -1,6 +1,6 @@
 /* Rime demo shell — a production-grade frame around the editor. The chrome reads as
    a real email-infrastructure tool: cool technical neutrals, one indigo accent that
-   matches the editor's own --eb-color-accent, mono for the wordmark tag + the
+   matches the editor's own --rime-color-accent, mono for the wordmark tag + the
    exported MJML (the "code artifact" of an email tool). */
 
 :root {

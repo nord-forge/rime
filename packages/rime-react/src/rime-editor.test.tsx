@@ -86,7 +86,7 @@ describe("<RimeEditor> wrapper", () => {
     act(() =>
       root.render(
         <RimeEditor
-          theme={{ "--eb-color-accent": "#abc" }}
+          theme={{ "--rime-color-accent": "#abc" }}
           enabledBlocks={["text", "image"]}
           onImageUpload={onImageUpload}
           lexicalEditor={false}
@@ -94,20 +94,20 @@ describe("<RimeEditor> wrapper", () => {
       ),
     );
     const config = el().config as Record<string, unknown>;
-    expect(config["theme"]).toEqual({ "--eb-color-accent": "#abc" });
+    expect(config["theme"]).toEqual({ "--rime-color-accent": "#abc" });
     expect(config["enabledBlocks"]).toEqual(["text", "image"]);
     expect(config["onImageUpload"]).toBe(onImageUpload);
     expect(config["lexicalEditor"]).toBe(false);
   });
 
   test("config updates when props change", () => {
-    act(() => root.render(<RimeEditor theme={{ "--eb-color-accent": "#111" }} />));
+    act(() => root.render(<RimeEditor theme={{ "--rime-color-accent": "#111" }} />));
     expect((el().config as Record<string, unknown>)["theme"]).toEqual({
-      "--eb-color-accent": "#111",
+      "--rime-color-accent": "#111",
     });
-    act(() => root.render(<RimeEditor theme={{ "--eb-color-accent": "#222" }} />));
+    act(() => root.render(<RimeEditor theme={{ "--rime-color-accent": "#222" }} />));
     expect((el().config as Record<string, unknown>)["theme"]).toEqual({
-      "--eb-color-accent": "#222",
+      "--rime-color-accent": "#222",
     });
   });
 

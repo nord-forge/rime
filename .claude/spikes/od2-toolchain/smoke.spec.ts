@@ -12,7 +12,7 @@ for (const engine of ['vite', 'rolldown']) {
     ).replace(/from\s*["']lit\/(.*?)["']/g, 'from "https://esm.sh/lit@3.3.3/$1"');
 
     await page.setContent(
-      `<style>themed-panel{--eb-color-accent:rgb(10,20,30)}</style>
+      `<style>themed-panel{--rime-color-accent:rgb(10,20,30)}</style>
        <themed-panel heading="Hello OD-2"></themed-panel>
        <script type="module">${code}</script>`,
     );

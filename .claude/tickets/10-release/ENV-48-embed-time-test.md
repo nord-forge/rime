@@ -54,7 +54,7 @@ friction filed as fixes.
 ## Acceptance criteria
 - [ ] A clean-room consumer project installs `@nord-forge/*` as a real dependency
       (tarball/link), not via monorepo internals.
-- [ ] Following only the README, the tester embeds, themes (`--eb-*`), and save/loads a
+- [ ] Following only the README, the tester embeds, themes (`--rime-*`), and save/loads a
       template — working end to end.
 - [ ] The elapsed time is measured and is **< 30 minutes** (or, if over, friction is
       fixed and a re-run lands under budget).

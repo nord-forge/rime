@@ -9,7 +9,7 @@ function doc(): Document {
 describe("renderPreviewCard", () => {
   test("palette item shows the block's icon + label", () => {
     const card = renderPreviewCard(doc(), { source: "palette", blockType: "button" });
-    expect(card.dataset["ebOverlay"]).toBe("drag-preview");
+    expect(card.dataset["rimeOverlay"]).toBe("drag-preview");
     expect(card.textContent).toContain("Button");
   });
 
@@ -23,7 +23,7 @@ describe("renderPreviewCard", () => {
     expect(card.textContent).toContain("Moving");
   });
 
-  // Note: the --eb-* token styling is asserted in the browser by
+  // Note: the --rime-* token styling is asserted in the browser by
   // e2e/drag-preview.spec.ts — happy-dom's CSSOM drops var() values for typed
   // color/length properties, so it can't verify theming here.
   test("renders an icon span + a label span", () => {

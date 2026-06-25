@@ -41,7 +41,7 @@ library and graceful handling when no callback is provided.
    const url = await config.onImageUpload?.(file);
    if (url) setNodeProp(doc, imageId, "src", url); // ENV-06 op → change event
    ```
-   - Show a pending state while the promise resolves (themed `--eb-*` spinner/skeleton).
+   - Show a pending state while the promise resolves (themed `--rime-*` spinner/skeleton).
    - On reject, surface a themed inline error and keep the old `src`; never throw into
      the user's face uncaught.
 3. **No callback configured.** If `onImageUpload` is undefined, disable the file-upload
@@ -62,7 +62,7 @@ library and graceful handling when no callback is provided.
 - [ ] When `onImageUpload` is absent, the upload button is disabled with a hint; the URL
       field still works; the library performs no upload itself.
 - [ ] No storage/CDN/backend logic exists in the library; only the returned URL is kept.
-- [ ] Controls are themed via `--eb-*`.
+- [ ] Controls are themed via `--rime-*`.
 - [ ] Unit tests cover the call + store-on-resolve, the reject path, and the
       no-callback path (`bun test`); a Playwright test with a stub uploader sets an
       image `src` (chromium + webkit).

@@ -28,9 +28,9 @@ they're the "discipline gaps" theme. One ticket — same subsystem, all small.
 2. **Properties-panel debounce timer never cleared on disconnect**
    (`properties/properties-panel.ts:144,159`) — the `setTimeout` flush has no
    `disconnectedCallback`; teardown between input and the 0 ms flush dispatches
-   `eb-doc-change` from a detached element. Fix: `disconnectedCallback` that
+   `rime-doc-change` from a detached element. Fix: `disconnectedCallback` that
    `clearTimeout`s `#flushHandle` and nulls `#pending`.
-3. **`EbTokenPicker` mutates reactive `@state active` inside `render()`**
+3. **`RimeTokenPicker` mutates reactive `@state active` inside `render()`**
    (`richtext/token-picker/token-picker.ts:139`) — Lit anti-pattern (dev-mode
    change-in-update warning, possible extra render). Fix: clamp in `willUpdate`/
    `updated`, or compute a local read-only value for rendering.
@@ -56,7 +56,7 @@ picker's a11y (dialog role, focus trap, focus restore); no reactive writes in
       draggable, no leaked listeners on detached nodes).
 - [ ] Properties panel clears its debounce timer on disconnect (no dispatch from a
       detached element).
-- [ ] `EbTokenPicker` no longer writes `active` during `render()`.
+- [ ] `RimeTokenPicker` no longer writes `active` during `render()`.
 - [ ] `MoveToMenu` only focuses when focus is already within it (or on keyboard nav).
 - [ ] Link popover has `role="dialog"`/`aria-label`, traps Tab, and restores focus on
       close.

@@ -71,7 +71,7 @@ test.describe("token picker", () => {
     await page.waitForFunction(() =>
       document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-rich-text-toolbar")
+        .shadowRoot!.querySelector("rime-rich-text-toolbar")
         ?.hasAttribute("open"),
     );
 
@@ -79,7 +79,7 @@ test.describe("token picker", () => {
     await page.evaluate(() => {
       const tb = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-rich-text-toolbar")!;
+        .shadowRoot!.querySelector("rime-rich-text-toolbar")!;
       tb.shadowRoot!.querySelector<HTMLButtonElement>(
         'button[aria-label="Insert merge tag"]',
       )!.click();
@@ -87,7 +87,7 @@ test.describe("token picker", () => {
     await page.waitForFunction(() =>
       document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-token-picker")
+        .shadowRoot!.querySelector("rime-token-picker")
         ?.hasAttribute("open"),
     );
 
@@ -95,7 +95,7 @@ test.describe("token picker", () => {
     const options = await page.evaluate(() => {
       const root = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-token-picker")!.shadowRoot!;
+        .shadowRoot!.querySelector("rime-token-picker")!.shadowRoot!;
       return [...root.querySelectorAll('[role="option"]')].map((o) => o.textContent!.trim());
     });
     expect(options.length).toBe(3);
@@ -104,7 +104,7 @@ test.describe("token picker", () => {
     await page.evaluate(() => {
       const root = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-token-picker")!.shadowRoot!;
+        .shadowRoot!.querySelector("rime-token-picker")!.shadowRoot!;
       const input = root.querySelector<HTMLInputElement>("input")!;
       input.value = "first";
       input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -112,7 +112,7 @@ test.describe("token picker", () => {
     await page.evaluate(() => {
       const root = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-token-picker")!.shadowRoot!;
+        .shadowRoot!.querySelector("rime-token-picker")!.shadowRoot!;
       const option = root.querySelector<HTMLElement>('[role="option"]')!;
       option.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
     });
@@ -127,7 +127,7 @@ test.describe("token picker", () => {
       () =>
         !document
           .querySelector("rime-editor")!
-          .shadowRoot!.querySelector("eb-token-picker")
+          .shadowRoot!.querySelector("rime-token-picker")
           ?.hasAttribute("open"),
     );
   });
@@ -141,13 +141,13 @@ test.describe("token picker", () => {
     await page.waitForFunction(() =>
       document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-rich-text-toolbar")
+        .shadowRoot!.querySelector("rime-rich-text-toolbar")
         ?.hasAttribute("open"),
     );
     await page.evaluate(() => {
       const tb = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-rich-text-toolbar")!;
+        .shadowRoot!.querySelector("rime-rich-text-toolbar")!;
       tb.shadowRoot!.querySelector<HTMLButtonElement>(
         'button[aria-label="Insert merge tag"]',
       )!.click();
@@ -155,7 +155,7 @@ test.describe("token picker", () => {
     const empty = await page.evaluate(() => {
       const root = document
         .querySelector("rime-editor")!
-        .shadowRoot!.querySelector("eb-token-picker")!.shadowRoot!;
+        .shadowRoot!.querySelector("rime-token-picker")!.shadowRoot!;
       return root.querySelector(".empty")?.textContent?.trim();
     });
     expect(empty).toBe("No tokens available");

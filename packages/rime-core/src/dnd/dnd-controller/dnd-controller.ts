@@ -42,7 +42,7 @@ export interface DndDeps {
   coords: DragCoordinateController;
   renderer: CanvasRenderer;
   /** Where the insertion indicator (chrome overlay) is appended — e.g. the shadow
-   *  root, so --eb-* tokens cascade to it. */
+   *  root, so --rime-* tokens cascade to it. */
   overlayHost: ParentNode & { ownerDocument: Document };
   getDoc: () => RimeDoc;
   createBlock: (blockType: string) => BaseNode;

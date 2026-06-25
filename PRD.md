@@ -87,9 +87,9 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
 ### 6.5 UI layer (Lit web components)
 - Builder **chrome** (palette, properties panel, toolbars, menus) = **Lit web components with Shadow DOM**, living in the host document.
 - **Two-surface theming model:**
-  - *Chrome* is themed via **CSS custom properties** (`--eb-*`, e.g. `--eb-color-accent`, `--eb-radius`, `--eb-font-ui`) that intentionally pierce shadow boundaries. Host app CSS cannot otherwise break the chrome.
+  - *Chrome* is themed via **CSS custom properties** (`--rime-*`, e.g. `--rime-color-accent`, `--rime-radius`, `--rime-font-ui`) that intentionally pierce shadow boundaries. Host app CSS cannot otherwise break the chrome.
   - *Canvas* (iframe) is styled by an **injected base stylesheet** — these are the *email's* styles, deliberately walled off from both the host app and the chrome theme by the iframe boundary.
-- All rich-text UI (inline toolbar, bubble menu, link popover, slash/insert menu) is **100% custom-rendered** as Lit components themed by the same `--eb-*` variables, so the editing experience matches the builder design exactly. The rich-text engine is used **headless** (no library-shipped toolbar).
+- All rich-text UI (inline toolbar, bubble menu, link popover, slash/insert menu) is **100% custom-rendered** as Lit components themed by the same `--rime-*` variables, so the editing experience matches the builder design exactly. The rich-text engine is used **headless** (no library-shipped toolbar).
 
 ### 6.6 Drag-and-drop engine
 - **Canvas DnD = custom pointer-event handling inside the iframe** (OD-6, resolved 2026-06-23). Pragmatic drag-and-drop was the initial choice but binds to the host `document` and uses native HTML5 drag, which the same-origin srcdoc iframe canvas (§6.4) defeats; we use `pointerdown/move/up` via the single drag controller (§6.4) instead. Still purpose-built for **nested drop zones** (sections → columns → blocks), with touch support and a custom drag-preview — just hand-rolled on pointer events rather than a library, which the iframe's clean coordinate system makes straightforward.
@@ -139,7 +139,7 @@ This resolves the apparent contradiction between "exactly Unlayer's feel" (one c
 | Rich text | headless **Lexical** (presumptive, confirm at ENV-27; chosen for ~100 kB budget), custom UI |
 | Export | **MJML** via swappable `Renderer` interface |
 | Doc model | immutable **JSON tree**, patch-diff undo, CRDT-friendly |
-| Theming | **CSS custom properties** (`--eb-*`) for chrome; injected stylesheet for canvas |
+| Theming | **CSS custom properties** (`--rime-*`) for chrome; injected stylesheet for canvas |
 | Lint / format | **oxlint + oxfmt** |
 | Bundling | **Vite** library mode (opt into **`rolldown-vite`** where stable) |
 | PM / runtime / unit test | **Bun** |

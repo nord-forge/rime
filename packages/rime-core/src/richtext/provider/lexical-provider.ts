@@ -9,7 +9,7 @@ import { RichTextLifecycle } from "../richtext-lifecycle/richtext-lifecycle";
 import { canonicalize, richTextEqual } from "../serialize/serialize";
 import { RichTextToolbar } from "../ui/rich-text-toolbar";
 import { type LinkApplyDetail, LinkPopover } from "../ui/link-popover";
-import { EbTokenPicker, type TokenSelectDetail } from "../token-picker/token-picker";
+import { RimeTokenPicker, type TokenSelectDetail } from "../token-picker/token-picker";
 import { makeCommands } from "../ui/rich-text-commands";
 import { findNodeById } from "../../a11y/announce-messages/announce-messages";
 import { type LexicalMount, mountLexical } from "../lexical-editor/lexical-editor";
@@ -19,7 +19,7 @@ export class LexicalRichTextProvider implements RichTextProvider {
   readonly #lifecycle: RichTextLifecycle;
   readonly #toolbar: RichTextToolbar;
   readonly #popover: LinkPopover;
-  readonly #picker: EbTokenPicker;
+  readonly #picker: RimeTokenPicker;
   readonly #onSelectionChange: () => void;
 
   constructor(host: RichTextHost) {
@@ -27,33 +27,33 @@ export class LexicalRichTextProvider implements RichTextProvider {
     const root = host.overlayHost();
     this.#toolbar = new RichTextToolbar();
     this.#popover = new LinkPopover();
-    this.#picker = new EbTokenPicker();
+    this.#picker = new RimeTokenPicker();
     root.append(this.#toolbar, this.#popover, this.#picker);
 
-    this.#toolbar.addEventListener("eb-request-link", () => {
+    this.#toolbar.addEventListener("rime-request-link", () => {
       this.#positionPopover();
       this.#popover.show(this.#currentLinkHref());
     });
-    this.#toolbar.addEventListener("eb-request-token", () => {
+    this.#toolbar.addEventListener("rime-request-token", () => {
       this.#picker.tokens = this.#host.tokens();
       this.#positionPicker();
       this.#picker.show();
     });
-    this.#picker.addEventListener("eb-token-select", (e: Event) => {
+    this.#picker.addEventListener("rime-token-select", (e: Event) => {
       const detail = (e as CustomEvent<TokenSelectDetail>).detail;
       this.insertToken(detail.key, detail.label);
       this.#lifecycle.activeMount?.editor.focus();
     });
-    this.#picker.addEventListener("eb-token-cancel", () =>
+    this.#picker.addEventListener("rime-token-cancel", () =>
       this.#lifecycle.activeMount?.editor.focus(),
     );
-    this.#popover.addEventListener("eb-link-apply", (e: Event) => {
+    this.#popover.addEventListener("rime-link-apply", (e: Event) => {
       const detail = (e as CustomEvent<LinkApplyDetail>).detail;
       const mount = this.#lifecycle.activeMount;
       if (mount) makeCommands(mount.editor).setLink(detail.href);
       mount?.editor.focus();
     });
-    this.#popover.addEventListener("eb-link-cancel", () =>
+    this.#popover.addEventListener("rime-link-cancel", () =>
       this.#lifecycle.activeMount?.editor.focus(),
     );
 

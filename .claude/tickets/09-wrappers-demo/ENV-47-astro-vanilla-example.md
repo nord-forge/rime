@@ -21,7 +21,7 @@ page / Astro island. P2 polish that supports the <30-min embed promise (§11).
 
 ## Goal
 A verified, copy-pasteable Astro/vanilla usage example in the README/docs showing
-embedding `<rime-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and
+embedding `<rime-editor>`, theming via `--rime-*`, wiring `onImageUpload`, and
 save/load via `change` + `loadDoc`.
 
 ## Prerequisites
@@ -39,7 +39,7 @@ save/load via `change` + `loadDoc`.
      import "@nord-forge/rime-core";
      const el = document.getElementById("editor");
      el.config = {
-       theme: { "--eb-color-accent": "#5b5bd6", "--eb-radius": "10px" },
+       theme: { "--rime-color-accent": "#5b5bd6", "--rime-radius": "10px" },
        onImageUpload: async (file) => URL.createObjectURL(file), // demo: host returns a URL
      };
      el.addEventListener("change", (e) => localStorage.setItem("doc", JSON.stringify(e.detail.doc)));
@@ -51,7 +51,7 @@ save/load via `change` + `loadDoc`.
    `<script>` and use `client:only`/`client:load` semantics so the custom element
    registers on the client. Call out that it's a client-side web component (no SSR of the
    editor). Reuse the same `config`/`change`/`loadDoc` wiring.
-4. **Theming pointer.** Link to the `--eb-*` token reference (ENV-51) and show one or
+4. **Theming pointer.** Link to the `--rime-*` token reference (ENV-51) and show one or
    two overrides inline so theming is obviously CSS-custom-property driven.
 5. **Verify it runs.** The example must actually load the built `@nord-forge/rime-core` (e.g.
    via the demo dev server or a one-file static page) — not a snippet that was never
@@ -59,7 +59,7 @@ save/load via `change` + `loadDoc`.
 
 ## Acceptance criteria
 - [ ] The README/docs contain a runnable vanilla HTML example embedding
-      `<rime-editor>`, theming via `--eb-*`, wiring `onImageUpload`, and save/load
+      `<rime-editor>`, theming via `--rime-*`, wiring `onImageUpload`, and save/load
       via `change` + `loadDoc`.
 - [ ] An Astro usage note shows the client-only registration pattern with the same API.
 - [ ] The example matches the actual public API (no stale/aspirational calls) and has

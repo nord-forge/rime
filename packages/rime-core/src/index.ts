@@ -4,7 +4,7 @@
 // element and its chrome UI live on the side-effectful "@nord-forge/rime-core/register"
 // entry instead (see register.ts).
 
-export { EB_TOKENS, type EbTheme, type EbToken } from "./theme/tokens/tokens";
+export { RIME_TOKENS, type RimeTheme, type RimeToken } from "./theme/tokens/tokens";
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer/canvas-renderer";
 export {

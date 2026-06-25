@@ -28,12 +28,12 @@ look like a small, branded card that matches the builder design and reads as
 "this block". This is a small, self-contained UI ticket on top of ENV-19's wiring.
 
 ## Goal
-Dragging any palette item or canvas block shows a custom, `--eb-*`-themed preview
+Dragging any palette item or canvas block shows a custom, `--rime-*`-themed preview
 (icon + label) instead of the default browser ghost, in Chromium + WebKit.
 
 ## Prerequisites
 - ENV-19 done (`DndController`, `DragData`, palette + canvas draggables).
-- `--eb-*` theme tokens (ENV-18) for styling.
+- `--rime-*` theme tokens (ENV-18) for styling.
 
 ## Implementation notes
 Create under `packages/core/src/dnd/`:
@@ -52,20 +52,20 @@ Create under `packages/core/src/dnd/`:
        nativeSetDragImage,
        getOffset: pointerOutsideOfPreview({ x: "8px", y: "8px" }),
        render({ container }) {
-         const card = renderPreviewCard(data); // returns an <eb-drag-preview> / element
+         const card = renderPreviewCard(data); // returns an <rime-drag-preview> / element
          container.appendChild(card);
          return () => card.remove(); // cleanup
        },
      });
    }
    ```
-2. **`<eb-drag-preview>`** — a tiny Lit component (or plain element) showing the
+2. **`<rime-drag-preview>`** — a tiny Lit component (or plain element) showing the
    block's palette icon + label. Pull the icon/label from the block's palette
    metadata for `DragData.source === "palette"`, or the block type for an existing
    canvas block. Styled exclusively from tokens:
-   `background: var(--eb-color-surface)`, `color: var(--eb-color-fg)`,
-   `border-radius: var(--eb-radius)`, `box-shadow: var(--eb-shadow-1)`,
-   `font: var(--eb-font-ui)`.
+   `background: var(--rime-color-surface)`, `color: var(--rime-color-fg)`,
+   `border-radius: var(--rime-radius)`, `box-shadow: var(--rime-shadow-1)`,
+   `font: var(--rime-font-ui)`.
 3. **Cleanup** — the `render` return MUST remove the preview element; verify no
    detached preview nodes accumulate across repeated drags (ENV-26 territory, but
    keep it clean here).
@@ -78,7 +78,7 @@ Create under `packages/core/src/dnd/`:
 - [ ] Dragging a palette item shows the custom themed preview (icon + label of
       that block), not the default browser ghost.
 - [ ] Dragging an existing canvas block shows a custom preview for that block.
-- [ ] The preview is styled only via `--eb-*` tokens (no hard-coded colors).
+- [ ] The preview is styled only via `--rime-*` tokens (no hard-coded colors).
 - [ ] The preview offsets slightly from the pointer (not under the cursor).
 - [ ] The preview element is cleaned up after each drag (no detached nodes).
 - [ ] Works in Chromium + WebKit.

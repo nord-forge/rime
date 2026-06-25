@@ -41,12 +41,12 @@ Create under `packages/core/src/a11y/`:
    readers track the host).
    ```ts
    export class LiveAnnouncer {
-     constructor(host: HTMLElement);     // creates <div aria-live="polite" aria-atomic="true" class="eb-sr-only">
+     constructor(host: HTMLElement);     // creates <div aria-live="polite" aria-atomic="true" class="rime-sr-only">
      announce(message: string): void;    // sets textContent; clears+sets to force re-read of identical msgs
      destroy(): void;                    // remove the region (no leak)
    }
    ```
-   - Use the standard visually-hidden pattern (`eb-sr-only`: 1px clip, off-screen)
+   - Use the standard visually-hidden pattern (`rime-sr-only`: 1px clip, off-screen)
      — NOT `display:none` (that suppresses announcements).
    - To force re-announcement of an identical message (e.g. two moves in the same
      direction), clear `textContent` then set it on the next frame.

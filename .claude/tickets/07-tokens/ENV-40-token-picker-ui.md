@@ -15,15 +15,15 @@ estimate: M
 
 ## Context
 Users need a way to insert merge tags without typing braces by hand (§6.9). This is a
-custom Lit UI — a token picker — themed by `--eb-*`, matching the rest of the
+custom Lit UI — a token picker — themed by `--rime-*`, matching the rest of the
 100%-custom rich-text chrome (§6.5). It lists the available tokens (from the
 `registerToken`/token-source config, ENV-41) and inserts the chosen one into the live
 editor via ENV-39's `insertToken`. No library toolbar — ours.
 
 ## Goal
-A Lit `<eb-token-picker>` lists available tokens (searchable, grouped by source) and,
+A Lit `<rime-token-picker>` lists available tokens (searchable, grouped by source) and,
 on select, inserts a token node at the caret via `insertToken`, themed entirely by
-`--eb-*`.
+`--rime-*`.
 
 ## Prerequisites
 - ENV-39 done (`insertToken(token, label?)`, the token node + chip render).
@@ -31,12 +31,12 @@ on select, inserts a token node at the caret via `insertToken`, themed entirely 
   and document the wiring to the token registry. Shape: `{ key: string; label: string;
   source?: string }[]`.
 - ENV-29 (the inline rich-text toolbar) is the natural place to surface the trigger —
-  reuse its popover/positioning patterns and `--eb-*` theming.
+  reuse its popover/positioning patterns and `--rime-*` theming.
 
 ## Implementation notes
 Create under `packages/core/src/richtext/token-picker/`:
 
-1. **`token-picker.ts`** — `EbTokenPicker extends LitElement` (`eb-token-picker`):
+1. **`token-picker.ts`** — `RimeTokenPicker extends LitElement` (`rime-token-picker`):
    ```ts
    @property({ attribute: false }) tokens: TokenItem[] = []; // from ENV-41 registry
    // emits nothing to the doc directly — calls insertToken() (ENV-39) on select
@@ -52,7 +52,7 @@ Create under `packages/core/src/richtext/token-picker/`:
      complicates ENV-27's IME handling — note the Safari/IME caution from R-1).
    Anchor the popover to the caret/selection rect; clamp to viewport. Reuse ENV-29's
    popover utility if one exists.
-3. **Theming.** All of it via `--eb-*` (colors, radius, font, elevation). Shadow DOM;
+3. **Theming.** All of it via `--rime-*` (colors, radius, font, elevation). Shadow DOM;
    no host CSS bleed. Match the builder chrome.
 4. **One-instance discipline.** The picker operates on the single live editor instance
    (ENV-28); if no text block is focused, the picker trigger is disabled.
@@ -62,11 +62,11 @@ Create under `packages/core/src/richtext/token-picker/`:
    filter inline.
 
 ## Acceptance criteria
-- [ ] `<eb-token-picker>` lists provided tokens, searchable and grouped by `source`.
+- [ ] `<rime-token-picker>` lists provided tokens, searchable and grouped by `source`.
 - [ ] Selecting a token calls `insertToken(key, label)` and inserts a chip at the caret
       in the live editor; the picker closes and returns focus to the editor.
 - [ ] Fully keyboard-operable (open/navigate/select/close) and focus-managed (a11y).
-- [ ] Themed entirely via `--eb-*`; Shadow DOM; no host CSS bleed.
+- [ ] Themed entirely via `--rime-*`; Shadow DOM; no host CSS bleed.
 - [ ] Disabled when no text block is focused; empty state when no tokens are registered.
 - [ ] Unit tests cover filter/grouping and the insert call; a Playwright test opens the
       picker, selects a token, and asserts a chip is inserted (chromium + webkit).

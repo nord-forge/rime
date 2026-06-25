@@ -32,17 +32,17 @@ const DOC = {
   ],
 };
 
-// The two-surface contract. Chrome is themed by --eb-* (pierces shadow
+// The two-surface contract. Chrome is themed by --rime-* (pierces shadow
 // DOM); the canvas is walled off from BOTH host CSS and the chrome theme. The
 // bleed-proof is the whole point — truthful email preview depends on it.
 test.describe("two-surface theming", () => {
-  test("chrome picks up --eb-* tokens (piercing works)", async ({ editor }) => {
+  test("chrome picks up --rime-* tokens (piercing works)", async ({ editor }) => {
     const borderColor = await editor.host.evaluate(async (host) => {
       const el = host as unknown as {
         config: { theme: Record<string, string> };
         updateComplete: Promise<unknown>;
       };
-      el.config = { theme: { "--eb-color-border": "rgb(0, 128, 0)" } };
+      el.config = { theme: { "--rime-color-border": "rgb(0, 128, 0)" } };
       await el.updateComplete;
       const palette = host.shadowRoot!.querySelector('[part="palette"]')!;
       return getComputedStyle(palette).borderInlineEndColor;
@@ -56,20 +56,20 @@ test.describe("two-surface theming", () => {
         config: { theme: Record<string, string> };
         updateComplete: Promise<unknown>;
       };
-      el.config = { theme: { "--eb-color-bg": "rgb(12, 16, 32)" } };
+      el.config = { theme: { "--rime-color-bg": "rgb(12, 16, 32)" } };
       await el.updateComplete;
-      const dark = host.style.getPropertyValue("--eb-color-bg");
+      const dark = host.style.getPropertyValue("--rime-color-bg");
       // Switch back to a default ({}) theme — the override must be removed.
       el.config = { theme: {} };
       await el.updateComplete;
-      const cleared = host.style.getPropertyValue("--eb-color-bg");
+      const cleared = host.style.getPropertyValue("--rime-color-bg");
       return { dark, cleared };
     });
     expect(result.dark).toBe("rgb(12, 16, 32)");
     expect(result.cleared).toBe("");
   });
 
-  test("host CSS does NOT bleed into the canvas; --eb-* does NOT cross", async ({
+  test("host CSS does NOT bleed into the canvas; --rime-* does NOT cross", async ({
     editor,
     page,
   }) => {
@@ -84,7 +84,7 @@ test.describe("two-surface theming", () => {
         whenCanvasReady(): Promise<unknown>;
         loadDoc(d: unknown): void;
       };
-      el.config = { theme: { "--eb-color-accent": "rgb(255, 0, 255)" } };
+      el.config = { theme: { "--rime-color-accent": "rgb(255, 0, 255)" } };
       await el.updateComplete;
     });
 
@@ -102,7 +102,7 @@ test.describe("two-surface theming", () => {
         font: cs.fontFamily,
         // does the chrome token resolve inside the canvas document?
         tokenInCanvas: getComputedStyle(cdoc.documentElement)
-          .getPropertyValue("--eb-color-accent")
+          .getPropertyValue("--rime-color-accent")
           .trim(),
       };
     }, DOC);

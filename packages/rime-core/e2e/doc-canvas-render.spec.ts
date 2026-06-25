@@ -43,7 +43,7 @@ const DOC = {
 
 // Doc → canvas preview DOM, verified in a real browser (chromium + webkit).
 test.describe("doc → canvas render", () => {
-  test("renders into #eb-root with data-node-id stamps and no <table>", async ({ editor }) => {
+  test("renders into #rime-root with data-node-id stamps and no <table>", async ({ editor }) => {
     const result = await editor.host.evaluate(async (host, doc) => {
       const el = host as unknown as {
         whenCanvasReady(): Promise<{ mount: HTMLElement }>;

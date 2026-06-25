@@ -1,6 +1,6 @@
-// <eb-move-to-menu> — a keyboard-operable popover listing valid destinations for
+// <rime-move-to-menu> — a keyboard-operable popover listing valid destinations for
 // the selected block (the non-pointer way to reorder). Themed via
-// --eb-* tokens. Emits an `eb-move-select` event with the chosen DropTarget; the
+// --rime-* tokens. Emits an `rime-move-select` event with the chosen DropTarget; the
 // editor applies it through the same moveNode op as keyboard/pointer moves.
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
@@ -14,12 +14,12 @@ export class MoveToMenu extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
-      background: var(--eb-color-bg, #fff);
-      color: var(--eb-color-fg, #18181b);
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 8px);
-      box-shadow: var(--eb-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
-      font: var(--eb-font-ui, 14px system-ui);
+      background: var(--rime-color-bg, #fff);
+      color: var(--rime-color-fg, #18181b);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 8px);
+      box-shadow: var(--rime-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
+      font: var(--rime-font-ui, 14px system-ui);
       padding: 4px;
       min-inline-size: 180px;
     }
@@ -29,7 +29,7 @@ export class MoveToMenu extends LitElement {
       text-align: start;
       padding: 6px 10px;
       border: 0;
-      border-radius: var(--eb-radius, 6px);
+      border-radius: var(--rime-radius, 6px);
       background: transparent;
       color: inherit;
       font: inherit;
@@ -37,7 +37,7 @@ export class MoveToMenu extends LitElement {
     }
     button:hover,
     button:focus-visible {
-      background: var(--eb-color-accent, #5b5bd6);
+      background: var(--rime-color-accent, #5b5bd6);
       color: #fff;
       outline: none;
     }
@@ -102,7 +102,7 @@ export class MoveToMenu extends LitElement {
       this.#choose(this.activeIndex);
       e.preventDefault();
     } else if (e.key === "Escape") {
-      this.dispatchEvent(new CustomEvent("eb-move-cancel", { bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent("rime-move-cancel", { bubbles: true, composed: true }));
       e.preventDefault();
     }
   }
@@ -111,7 +111,7 @@ export class MoveToMenu extends LitElement {
     const dest = this.destinations[index];
     if (!dest) return;
     this.dispatchEvent(
-      new CustomEvent<DropTarget>("eb-move-select", {
+      new CustomEvent<DropTarget>("rime-move-select", {
         detail: dest.target,
         bubbles: true,
         composed: true,
@@ -120,12 +120,12 @@ export class MoveToMenu extends LitElement {
   }
 }
 
-if (!customElements.get("eb-move-to-menu")) {
-  customElements.define("eb-move-to-menu", MoveToMenu);
+if (!customElements.get("rime-move-to-menu")) {
+  customElements.define("rime-move-to-menu", MoveToMenu);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "eb-move-to-menu": MoveToMenu;
+    "rime-move-to-menu": MoveToMenu;
   }
 }

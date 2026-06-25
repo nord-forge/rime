@@ -43,7 +43,7 @@ async function enterEditAndSelectAll(
   await page.waitForFunction(() => {
     const tb = document
       .querySelector("rime-editor")!
-      .shadowRoot!.querySelector("eb-rich-text-toolbar");
+      .shadowRoot!.querySelector("rime-rich-text-toolbar");
     return tb?.hasAttribute("open");
   });
 }
@@ -52,7 +52,7 @@ function clickToolbar(page: import("@playwright/test").Page, label: string) {
   return page.evaluate((lbl) => {
     const tb = document
       .querySelector("rime-editor")!
-      .shadowRoot!.querySelector("eb-rich-text-toolbar")!;
+      .shadowRoot!.querySelector("rime-rich-text-toolbar")!;
     const btn = tb.shadowRoot!.querySelector<HTMLButtonElement>(`button[aria-label="${lbl}"]`)!;
     btn.click();
   }, label);
@@ -115,7 +115,7 @@ test.describe("rich-text toolbar", () => {
       page.evaluate((u) => {
         const pop = document
           .querySelector("rime-editor")!
-          .shadowRoot!.querySelector("eb-link-popover")!;
+          .shadowRoot!.querySelector("rime-link-popover")!;
         const input = pop.shadowRoot!.querySelector<HTMLInputElement>("input")!;
         input.value = u;
         input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -124,7 +124,7 @@ test.describe("rich-text toolbar", () => {
       page.evaluate((c) => {
         const pop = document
           .querySelector("rime-editor")!
-          .shadowRoot!.querySelector("eb-link-popover")!;
+          .shadowRoot!.querySelector("rime-link-popover")!;
         pop.shadowRoot!.querySelector<HTMLButtonElement>(`button.${c}`)!.click();
       }, cls);
 

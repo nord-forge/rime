@@ -51,8 +51,8 @@ Create under `packages/core/src/`:
      mount(into: HTMLElement): void;        // append iframe, set srcdoc, resolve `ready` on load
      whenReady(): Promise<CanvasReadyEvent>;
      get document(): Document | null;       // iframe.contentDocument
-     get mountPoint(): HTMLElement | null;  // the #eb-root render node
-     setBaseStyles(css: string): void;      // replace the injected <style id="eb-base"> textContent
+     get mountPoint(): HTMLElement | null;  // the #rime-root render node
+     setBaseStyles(css: string): void;      // replace the injected <style id="rime-base"> textContent
      destroy(): void;                       // remove listeners + iframe
    }
    ```
@@ -61,11 +61,11 @@ Create under `packages/core/src/`:
    include two well-known nodes:
    ```ts
    const SRCDOC = `<!doctype html><html><head><meta charset="utf-8">
-   <style id="eb-base">/* injected email base styles go here */
+   <style id="rime-base">/* injected email base styles go here */
    *,*::before,*::after{box-sizing:border-box} html,body{margin:0} body{font:15px system-ui;background:#fff}</style>
-   </head><body><div id="eb-root"></div></body></html>`;
+   </head><body><div id="rime-root"></div></body></html>`;
    ```
-   The renderer (ENV-16) draws into `#eb-root`; `#eb-base` is the swappable email
+   The renderer (ENV-16) draws into `#rime-root`; `#rime-base` is the swappable email
    stylesheet (`setBaseStyles`).
 3. **Same-origin guarantee** — use `srcdoc` (not `src`) so the iframe is same-origin
    with the host → `contentDocument`, `elementFromPoint`, and selection are all
@@ -78,9 +78,9 @@ Create under `packages/core/src/`:
    `contentDocument` before load. On `destroy()`, remove the `load` listener and the
    iframe element; null internal refs (memory discipline, §10).
 5. **CSS isolation is structural, not host-leaked** — the iframe must **not** copy or
-   inherit any host/chrome stylesheet. `--eb-*` chrome tokens stop at the iframe
-   boundary by design (ENV-18 verifies). The only styles inside are `#eb-base` plus
-   whatever ENV-16 writes into `#eb-root`.
+   inherit any host/chrome stylesheet. `--rime-*` chrome tokens stop at the iframe
+   boundary by design (ENV-18 verifies). The only styles inside are `#rime-base` plus
+   whatever ENV-16 writes into `#rime-root`.
 6. **Wire into the shell** — `RimeEditor.firstUpdated` constructs a
    `CanvasController`, `mount()`s it into the `part="canvas"` section, and holds the
    `whenReady()` promise for ENV-16 to await. Expose the iframe as `part="canvas-frame"`
@@ -91,15 +91,15 @@ Create under `packages/core/src/`:
 - [ ] iframe uses `srcdoc` and is **same-origin** (`iframe.contentDocument` is
       accessible; `elementFromPoint` works inside it).
 - [ ] `whenReady()` resolves after `load` with `{ doc, mount, iframe }` where `mount`
-      is `#eb-root`.
-- [ ] `setBaseStyles(css)` replaces `#eb-base` contents and visibly restyles the
+      is `#rime-root`.
+- [ ] `setBaseStyles(css)` replaces `#rime-base` contents and visibly restyles the
       canvas without touching the chrome.
 - [ ] **No host CSS bleed:** a host rule like `* { color: red }` does NOT affect
-      content inside `#eb-root` (Playwright, chromium + webkit).
+      content inside `#rime-root` (Playwright, chromium + webkit).
 - [ ] `destroy()` removes the iframe and its listeners (no leaked `load` handler).
 
 ## Out of scope
-- Rendering the doc into `#eb-root` (ENV-16).
+- Rendering the doc into `#rime-root` (ENV-16).
 - Coordinate translation / pointer math (ENV-17).
 - The full no-bleed theming verification matrix (ENV-18 owns the dedicated test).
 
@@ -108,7 +108,7 @@ Create under `packages/core/src/`:
 cd packages/core
 bun test
 bun run build
-bun run e2e   # chromium + webkit: iframe present, same-origin reachable, host `* { color:red }` does NOT reach #eb-root
+bun run e2e   # chromium + webkit: iframe present, same-origin reachable, host `* { color:red }` does NOT reach #rime-root
 ```
 
 ## Definition of done

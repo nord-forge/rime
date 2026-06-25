@@ -89,7 +89,7 @@ Conventions:
 | ENV-15 | ✅ | **iframe canvas** — same-origin `srcdoc`, real preview DOM, injected base stylesheet | P0 | ENV-14 | §6.4 |
 | ENV-16 | ✅ | **Doc → canvas renderer** — render the JSON doc to the clean preview DOM (divs/flex) | P0 | ENV-15, ENV-05 | §6.2 |
 | ENV-17 | ✅ | **Coordinate-translation drag controller** — host pointer space ↔ iframe doc space (single owner) | P0 | ENV-15 | §6.4 |
-| ENV-18 | ✅ | **Two-surface theming** — `--eb-*` CSS custom properties for chrome; verify no host CSS bleed into canvas | P1 | ENV-14 | §6.5 |
+| ENV-18 | ✅ | **Two-surface theming** — `--rime-*` CSS custom properties for chrome; verify no host CSS bleed into canvas | P1 | ENV-14 | §6.5 |
 
 ## Milestone 4 — Drag & drop (the do-or-die) ✅
 
@@ -100,7 +100,7 @@ Conventions:
 | ENV-19 | ✅ | **Canvas DnD (pointer events, OD-6)** — palette → canvas, reorder within/between columns, nested drop zones | P0 | ENV-16, ENV-17 | §6.6 |
 | ENV-20 | ✅ | **Drop-zone detection + indicators** — rAF-gated hit-testing, themed insertion marker | P0 | ENV-19 | §6.6 |
 | ENV-21 | ✅ | **DnD perf pass (OD-3 resolved)** — ≥95% frames ≤16.6ms + detection p95 ≤8ms under 4× CPU throttle; benchmark gates it | P0 | ENV-20 | §10, OD-3 |
-| ENV-22 | ✅ | **Custom drag preview** — branded, `--eb-*`-themed, pointer-following | P1 | ENV-19 | §6.6 |
+| ENV-22 | ✅ | **Custom drag preview** — branded, `--rime-*`-themed, pointer-following | P1 | ENV-19 | §6.6 |
 | ENV-23 | ✅ | **Keyboard reordering** — select block → move up/down/into via keyboard / "move to" menu | P0 | ENV-19 | §6.6 |
 | ENV-24 | ✅ | **ARIA live announcements** — move/insert/delete announced to screen readers | P0 | ENV-23 | §6.6 |
 | ENV-25 | ✅ | **Cross-browser DnD E2E** — Playwright incl. WebKit; touch path | P0 | ENV-20 | §9 |
@@ -112,7 +112,7 @@ Conventions:
 |----|----|-------|-----|------------|-----|
 | ENV-27 | ✅ | **Integrate Lexical headless in the canvas** (per OD-1/OD-4) + **hard-confirm bundle budget**: measure real `@nord-forge/rime-core` gzip. Start from `.claude/spikes/od1-richtext/src/lexical-adapter.ts` (registerRichText + curated nodes). | P0 | OD-4, ENV-16 | §6.7, OD-1/4 |
 | ENV-28 | ✅ | **One-instance lifecycle** — create on focus, destroy on blur; assert single live instance | P0 | ENV-27 | §6.7, §10 |
-| ENV-29 | ✅ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--eb-*` | P0 | ENV-27 | §6.5 |
+| ENV-29 | ✅ | **Custom rich-text UI** — Lit inline toolbar / bubble menu / link popover, themed by `--rime-*` | P0 | ENV-27 | §6.5 |
 | ENV-30 | ✅ | **Schema ↔ doc-model round-trip** — text content serializes into/out of the JSON doc losslessly | P0 | ENV-27, ENV-09 | §6.1 |
 | ENV-31 | ✅ | **Paste sanitization** — Word/Outlook/Docs paste → schema-valid content. **De-risked:** spike proved Lexical's `registerRichText` + curated node set sanitizes mso/font/script (Chromium + WebKit). This ticket = port + harden. | P1 | ENV-27 | §6.7 |
 | ENV-32 | ✅ | **IME / mobile / Safari hardening** — verified (real iOS Safari + CJK IME manual pass; not covered by automated WebKit) | P1 | ENV-27 | §9 |

@@ -10,7 +10,7 @@ export interface TokenSelectDetail {
 
 export type { TokenItem } from "./token-filter";
 
-export class EbTokenPicker extends LitElement {
+export class RimeTokenPicker extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       position: absolute;
@@ -25,21 +25,21 @@ export class EbTokenPicker extends LitElement {
       max-block-size: 280px;
       display: flex;
       flex-direction: column;
-      background: var(--eb-color-surface, var(--eb-color-bg, #fff));
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 8px);
-      box-shadow: var(--eb-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
-      font: var(--eb-font-ui, 14px system-ui);
+      background: var(--rime-color-surface, var(--rime-color-bg, #fff));
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 8px);
+      box-shadow: var(--rime-shadow-1, 0 2px 8px rgba(0, 0, 0, 0.18));
+      font: var(--rime-font-ui, 14px system-ui);
       overflow: hidden;
     }
     input {
       margin: 6px;
       padding: 4px 6px;
-      border: 1px solid var(--eb-color-border, #e4e4e7);
-      border-radius: var(--eb-radius, 6px);
+      border: 1px solid var(--rime-color-border, #e4e4e7);
+      border-radius: var(--rime-radius, 6px);
       font: inherit;
-      color: var(--eb-color-fg, #18181b);
-      background: var(--eb-color-bg, #fff);
+      color: var(--rime-color-fg, #18181b);
+      background: var(--rime-color-bg, #fff);
     }
     .list {
       overflow-y: auto;
@@ -49,28 +49,28 @@ export class EbTokenPicker extends LitElement {
       padding: 4px 6px 2px;
       font-size: 0.8em;
       font-weight: 600;
-      color: color-mix(in srgb, var(--eb-color-fg, #18181b) 55%, transparent);
+      color: color-mix(in srgb, var(--rime-color-fg, #18181b) 55%, transparent);
     }
     .item {
       display: flex;
       justify-content: space-between;
       gap: 8px;
       padding: 5px 6px;
-      border-radius: var(--eb-radius, 6px);
-      color: var(--eb-color-fg, #18181b);
+      border-radius: var(--rime-radius, 6px);
+      color: var(--rime-color-fg, #18181b);
       cursor: pointer;
     }
     .item .key {
-      color: color-mix(in srgb, var(--eb-color-fg, #18181b) 50%, transparent);
+      color: color-mix(in srgb, var(--rime-color-fg, #18181b) 50%, transparent);
       font-size: 0.85em;
     }
     .item:hover,
     .item[aria-selected="true"] {
-      background: color-mix(in srgb, var(--eb-color-accent, #5b5bd6) 12%, transparent);
+      background: color-mix(in srgb, var(--rime-color-accent, #5b5bd6) 12%, transparent);
     }
     .empty {
       padding: 10px;
-      color: color-mix(in srgb, var(--eb-color-fg, #18181b) 55%, transparent);
+      color: color-mix(in srgb, var(--rime-color-fg, #18181b) 55%, transparent);
       text-align: center;
     }
   `;
@@ -101,7 +101,7 @@ export class EbTokenPicker extends LitElement {
 
   #select(item: TokenItem): void {
     this.dispatchEvent(
-      new CustomEvent<TokenSelectDetail>("eb-token-select", {
+      new CustomEvent<TokenSelectDetail>("rime-token-select", {
         detail: { key: item.key, label: item.label },
         bubbles: true,
         composed: true,
@@ -112,7 +112,7 @@ export class EbTokenPicker extends LitElement {
 
   #cancel(): void {
     this.hide();
-    this.dispatchEvent(new CustomEvent("eb-token-cancel", { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent("rime-token-cancel", { bubbles: true, composed: true }));
   }
 
   #onKeydown(e: KeyboardEvent): void {
@@ -202,6 +202,6 @@ export class EbTokenPicker extends LitElement {
   }
 }
 
-if (!customElements.get("eb-token-picker")) {
-  customElements.define("eb-token-picker", EbTokenPicker);
+if (!customElements.get("rime-token-picker")) {
+  customElements.define("rime-token-picker", RimeTokenPicker);
 }
