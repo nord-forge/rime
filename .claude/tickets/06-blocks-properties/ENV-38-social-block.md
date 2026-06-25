@@ -1,7 +1,7 @@
 ---
 id: ENV-38
 title: Social block (icons + links)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34]
