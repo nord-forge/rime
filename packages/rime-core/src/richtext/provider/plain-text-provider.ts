@@ -65,6 +65,22 @@ export class PlainTextRichTextProvider implements RichTextProvider {
   // The plain textarea handles IME natively; nothing to defer.
   setComposing(): void {}
 
+  // No token node in the textarea fallback: insert the literal {{token}} text at
+  // the caret (lossy by design — this provider drops all rich structure).
+  insertToken(token: string): void {
+    const active = this.#active;
+    const key = token.trim();
+    if (!active || key === "") return;
+    const ta = active.textarea;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const tag = `{{${key}}}`;
+    ta.value = ta.value.slice(0, start) + tag + ta.value.slice(end);
+    const caret = start + tag.length;
+    ta.setSelectionRange(caret, caret);
+    ta.focus();
+  }
+
   // No inline chrome to reposition.
   reposition(): void {}
 

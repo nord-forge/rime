@@ -1,6 +1,6 @@
 // Convert RichTextJSON into escaped inline HTML for <mj-text>. No DOM, no engine.
 
-import type { Mark, RichTextJSON, TextRun } from "@nord-forge/rime-model";
+import type { Inline, Mark, RichTextJSON } from "@nord-forge/rime-model";
 
 /** Escape text for HTML element content. */
 export function escapeHtml(value: string): string {
@@ -18,7 +18,13 @@ const MARK_TAGS: Record<Mark, string> = {
   underline: "u",
 };
 
-function renderRun(run: TextRun): string {
+function renderInline(run: Inline): string {
+  // A token exports to the literal {{key}} so the ESP does the substitution; the
+  // key is HTML-escaped but the braces are literal.
+  if (run.type === "token") {
+    return `{{${escapeHtml(run.token)}}}`;
+  }
+
   let html = escapeHtml(run.text);
 
   // Wrap with mark tags (deterministic order so output is stable for snapshots).
@@ -36,8 +42,8 @@ function renderRun(run: TextRun): string {
   return html;
 }
 
-function renderRuns(runs: TextRun[] | undefined): string {
-  return (runs ?? []).map(renderRun).join("");
+function renderRuns(runs: Inline[] | undefined): string {
+  return (runs ?? []).map(renderInline).join("");
 }
 
 export function richTextToInlineHtml(content: RichTextJSON): string {

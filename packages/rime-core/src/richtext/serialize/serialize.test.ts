@@ -6,6 +6,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
 import type { RichTextJSON } from "@nord-forge/rime-model";
 import { $applyRichTextJSON, $readRichTextJSON, canonicalize } from "./serialize";
+import { TokenNode } from "../token-node/token-node";
 
 // The converters run inside Lexical update/read callbacks, which read global DOM.
 const saved: Record<string, unknown> = {};
@@ -29,7 +30,7 @@ beforeEach(() => {
   }
   editor = createEditor({
     namespace: "test",
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, TokenNode],
     onError: (e) => {
       throw e;
     },
@@ -144,6 +145,43 @@ describe("lossless law: read(apply(json)) == canonicalize(json)", () => {
           ordered: true,
           items: [
             { type: "listitem", content: [{ type: "text", text: "go", link: "https://y.test" }] },
+          ],
+        },
+      ],
+    },
+    "text with token": {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Hi " },
+            { type: "token", token: "first_name", label: "First name" },
+            { type: "text", text: ", welcome" },
+          ],
+        },
+      ],
+    },
+    "token without label": {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "token", token: "order_total" },
+            { type: "text", text: " due" },
+          ],
+        },
+      ],
+    },
+    "adjacent tokens stay separate": {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "token", token: "a" },
+            { type: "token", token: "b" },
           ],
         },
       ],

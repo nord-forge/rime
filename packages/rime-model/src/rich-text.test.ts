@@ -74,6 +74,39 @@ describe("RichTextJSON schema — blocks", () => {
     expect(errors.some((m) => m.includes("paragraph, heading or list"))).toBe(true);
   });
 
+  test("accepts token inlines mixed with text", () => {
+    const content: RichTextJSON = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Hi " },
+            { type: "token", token: "first_name", label: "First name" },
+            { type: "text", text: "!" },
+          ],
+        },
+      ],
+    };
+    expect(errorsFor(content)).toEqual([]);
+  });
+
+  test("rejects a token with an empty key", () => {
+    const errors = errorsFor({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "token", token: "  " }] }],
+    });
+    expect(errors.some((m) => m.includes("token must be a non-empty string"))).toBe(true);
+  });
+
+  test("rejects a token with a non-string label", () => {
+    const errors = errorsFor({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "token", token: "x", label: 1 }] }],
+    });
+    expect(errors.some((m) => m.includes("label must be a string"))).toBe(true);
+  });
+
   test("still validates marks/links inside heading + list runs", () => {
     const errors = errorsFor({
       type: "doc",

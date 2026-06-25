@@ -10,11 +10,11 @@ import type {
   DividerBlock,
   DocumentNode,
   ImageBlock,
+  Inline,
   RichTextJSON,
   SectionNode,
   SpacerBlock,
   TextBlock,
-  TextRun,
 } from "@nord-forge/rime-model";
 
 /** Create an element stamped with the node's identity for hit-testing. */
@@ -36,8 +36,32 @@ export function applyStyle(e: HTMLElement, style: BlockStyle | undefined): void 
   e.style.textAlign = style?.align ?? "";
 }
 
-function appendRuns(host: HTMLElement, runs: TextRun[] | undefined, doc: Document): void {
+/** Paint a merge tag as an atomic, themed chip (visual parity with the editor). */
+export function renderTokenChip(
+  token: string,
+  label: string | undefined,
+  doc: Document,
+): HTMLElement {
+  const chip = doc.createElement("span");
+  chip.dataset["token"] = token;
+  chip.setAttribute("contenteditable", "false");
+  chip.textContent = label ?? token;
+  chip.style.display = "inline-block";
+  chip.style.padding = "0 4px";
+  chip.style.borderRadius = "3px";
+  chip.style.background = "var(--eb-token-bg, var(--eb-accent-soft, #e8eefc))";
+  chip.style.color = "var(--eb-token-fg, var(--eb-accent, #2748b8))";
+  chip.style.fontSize = "0.9em";
+  chip.style.whiteSpace = "nowrap";
+  return chip;
+}
+
+function appendRuns(host: HTMLElement, runs: Inline[] | undefined, doc: Document): void {
   for (const run of runs ?? []) {
+    if (run.type === "token") {
+      host.append(renderTokenChip(run.token, run.label, doc));
+      continue;
+    }
     let child: Node = doc.createTextNode(run.text);
     for (const mark of ["bold", "italic", "underline"] as const) {
       if (run.marks?.includes(mark)) {

@@ -343,8 +343,20 @@ function validateRuns(runs: unknown, path: string, errors: ValidationError[]): v
   }
   runs.forEach((run, j) => {
     const runPath = `${path}[${j}]`;
+    if (isObject(run) && run["type"] === "token") {
+      if (typeof run["token"] !== "string" || run["token"].trim() === "") {
+        errors.push({ path: `${runPath}.token`, message: "token must be a non-empty string" });
+      }
+      if (run["label"] !== undefined && typeof run["label"] !== "string") {
+        errors.push({ path: `${runPath}.label`, message: "label must be a string" });
+      }
+      return;
+    }
     if (!isObject(run) || run["type"] !== "text" || typeof run["text"] !== "string") {
-      errors.push({ path: runPath, message: 'must be { type: "text", text: string }' });
+      errors.push({
+        path: runPath,
+        message: 'must be { type: "text", text: string } or { type: "token", token: string }',
+      });
       return;
     }
     const marks = run["marks"];

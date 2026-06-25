@@ -160,8 +160,22 @@ describe("MJML export parity with renderer-mjml", () => {
     content: [{ type: "paragraph", content: [{ type: "text", text: "Hello", marks: ["bold"] }] }],
   };
 
+  const rtToken: RichTextJSON = {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Hi " },
+          { type: "token", token: "first_name", label: "First name" },
+        ],
+      },
+    ],
+  };
+
   const cases: Record<string, BaseNode> = {
     text: createTextBlock(createIdFactory(), rt),
+    "text with token": createTextBlock(createIdFactory(), rtToken),
     image: {
       ...createImageBlock(createIdFactory(), "https://x.test/i.png", "alt"),
       href: "https://x.test",

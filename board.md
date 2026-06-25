@@ -3,7 +3,8 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 47 / 61 tickets done.** Milestones 0–6 complete. Milestone 6 (blocks &
+**Progress: 48 / 61 tickets done.** Milestones 0–6 complete; Milestone 7 started
+(ENV-39 merge-tag node + `{{var}}` export landed). Milestone 6 (blocks &
 properties) closed: the full block catalog (ENV-57–64 + ENV-65 field types), the
 schema-driven properties panel (ENV-35), the registry-driven palette (ENV-36), and
 the example custom block / SDK proof (ENV-37). The pure SDK barrel was purified along
@@ -22,7 +23,7 @@ the way (editor + Lit UI moved to `/register`). Core 81.88 kB gzip vs ~100 kB.
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
 | 6 — Blocks & properties | ✅ 15 / 15 |
-| 7 — Personalization tokens | ⬜ 0 / 3 |
+| 7 — Personalization tokens | 🔶 1 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
 | 10 — Release readiness | ⬜ 0 / 5 |
@@ -126,11 +127,11 @@ Conventions:
 | ENV-63 | ✅ | **Video block** — poster + play overlay linking out | P2 | ENV-34, ENV-33, ENV-65 | §12 |
 | ENV-64 | ✅ | **Table block** — simple data table (raw-table fallback) | P2 | ENV-34, ENV-33, ENV-65 | §12 |
 
-## Milestone 7 — Personalization tokens ⬜
+## Milestone 7 — Personalization tokens 🔶
 
 | ID | St | Title | Pri | Depends on | PRD |
 |----|----|-------|-----|------------|-----|
-| ENV-39 | ⬜ | **`{{variable}}` merge tags** in rich text + render handling | P1 | ENV-27 | §6.9 |
+| ENV-39 | ✅ | **`{{variable}}` merge tags** in rich text + render handling | P1 | ENV-27 | §6.9 |
 | ENV-40 | ⬜ | **Token picker UI** | P1 | ENV-39 | §6.9 |
 | ENV-41 | ⬜ | **`registerToken` / token-source config** | P1 | ENV-39 | §6.8/9 |
 

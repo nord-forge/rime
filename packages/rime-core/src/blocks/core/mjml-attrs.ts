@@ -3,7 +3,7 @@
 // export path and the standalone renderer agree for core node types — without
 // rime-core depending on rime-mjml.
 
-import type { BlockStyle, Mark, RichTextJSON, TextRun } from "@nord-forge/rime-model";
+import type { BlockStyle, Inline, Mark, RichTextJSON } from "@nord-forge/rime-model";
 
 export function escapeHtml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -51,7 +51,8 @@ export function attrsToString(attrs: Record<string, string>): string {
 
 const MARK_TAGS: Record<Mark, string> = { bold: "strong", italic: "em", underline: "u" };
 
-function renderRun(run: TextRun): string {
+function renderInline(run: Inline): string {
+  if (run.type === "token") return `{{${escapeHtml(run.token)}}}`;
   let html = escapeHtml(run.text);
   for (const mark of ["bold", "italic", "underline"] as const) {
     if (run.marks?.includes(mark)) html = `<${MARK_TAGS[mark]}>${html}</${MARK_TAGS[mark]}>`;
@@ -60,8 +61,8 @@ function renderRun(run: TextRun): string {
   return html;
 }
 
-function renderRuns(runs: TextRun[] | undefined): string {
-  return (runs ?? []).map(renderRun).join("");
+function renderRuns(runs: Inline[] | undefined): string {
+  return (runs ?? []).map(renderInline).join("");
 }
 
 export function richTextToInlineHtml(content: RichTextJSON): string {

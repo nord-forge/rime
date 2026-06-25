@@ -2,14 +2,19 @@
 // drops marks/links/headings/lists to plain paragraph text; the inverse turns each
 // line into a paragraph. Pure + DOM-free so it's unit-testable and pulls no engine.
 
-import type { RichTextBlock, RichTextJSON } from "@nord-forge/rime-model";
+import type { Inline, RichTextBlock, RichTextJSON } from "@nord-forge/rime-model";
 
-/** Concatenate a block's text runs (or list items' runs) into a single string. */
+/** Flatten an inline to plain text; a token becomes its literal {{key}}. */
+function inlineText(run: Inline): string {
+  return run.type === "token" ? `{{${run.token}}}` : run.text;
+}
+
+/** Concatenate a block's inlines (or list items' inlines) into a single string. */
 function blockText(block: RichTextBlock): string {
   if (block.type === "list") {
-    return block.items.map((item) => (item.content ?? []).map((r) => r.text).join("")).join("\n");
+    return block.items.map((item) => (item.content ?? []).map(inlineText).join("")).join("\n");
   }
-  return (block.content ?? []).map((r) => r.text).join("");
+  return (block.content ?? []).map(inlineText).join("");
 }
 
 /** RichTextJSON → plain text: each top-level block becomes a line. */
