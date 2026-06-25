@@ -1,7 +1,7 @@
 # Session handoff — Rime
 
 Snapshot to continue work in a fresh session. Update or delete when stale.
-Last updated after PR #21 merged. Branch: `main` (clean).
+Last updated after PR #22 merged (M6 complete). Branch: `main` (clean).
 
 ## What this project is
 **Rime** — an embeddable, framework-agnostic email template builder. Published under
@@ -11,15 +11,18 @@ the **`@nord-forge`** npm scope (NOT `@enveloppe` — that name is gone). Repo:
 Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Playwright.
 
 ## Progress (board is source of truth: `board.md`)
-- **46/61 tickets done.**
-- **Milestones 0–5 complete.** Milestone 6 (blocks & properties): **14/15** — catalog +
-  properties panel + palette all ship. Done: ENV-33 (registerBlock), ENV-34 (seven core
-  blocks), ENV-65 (schema field types + open validator), ENV-57 (Heading), ENV-58 (Quote),
-  ENV-38 (Social), ENV-60 (Hero), ENV-61 (Column presets), Batch B — ENV-59 (Menu, PR #16),
-  ENV-62 (HTML, PR #17), ENV-63 (Video, PR #18), ENV-64 (Table, PR #19), ENV-35 (properties
-  panel, PR #20), ENV-36 (palette UI, PR #21).
-- **Remaining in M6: only ENV-37 (example custom block — the SDK proof, documented
-  end-to-end).** After that M6 is done and the demo (ENV-46, Milestone 9) is unblocked.
+- **47/61 tickets done. MILESTONE 6 COMPLETE (15/15).**
+- **Milestones 0–6 complete.** M6 shipped: ENV-33/34/65 (registry + core blocks + schema
+  fields), the full block catalog (ENV-57 Heading, ENV-58 Quote, ENV-38 Social, ENV-60
+  Hero, ENV-61 Column presets, ENV-59 Menu, ENV-62 HTML, ENV-63 Video, ENV-64 Table),
+  ENV-35 (properties panel), ENV-36 (palette), ENV-37 (example coupon block / SDK proof).
+- **IN PROGRESS (post-M6, user request): make Lexical optional.** `defineRimeEditor(
+  { lexicalEditor: false })` (default true) → the editor DYNAMIC-imports Lexical only when
+  on, so the opt-out user never fetches/parses the Lexical chunk (~72 kB gzip — the bundle's
+  bulk). With it off, text blocks fall back to a plain `<textarea>` that serializes to the
+  richtext JSON model as plain paragraphs (no bold/links/lists). See "NEXT UP" for the plan.
+- **After that:** Milestone 7 (personalization tokens, ENV-39/40/41) or jump to the demo
+  (ENV-46, M9) — M6 unblocked it. Confirm priority with the user.
 - Heading + Quote (PR #12) and Social (PR #13) are Batch A. Custom leaf blocks:
   node interface declared in rime-core (NOT the rime-model union), validated via
   `validateDoc`'s `extraLeafTypes`, exported as native MJML. They go in the core
@@ -62,12 +65,17 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
   (leftover preview node). Tracked as ENV-26b. Not a regression.
 
 ## Architecture notes
-- **Barrel split (PR #11):** `@nord-forge/rime-core` root barrel is the PURE SDK (types,
-  registerBlock, helpers). The editor element is defined via
-  `@nord-forge/rime-core/register` → `defineRimeEditor(config?)` (config:
-  `{ coreBlocks?, blocks?, tagName? }`, typed to grow into theme/tokens/enabledBlocks).
-  `"sideEffects"` is set: only `register.*` in core; `false` for model/mjml/react/vue.
-  Don't reintroduce module-level side effects into the root barrel.
+- **Barrel split (PR #11, ENFORCED in PR #22):** `@nord-forge/rime-core` root barrel is
+  the PURE, tree-shakeable SDK (types, registerBlock, registry, blocks, render helpers,
+  DOM-free logic) — it pulls in NO Lit custom elements. The editor element + ALL Lit
+  chrome UI live on `@nord-forge/rime-core/register`: `defineRimeEditor(config?)`,
+  `RimeEditor`/`RimeConfig`/`RimeChangeDetail`/`TokenSource`, `EbPropertiesPanel`,
+  `EbPalette`, `RichTextToolbar`, `LinkPopover`, `MoveToMenu`. PR #22 moved these OFF the
+  barrel (they had leaked back via the `RimeEditor` re-export) — importing `registerBlock`
+  no longer drags in Lit. **Rule:** a value-export on the root barrel must not transitively
+  import `lit/decorators`; pure logic co-located with a Lit component (e.g. `destinationsFor`
+  in move-to-menu) must be split into its own module (`move-destinations.ts`) to be barrel-
+  exported. `"sideEffects"`: only `register.*` in core; `false` for model/mjml/react/vue.
 - **Blocks:** every block (built-in or custom) is a `BlockDefinition`
   (`{ type, schema, palette, renderCanvas, renderExport }`) registered via
   `registerBlock`. Canvas reuses `render-node` helpers; export returns `{ mjml }` or
@@ -115,17 +123,32 @@ Lexical (headless rich text), MJML export, TypeScript strict, oxlint/oxfmt, Play
 - **Canvas DnD = custom pointer events** in the srcdoc iframe (OD-6), NOT a library;
   test with `page.mouse`.
 
-## NEXT UP — the last two M6 UI tickets (catalog + panel DONE)
-The full block catalog ships (ENV-34 core + ENV-57/58/38/60/61/59/62/63/64), the
-schema-driven properties panel (ENV-35), and the registry-driven palette (ENV-36).
-**Only ENV-37 remains in M6:**
-- **ENV-37 — example custom block:** the SDK proof — a custom block defined OUTSIDE the
-  core set, registered via the public `registerBlock` / `defineRimeEditor({ blocks: [...] })`
-  path, documented end-to-end so a host can copy it. Use the block-authoring crib below.
-  Likely lives as a doc/example (README or `apps/` example) + a test asserting it registers,
-  renders on canvas, and exports through the MjmlRenderer. Confirm with the ticket where it
-  should live (example app vs docs) before building.
-After ENV-37, M6 is done and the demo (ENV-46, Milestone 9) is unblocked.
+## NEXT UP — make Lexical optional (post-M6 user request, IN PROGRESS)
+**Goal:** `defineRimeEditor({ lexicalEditor?: boolean })` (default true). When false, the
+editor must NOT fetch/parse Lexical (it's ~72 kB gzip — the whole bundle's bulk), and text
+blocks fall back to a plain `<textarea>` that serializes to the richtext JSON model as plain
+paragraphs. User confirmed: dynamic-import + flag (the chunk still ships as a lazy file but
+is never loaded when off); plain-textarea fallback (NOT contenteditable).
+Plan:
+1. **Make the Lexical wiring dynamic.** Today `rime-editor.ts` STATIC-imports
+   `RichTextLifecycle`/`mountLexical`/`RichTextToolbar`/`makeCommands` (so Lexical is in the
+   main chunk for everyone). Move those behind a single `await import(...)` gated by the flag
+   — a dynamic `import()` is the code-split point that puts Lexical in its own chunk. Keep
+   one richtext "provider" seam so the editor's richtext calls (`#richtext?.focus(...)`, blur,
+   composition guard, toolbar bind) go through an interface that is either the Lexical impl or
+   the plain-text fallback.
+2. **Plain-text fallback editor.** A no-Lexical provider: clicking a text block opens a plain
+   `<textarea>` (or edits via the properties panel's existing text control); on commit, wrap
+   the string into `{ type:doc, content:[{paragraph:[textRun]}] }` via the existing
+   serialize helpers. Pre-existing rich formatting still RENDERS (canvas + export unchanged)
+   but isn't editable in this tier. Reuse `richtext/serialize/serialize.ts` round-trip.
+3. **Verify the bundle.** `bun run size` should show Lexical split into its own chunk; a build
+   that opts out should not load it. Add a test/assertion that `{ lexicalEditor: false }`
+   yields a working text-edit path with no Lexical on the critical import path.
+4. Default path (flag true / omitted) must behave EXACTLY as today — all existing richtext
+   e2e (mount/lifecycle/roundtrip/paste/toolbar) stay green.
+**After this:** Milestone 7 (tokens, ENV-39/40/41) OR the demo (ENV-46, M9 — unblocked by
+M6). Confirm priority with the user.
 
 **Chrome-UI pattern (ENV-35 panel PR #20 + ENV-36 palette PR #21):** both live in their own
 dir (`properties/`, `palette/`), render in the shell region (`part="properties"` /
@@ -134,9 +157,10 @@ state. Pure grouping/assembly logic is factored into a DOM-free helper so it's u
 (`properties/field-path.ts`, `palette/palette-entries.ts`); the Lit component just renders it.
 Edits/adds go through the model ops → editor `#dispatch` (panel: `eb-doc-change`; palette:
 `eb-palette-add` → `editor.addBlock()`), so undo/redo + ARIA-live are covered. Themed-Lit
-components register idempotently (`if (!customElements.get(...))`) and are exported from the
-root barrel alongside the toolbar/popover. **Gotcha:** don't set `display` on `rime-editor`
-from host CSS — it overrides the `:host` grid (the harness did this; fixed in PR #21).
+components register idempotently (`if (!customElements.get(...))`) and are exported from
+`@nord-forge/rime-core/register` (NOT the pure root barrel — see Barrel split). **Gotcha:**
+don't set `display` on `rime-editor` from host CSS — it overrides the `:host` grid (the e2e
+harness did this; fixed in PR #21).
 
 **Block-authoring crib (for ENV-37 / any new block):** every block is a `BlockDefinition`
 `{ type, placement?, schema, palette, renderCanvas, renderExport }` in
