@@ -1,0 +1,27 @@
+{
+  "name": "@nord-forge/rime-react-demo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Runnable React demo for the @nord-forge/rime-react wrapper.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "oxlint src"
+  },
+  "dependencies": {
+    "@nord-forge/rime-core": "workspace:*",
+    "@nord-forge/rime-mjml": "workspace:*",
+    "@nord-forge/rime-model": "workspace:*",
+    "@nord-forge/rime-react": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4"
+  }
+}

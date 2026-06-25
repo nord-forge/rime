@@ -19,7 +19,8 @@
     "typecheck": "bun run --filter='@nord-forge/*' typecheck",
     "size": "bun run --filter='@nord-forge/rime-core' build && bun run scripts/measure.ts",
     "e2e": "bun run --filter='@nord-forge/rime-core' e2e",
-    "demo": "bun run --filter='@nord-forge/rime-demo' dev"
+    "demo": "bun run --filter='@nord-forge/rime-demo' dev",
+    "demo:react": "bun run --filter='@nord-forge/rime-react-demo' dev"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
