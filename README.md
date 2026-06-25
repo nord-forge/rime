@@ -82,10 +82,61 @@ const couponBlock: BlockDefinition = {
 defineRimeEditor({ blocks: [couponBlock] });
 ```
 
-The pure root import (`@nord-forge/rime-core`) carries the SDK — types,
-`registerBlock`, helpers — with no editor side effects, so importing a type or
-helper stays tree-shakeable. `@nord-forge/rime-core/register` is the entry that
-defines `<rime-editor>` (and is the only module marked as having side effects).
+## Importing the editor
+
+`@nord-forge/rime-core` ships **three entry points** so you pull in only what you
+use. The rich-text engine (Lexical, ~60 kB gzip) is **code-split** — it loads on
+demand, never up front.
+
+| Import | What it gives you | Pulls in Lexical? |
+|---|---|---|
+| `@nord-forge/rime-core` | The pure, tree-shakeable SDK: types, `registerBlock`, the block registry, `registerToken`, render helpers. **No custom elements, no side effects.** | No |
+| `@nord-forge/rime-core/register` | Defines the `<rime-editor>` element + the built-in blocks (side-effecting). This is what you import to actually render an editor. | Lazily, only when rich text is enabled (see below) |
+| `@nord-forge/rime-core/richtext` | The Lexical-coupled surface for advanced/direct use (`mountLexical`, the rich-text toolbar/popover/token-picker classes). Most apps never need this. | Yes (statically) |
+
+### Editor **with** the Lexical rich-text editor (default)
+
+This is the normal path: bold/italic/links/lists, the inline toolbar, and the merge-tag
+chip UI. Lexical is **dynamic-imported the first time a text block is focused**, so it
+stays out of your initial bundle and only loads when the user actually edits text.
+
+```html
+<rime-editor id="editor"></rime-editor>
+<script type="module">
+  import '@nord-forge/rime-core/register'; // defines <rime-editor> + core blocks
+  const el = document.getElementById('editor');
+  // lexicalEditor defaults to true — nothing to set.
+  el.config = { theme: { '--eb-color-accent': '#5b5bd6' } };
+</script>
+```
+
+Or via the config-driven initializer:
+
+```ts
+import { defineRimeEditor } from '@nord-forge/rime-core/register';
+defineRimeEditor(); // rich text on by default
+```
+
+### Editor **without** Lexical (plain-text fallback)
+
+Set `config.lexicalEditor = false`. Text blocks are then edited with a plain
+`<textarea>` (plain paragraphs, no inline formatting), and **the Lexical chunk is
+never loaded** — opting out keeps it entirely out of the bundle. Use this when you want
+the smallest possible editor and don't need rich text.
+
+```html
+<rime-editor id="editor"></rime-editor>
+<script type="module">
+  import '@nord-forge/rime-core/register';
+  const el = document.getElementById('editor');
+  el.config = { lexicalEditor: false }; // plain-text editing; Lexical never fetched
+</script>
+```
+
+> **Bundle impact.** Importing only `@nord-forge/rime-core` (the SDK barrel) pulls
+> **no** Lexical. Importing `/register` keeps Lexical in a separate lazy chunk that
+> loads on first text-block focus — and with `lexicalEditor: false` it's never fetched
+> at all. The size gate enforces these per-entry budgets so the split can't regress.
 
 ### Export to email HTML
 ```ts
