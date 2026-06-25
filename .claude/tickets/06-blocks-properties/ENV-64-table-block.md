@@ -1,7 +1,7 @@
 ---
 id: ENV-64
 title: Table block (data table via raw-table export)
-status: ready
+status: done
 priority: P2
 milestone: 6 — Blocks & properties
 depends_on: [ENV-34, ENV-33]
