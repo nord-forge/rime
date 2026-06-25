@@ -337,12 +337,26 @@ export class DndController {
     for (const section of doc.children) {
       // Skip section-level band blocks (e.g. a hero) — they hold no columns.
       if (!isSection(section)) continue;
+      const sectionEl = this.#deps.renderer.elementForNode(section.id);
+      const sectionRect = sectionEl?.getBoundingClientRect();
       for (const column of section.children) {
         const colEl = this.#deps.renderer.elementForNode(column.id);
         if (!colEl) continue;
+        const colRect = colEl.getBoundingClientRect();
+        // A flex column shrinks to its content, so there's no droppable area below
+        // the last block (the trailing section padding is dead). Extend the column's
+        // HIT rect to its section's vertical bounds so dropping anywhere in the
+        // section — incl. the padding below the content — targets this column and
+        // appends. X stays the column's own so multi-column sections resolve by X.
+        const rect: ColumnGeometry["rect"] = {
+          left: colRect.left,
+          right: colRect.right,
+          top: sectionRect ? Math.min(sectionRect.top, colRect.top) : colRect.top,
+          bottom: sectionRect ? Math.max(sectionRect.bottom, colRect.bottom) : colRect.bottom,
+        };
         columns.push({
           columnId: column.id,
-          rect: colEl.getBoundingClientRect(),
+          rect,
           children: column.children
             .map((c) => {
               const el = this.#deps.renderer.elementForNode(c.id);
