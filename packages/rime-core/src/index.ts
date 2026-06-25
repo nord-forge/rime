@@ -84,6 +84,9 @@ export type { MenuBlock, MenuItem } from "./blocks/core/menu";
 export type { HtmlBlock } from "./blocks/core/html";
 export type { VideoBlock } from "./blocks/core/video";
 export type { TableBlock, TableBorder } from "./blocks/core/table";
+export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
+export { getByPath, nestedPartial } from "./properties/field-path";
+export { columnsForCount } from "./properties/columns-op";
 export {
   type LayoutPreset,
   LAYOUT_PRESETS,

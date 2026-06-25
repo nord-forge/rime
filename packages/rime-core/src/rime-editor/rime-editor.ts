@@ -43,6 +43,7 @@ import { canonicalize, richTextEqual } from "../richtext/serialize/serialize";
 import { RichTextToolbar } from "../richtext/ui/rich-text-toolbar";
 import { type LinkApplyDetail, LinkPopover } from "../richtext/ui/link-popover";
 import { makeCommands } from "../richtext/ui/rich-text-commands";
+import { type DocChangeDetail, EbPropertiesPanel } from "../properties/properties-panel";
 
 /** A declarative merge-token source (consumed by the tokens milestone). */
 export interface TokenSource {
@@ -116,6 +117,7 @@ export class RimeEditor extends LitElement {
   @property({ attribute: false }) config: RimeConfig = {};
 
   @query('[part="canvas"]') private canvasRegion!: HTMLElement;
+  @query("eb-properties-panel") private propertiesPanel!: EbPropertiesPanel;
 
   #doc: RimeDoc | null = null;
 
@@ -128,6 +130,7 @@ export class RimeEditor extends LitElement {
   #richtext: RichTextLifecycle | null = null;
   #toolbar: RichTextToolbar | null = null;
   #linkPopover: LinkPopover | null = null;
+  #properties: EbPropertiesPanel | null = null;
   #selected: string | null = null;
   #onViewportChange: (() => void) | null = null;
   #onKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -142,6 +145,8 @@ export class RimeEditor extends LitElement {
   }
 
   override firstUpdated(): void {
+    this.#properties = this.propertiesPanel;
+    this.#syncProperties();
     this.#canvas = new CanvasController();
     this.#canvas.mount(this.canvasRegion);
     void this.#canvas.whenReady().then(({ doc, mount, iframe }) => {
@@ -329,7 +334,21 @@ export class RimeEditor extends LitElement {
     this.#renderer?.update(op.doc);
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
+    this.#syncProperties();
     this.dispatchEvent(new CustomEvent<RimeChangeDetail>("change", { detail: { doc: op.doc } }));
+  }
+
+  // Feed the current doc + selection into the properties panel.
+  #syncProperties(): void {
+    if (!this.#properties) return;
+    this.#properties.doc = this.#doc;
+    this.#properties.selectedId = this.#selected;
+  }
+
+  // A property-panel edit produced a new doc — apply it through the normal op path.
+  #onPropertyChange(e: Event): void {
+    const detail = (e as CustomEvent<DocChangeDetail>).detail;
+    this.#dispatch({ doc: detail.doc, patch: detail.patch, inverse: detail.inverse });
   }
 
   #setupRichTextUi(canvasDoc: Document): void {
@@ -416,6 +435,7 @@ export class RimeEditor extends LitElement {
 
   #setSelected(id: string | null): void {
     this.#selected = id;
+    this.#syncProperties();
     const root = this.#canvas?.mountPoint;
     if (!root) return;
     for (const el of root.querySelectorAll<HTMLElement>("[data-node-id]")) {
@@ -536,6 +556,7 @@ export class RimeEditor extends LitElement {
     else this.#renderer.render(doc);
     this.#dnd?.syncCanvasTargets();
     this.#makeLeavesFocusable();
+    this.#syncProperties();
   }
 
   elementForNode(id: string): HTMLElement | null {
@@ -555,7 +576,12 @@ export class RimeEditor extends LitElement {
     return html`
       <section part="palette"><slot name="palette"></slot></section>
       <section part="canvas"><slot name="canvas"></slot></section>
-      <section part="properties"><slot name="properties"></slot></section>
+      <section part="properties">
+        <eb-properties-panel
+          @eb-doc-change=${(e: Event) => this.#onPropertyChange(e)}
+        ></eb-properties-panel>
+        <slot name="properties"></slot>
+      </section>
     `;
   }
 }
