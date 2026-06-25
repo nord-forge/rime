@@ -87,6 +87,13 @@ export type { TableBlock, TableBorder } from "./blocks/core/table";
 export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
 export { getByPath, nestedPartial } from "./properties/field-path";
 export { columnsForCount } from "./properties/columns-op";
+export { EbPalette, type PaletteAddDetail } from "./palette/palette";
+export {
+  type PaletteGroup,
+  type PaletteItem,
+  type PaletteSource,
+  paletteEntries,
+} from "./palette/palette-entries";
 export {
   type LayoutPreset,
   LAYOUT_PRESETS,

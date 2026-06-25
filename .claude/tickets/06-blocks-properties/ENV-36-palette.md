@@ -1,7 +1,7 @@
 ---
 id: ENV-36
 title: Block palette (categorized, drag source)
-status: ready
+status: done
 priority: P0
 milestone: 6 — Blocks & properties
 depends_on: [ENV-33, ENV-19]
