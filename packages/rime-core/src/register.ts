@@ -10,6 +10,7 @@
 import { RimeEditor } from "./rime-editor/rime-editor";
 import { registerCoreBlocks } from "./blocks/core/index";
 import { blockRegistry, registerBlock } from "./blocks/registry";
+import { registerCorePresets } from "./blocks/column-presets";
 import type { BlockDefinition } from "./blocks/types";
 
 export interface RimeInitConfig {
@@ -37,7 +38,10 @@ let defined = false;
 export function defineRimeEditor(config: RimeInitConfig = {}): string {
   const tagName = config.tagName ?? "rime-editor";
 
-  if (config.coreBlocks !== false) registerCoreBlocks();
+  if (config.coreBlocks !== false) {
+    registerCoreBlocks();
+    registerCorePresets();
+  }
   for (const block of config.blocks ?? []) {
     if (!blockRegistry.get(block.type)) registerBlock(block);
   }
