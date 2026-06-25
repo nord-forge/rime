@@ -13,6 +13,24 @@ export function escapeAttr(value: string): string {
   return escapeHtml(value).replaceAll('"', "&quot;");
 }
 
+// Allow only http(s) and mailto; reject javascript:/data: and anything unparseable.
+// A standalone copy of the rich-text href guard kept here so the export path stays
+// free of the Lexical-dependent richtext module.
+export function normalizeHref(raw: string): string | null {
+  const value = raw.trim();
+  if (value === "") return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`;
+  let url: URL;
+  try {
+    url = new URL(candidate);
+  } catch {
+    return null;
+  }
+  const scheme = url.protocol.toLowerCase();
+  if (scheme !== "http:" && scheme !== "https:" && scheme !== "mailto:") return null;
+  return url.href;
+}
+
 export function styleToMjmlAttrs(style: BlockStyle | undefined): Record<string, string> {
   const attrs: Record<string, string> = {};
   if (!style) return attrs;

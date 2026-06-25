@@ -3,10 +3,10 @@
 Tickets derived from [PRD.md](./PRD.md). Status: **⬜ Ready → ✅ Done**.
 Ticket frontmatter `status:` is the source of truth; this board is the rollup.
 
-**Progress: 37 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
+**Progress: 38 / 61 tickets done.** Milestones 0–5 complete; Milestone 6 (blocks &
 properties) in progress — the block catalog was expanded (ENV-57–64 added, ENV-65
 schema field-types) so the registration interface lands a real library, not just
-seven blocks. Core 68.71 kB gzip vs ~100 kB budget.
+seven blocks. Core 74.49 kB gzip vs ~100 kB budget.
 
 > ENV-32 caveat: the composition guard + QA checklist (`packages/rime-core/docs/
 > RICHTEXT-QA-CHECKLIST.md`) are landed; the **real-device iOS Safari + CJK IME
@@ -20,7 +20,7 @@ seven blocks. Core 68.71 kB gzip vs ~100 kB budget.
 | 3 — Canvas & shell | ✅ 5 / 5 |
 | 4 — Drag & drop | ✅ 8 / 8 |
 | 5 — Inline rich text | ✅ 6 / 6 |
-| 6 — Blocks & properties | 🔶 5 / 15 |
+| 6 — Blocks & properties | 🔶 6 / 15 |
 | 7 — Personalization tokens | ⬜ 0 / 3 |
 | 8 — Persistence & images | ⬜ 0 / 2 |
 | 9 — Framework wrappers & demo | ⬜ 0 / 4 |
@@ -115,7 +115,7 @@ Conventions:
 | ENV-36 | ⬜ | **Palette** — categorized, icons, drag source | P0 | ENV-33, ENV-19 | §6.5 |
 | ENV-37 | ⬜ | **Example custom block** — documented end-to-end (the SDK proof) | P1 | ENV-33 | §12 |
 | ENV-65 | ✅ | **Schema field-type extensions** — `list`/repeater + `multiline`/`code` (shared by menu/html/video/table) | P1 | ENV-33 | §6.8 |
-| ENV-38 | ⬜ | **Social block** — `<mj-social>` icons + links | P1 | ENV-34 | §12 |
+| ENV-38 | ✅ | **Social block** — `<mj-social>` icons + links | P1 | ENV-34 | §12 |
 | ENV-57 | ✅ | **Heading block** — standalone layout-level h1–3 (`<mj-text>`) | P1 | ENV-34, ENV-33 | §12 |
 | ENV-58 | ✅ | **Quote block** — pull-quote w/ accent border (`<mj-text>`) | P1 | ENV-34, ENV-33 | §12 |
 | ENV-59 | ⬜ | **Menu / Nav block** — horizontal links (`<mj-navbar>`) | P1 | ENV-34, ENV-33, ENV-65 | §12 |

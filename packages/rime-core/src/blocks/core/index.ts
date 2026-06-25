@@ -9,6 +9,7 @@ import { dividerBlock } from "./divider";
 import { spacerBlock } from "./spacer";
 import { headingBlock } from "./heading";
 import { quoteBlock } from "./quote";
+import { socialBlock } from "./social";
 
 // Each block is typed against its own node; the registry stores them as the base
 // BlockDefinition (a node-type → handler map), so widen here at the boundary.
@@ -22,6 +23,7 @@ export const CORE_BLOCKS: BlockDefinition[] = [
   spacerBlock,
   headingBlock,
   quoteBlock,
+  socialBlock,
 ] as BlockDefinition[];
 
 export {
@@ -34,6 +36,7 @@ export {
   spacerBlock,
   headingBlock,
   quoteBlock,
+  socialBlock,
 };
 
 // Register the core blocks. Idempotent — a double import (or a re-call after

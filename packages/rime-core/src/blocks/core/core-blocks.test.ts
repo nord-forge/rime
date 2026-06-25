@@ -40,6 +40,7 @@ describe("registerCoreBlocks", () => {
         "image",
         "quote",
         "section",
+        "social",
         "spacer",
         "text",
       ].sort(),
