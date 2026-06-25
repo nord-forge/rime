@@ -34,6 +34,18 @@ export {
   resolveMove,
 } from "./dnd/keyboard-move/keyboard-move";
 export { destinationsFor, type MoveDestination } from "./dnd/move-to-menu/move-destinations";
+// Re-export the core doc-model types so consumers (and the framework wrappers) get
+// the public document shape from "@nord-forge/rime-core" without a separate
+// rime-model import. Pure types — no runtime, no Lexical.
+export type {
+  RimeDoc,
+  DocumentNode,
+  SectionNode,
+  ColumnNode,
+  AnyNode,
+  BaseNode,
+  BlockStyle,
+} from "@nord-forge/rime-model";
 export type { BlockSchema, FieldDef, FieldType } from "./blocks/schema";
 export type {
   BlockDefinition,

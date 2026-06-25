@@ -73,6 +73,9 @@ export {
   RimeValidationError,
   type TokenSource,
 };
+// The public document type, re-exported so consumers of the editor entry get it
+// here too (mirrors the pure "@nord-forge/rime-core" barrel).
+export type { RimeDoc } from "@nord-forge/rime-model";
 
 // The editor's chrome UI components (Lit custom elements) live here, alongside the
 // editor itself — NOT on the pure "@nord-forge/rime-core" SDK barrel, so importing
