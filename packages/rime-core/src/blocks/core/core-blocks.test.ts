@@ -39,6 +39,7 @@ describe("registerCoreBlocks", () => {
         "heading",
         "hero",
         "image",
+        "menu",
         "quote",
         "section",
         "social",
