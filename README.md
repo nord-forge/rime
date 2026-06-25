@@ -61,8 +61,14 @@ import { RimeEditor } from '@nord-forge/rime-react';
 import { RimeEditor } from '@nord-forge/rime-vue';
 </script>
 <template>
-  <RimeEditor v-model="doc" :on-image-upload="uploadToMyCdn" />
+  <RimeEditor v-model="doc" :on-image-upload="uploadToMyCdn" :theme="theme" />
 </template>
+```
+If you also use the `<rime-editor>` tag directly in a template (the wrapper itself
+doesn't need this), tell Vue it's a custom element so it doesn't try to resolve it:
+```ts
+// vite.config — @vitejs/plugin-vue
+vue({ template: { compilerOptions: { isCustomElement: (t) => t === 'rime-editor' } } });
 ```
 
 ### Custom block (the extension model)
