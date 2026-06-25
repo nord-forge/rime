@@ -676,12 +676,20 @@ export class RimeEditor extends LitElement {
 
   // Apply --eb-* overrides to the host element — the only theming channel for
   // chrome. We never read host stylesheets.
+  // --eb-* keys this component set on the last applyTheme, so switching to a theme
+  // that omits a key (e.g. back to a {} "default" theme) clears it instead of
+  // leaving the previous theme's value stuck on the element.
+  #appliedThemeKeys: string[] = [];
+
   #applyTheme(): void {
-    const theme = this.config.theme;
-    if (!theme) return;
+    const theme = this.config.theme ?? {};
+    for (const key of this.#appliedThemeKeys) {
+      if (!(key in theme)) this.style.removeProperty(key);
+    }
     for (const [key, value] of Object.entries(theme)) {
       this.style.setProperty(key, value);
     }
+    this.#appliedThemeKeys = Object.keys(theme);
   }
 
   /**

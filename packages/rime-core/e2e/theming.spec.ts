@@ -50,6 +50,25 @@ test.describe("two-surface theming", () => {
     expect(borderColor).toBe("rgb(0, 128, 0)");
   });
 
+  test("switching to a theme that omits a key clears the previous value", async ({ editor }) => {
+    const result = await editor.host.evaluate(async (host) => {
+      const el = host as unknown as {
+        config: { theme: Record<string, string> };
+        updateComplete: Promise<unknown>;
+      };
+      el.config = { theme: { "--eb-color-bg": "rgb(12, 16, 32)" } };
+      await el.updateComplete;
+      const dark = host.style.getPropertyValue("--eb-color-bg");
+      // Switch back to a default ({}) theme — the override must be removed.
+      el.config = { theme: {} };
+      await el.updateComplete;
+      const cleared = host.style.getPropertyValue("--eb-color-bg");
+      return { dark, cleared };
+    });
+    expect(result.dark).toBe("rgb(12, 16, 32)");
+    expect(result.cleared).toBe("");
+  });
+
   test("host CSS does NOT bleed into the canvas; --eb-* does NOT cross", async ({
     editor,
     page,
