@@ -156,6 +156,17 @@ export class RimeEditor extends LitElement {
     }
   }
 
+  override updated(changed: Map<PropertyKey, unknown>): void {
+    // A config change re-renders the palette with fresh .item nodes (e.g. when
+    // enabledBlocks changes); re-register their canvas drag sources so new items are
+    // draggable and stale listeners on detached nodes don't leak. #registerPaletteSources
+    // disposes prior registrations first. Skip until the palette exists (firstUpdated
+    // does the initial registration).
+    if (changed.has("config") && this.#palette) {
+      void this.#palette.updateComplete.then(() => this.#registerPaletteSources());
+    }
+  }
+
   // Merge declarative config.tokenSources into the shared token registry (the
   // declarative channel; registerTokenSource is the programmatic one — both land in
   // one registry the picker reads). Dup source ids throw, so we skip already-merged

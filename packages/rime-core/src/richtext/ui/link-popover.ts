@@ -66,8 +66,15 @@ export class LinkPopover extends LitElement {
 
   @query("input") private input!: HTMLInputElement;
 
+  // The element focused before the popover opened, restored on hide() so closing
+  // the dialog returns the caret to where the user was (a11y).
+  #returnFocus: HTMLElement | null = null;
+
   /** Open the popover, pre-filled with the current href. */
   show(current: string | null): void {
+    const root = this.getRootNode() as unknown as DocumentOrShadowRoot;
+    const active = root.activeElement;
+    this.#returnFocus = active instanceof HTMLElement ? active : null;
     this.value = current ?? "";
     this.invalid = false;
     this.open = true;
@@ -77,6 +84,14 @@ export class LinkPopover extends LitElement {
   hide(): void {
     this.open = false;
     this.invalid = false;
+    const restore = this.#returnFocus;
+    this.#returnFocus = null;
+    restore?.focus();
+  }
+
+  // The dialog's focusable controls, in tab order.
+  #focusables(): HTMLElement[] {
+    return [...this.renderRoot.querySelectorAll<HTMLElement>("input, button")];
   }
 
   #apply(): void {
@@ -115,9 +130,31 @@ export class LinkPopover extends LitElement {
     }
   }
 
+  // Trap Tab within the dialog so focus can't escape into background controls.
+  #onBoxKeydown(e: KeyboardEvent): void {
+    if (e.key !== "Tab") return;
+    const items = this.#focusables();
+    if (items.length === 0) return;
+    const first = items[0]!;
+    const last = items[items.length - 1]!;
+    const active = (this.renderRoot as unknown as DocumentOrShadowRoot).activeElement;
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
   override render() {
     return html`
-      <div class="box">
+      <div
+        class="box"
+        role="dialog"
+        aria-label="Edit link"
+        @keydown=${(e: KeyboardEvent) => this.#onBoxKeydown(e)}
+      >
         <input
           type="text"
           inputmode="url"
