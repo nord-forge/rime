@@ -1,7 +1,7 @@
 ---
 id: ENV-37
 title: Example custom block (the SDK proof)
-status: ready
+status: done
 priority: P1
 milestone: 6 — Blocks & properties
 depends_on: [ENV-33]

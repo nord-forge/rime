@@ -1,11 +1,9 @@
-// Importing this module defines the <rime-editor> custom element.
+// The PURE Rime SDK surface: types, the block registry + registerBlock, the core
+// blocks, render helpers, and DOM-free logic. It pulls in NO Lit custom elements,
+// so importing `registerBlock` (etc.) stays light and tree-shakeable. The editor
+// element and its chrome UI live on the side-effectful "@nord-forge/rime-core/register"
+// entry instead (see register.ts).
 
-export {
-  RimeEditor,
-  type RimeChangeDetail,
-  type RimeConfig,
-  type TokenSource,
-} from "./rime-editor/rime-editor";
 export { EB_TOKENS, type EbTheme, type EbToken } from "./theme/tokens/tokens";
 export { CanvasController, type CanvasReadyEvent } from "./canvas/iframe-canvas/iframe-canvas";
 export { CanvasRenderer } from "./canvas/canvas-renderer/canvas-renderer";
@@ -35,7 +33,7 @@ export {
   locateLeaf,
   resolveMove,
 } from "./dnd/keyboard-move/keyboard-move";
-export { destinationsFor, type MoveDestination, MoveToMenu } from "./dnd/move-to-menu/move-to-menu";
+export { destinationsFor, type MoveDestination } from "./dnd/move-to-menu/move-destinations";
 export type { BlockSchema, FieldDef, FieldType } from "./blocks/schema";
 export type {
   BlockDefinition,
@@ -84,10 +82,8 @@ export type { MenuBlock, MenuItem } from "./blocks/core/menu";
 export type { HtmlBlock } from "./blocks/core/html";
 export type { VideoBlock } from "./blocks/core/video";
 export type { TableBlock, TableBorder } from "./blocks/core/table";
-export { type DocChangeDetail, EbPropertiesPanel } from "./properties/properties-panel";
 export { getByPath, nestedPartial } from "./properties/field-path";
 export { columnsForCount } from "./properties/columns-op";
-export { EbPalette, type PaletteAddDetail } from "./palette/palette";
 export {
   type PaletteGroup,
   type PaletteItem,
@@ -124,8 +120,6 @@ export {
   type FormatState,
   registerSelectionFormat,
 } from "./richtext/ui/selection-format";
-export { RichTextToolbar } from "./richtext/ui/rich-text-toolbar";
-export { type LinkApplyDetail, LinkPopover } from "./richtext/ui/link-popover";
 export { LiveAnnouncer } from "./a11y/live-region/live-region";
 export {
   blockLabel,

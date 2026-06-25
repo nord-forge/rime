@@ -5,14 +5,10 @@
 
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import { isSection } from "@nord-forge/rime-model";
 import type { DropTarget } from "../dnd-types/dnd-types";
+import { type MoveDestination, destinationsFor } from "./move-destinations";
 
-/** A selectable destination shown in the menu. */
-export interface MoveDestination {
-  label: string;
-  target: DropTarget;
-}
+export { type MoveDestination, destinationsFor };
 
 export class MoveToMenu extends LitElement {
   static styles: CSSResultGroup = css`
@@ -119,30 +115,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "eb-move-to-menu": MoveToMenu;
   }
-}
-
-/** Build the destination list for a leaf block from the current doc. */
-export function destinationsFor(
-  doc: import("@nord-forge/rime-model").RimeDoc,
-  id: string,
-): MoveDestination[] {
-  const out: MoveDestination[] = [];
-  let sectionNumber = 0;
-  doc.children.forEach((section) => {
-    // Section-level band blocks (e.g. a hero) hold no columns — skip them.
-    if (!isSection(section)) return;
-    sectionNumber += 1;
-    section.children.forEach((column, c) => {
-      const hasNode = column.children.some((leaf) => leaf.id === id);
-      const isOnlyHere = hasNode && column.children.length === 1;
-      // Offer "end of column X" for every column except where it already solely is.
-      if (!isOnlyHere) {
-        out.push({
-          label: `Section ${sectionNumber}, Column ${c + 1} (end)`,
-          target: { parentId: column.id, index: column.children.length },
-        });
-      }
-    });
-  });
-  return out;
 }
